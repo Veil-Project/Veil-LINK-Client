@@ -21,6 +21,7 @@ const Button = ({ to, onClick, className, disabled = false, primary = false, siz
       'h-9 px-4 text-sm': size === 'md',
       'h-10 px-5':        size === 'lg',
       'bg-blue-500':      !disabled && primary,
+      'bg-gray-600':      !disabled && !primary,
       'bg-gray-600 cursor-default text-gray-400': disabled,
     }
   )
