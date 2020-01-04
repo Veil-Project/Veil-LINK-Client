@@ -1,0 +1,89 @@
+{
+  "name": "veil-wallet",
+  "productName": "Veil Wallet",
+  "main": "electron/main.js",
+  "version": "0.0.1",
+  "homepage": "./",
+  "private": true,
+  "dependencies": {
+    "@reach/router": "^1.2.1",
+    "@reduxjs/toolkit": "^1.1.0",
+    "@types/classnames": "^2.2.9",
+    "@types/jest": "^24.0.24",
+    "@types/node": "^12.12.21",
+    "@types/reach__router": "^1.2.6",
+    "@types/react": "^16.9.16",
+    "@types/react-dom": "^16.9.4",
+    "@types/react-redux": "^7.1.5",
+    "@types/react-transition-group": "^4.2.3",
+    "@types/webpack-env": "^1.14.1",
+    "bip39": "^3.0.2",
+    "classnames": "^2.2.6",
+    "qrcode.react": "^1.0.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-icons": "^3.8.0",
+    "react-redux": "^7.1.3",
+    "react-scripts": "^3.3.0",
+    "react-toastify": "^5.4.1",
+    "react-transition-group": "^4.3.0",
+    "redux": "^4.0.4",
+    "tailwind.macro": "^0.5.10",
+    "typescript": "^3.7.3",
+    "veild-rpc": "^1.0.4"
+  },
+  "scripts": {
+    "start": "export BROWSER=none && react-scripts start",
+    "start-electron": "export ELECTRON_START_URL=http://localhost:3000 && electron .",
+    "build": "react-scripts build",
+    "build-electron": "mkdir build/src && cp -r electron/. build/electron && cp -r src/shared/. build/src/shared",
+    "package": "electron-builder build --mac -c.extraMetadata.main=build/electron/main.js --publish never",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "build:styles": "postcss tailwind.css -o src/styles.css",
+    "prebuild": "yarn build:styles",
+    "prestart": "yarn build:styles",
+    "storybook": "start-storybook -p 9009 -s public",
+    "build-storybook": "build-storybook -s public"
+  },
+  "build": {
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "publish": {
+      "provider": "github",
+      "repo": "veil-link-client",
+      "owner": "veil-project"
+    }
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^1.3.0",
+    "autoprefixer": "^9.7.3",
+    "electron": "^7.1.1",
+    "electron-builder": "^22.1.0",
+    "electron-updater": "^4.2.0",
+    "nedb": "^1.8.0",
+    "postcss-cli": "^6.1.3",
+    "tailwindcss": "^1.1.4",
+    "tailwindcss-animations": "^1.0.0",
+    "tailwindcss-font-variant-numeric": "^0.1.3",
+    "tailwindcss-gradients": "^2.3.1",
+    "tailwindcss-grid": "^1.2.1"
+  }
+}
