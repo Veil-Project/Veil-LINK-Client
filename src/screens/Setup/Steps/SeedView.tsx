@@ -16,14 +16,14 @@ const SeedView = ({ seed, isVisible }: SeedViewProps) => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    if (!seed) dispatch(generateSeed())
-  })
+    if (seed.length == 0) dispatch(generateSeed())
+  }, [seed])
 
   const revealSeed = () => {
     dispatch(toggleSeedVisibility())
   }
 
-  if (!seed) {
+  if (seed.length == 0) {
     return <Spinner /> 
   }
 
