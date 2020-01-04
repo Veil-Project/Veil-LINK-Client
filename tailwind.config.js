@@ -10,6 +10,9 @@ module.exports = {
         'titlebar': '12px',
         '-titlebar': '-12px',
       },
+      height: {
+        'titlebar': '36px',
+      },
       colors: {
         gray: {
           100: '#EBECED',

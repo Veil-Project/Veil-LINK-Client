@@ -3812,7 +3812,7 @@ video {
 }
 
 .h-titlebar {
-  height: 12px;
+  height: 36px;
 }
 
 .h--titlebar {
@@ -12136,7 +12136,7 @@ video {
   }
 
   .sm\:h-titlebar {
-    height: 12px;
+    height: 36px;
   }
 
   .sm\:h--titlebar {
@@ -20421,7 +20421,7 @@ video {
   }
 
   .md\:h-titlebar {
-    height: 12px;
+    height: 36px;
   }
 
   .md\:h--titlebar {
@@ -28706,7 +28706,7 @@ video {
   }
 
   .lg\:h-titlebar {
-    height: 12px;
+    height: 36px;
   }
 
   .lg\:h--titlebar {
@@ -36991,7 +36991,7 @@ video {
   }
 
   .xl\:h-titlebar {
-    height: 12px;
+    height: 36px;
   }
 
   .xl\:h--titlebar {
@@ -45276,7 +45276,7 @@ video {
   }
 
   .dark\:h-titlebar {
-    height: 12px;
+    height: 36px;
   }
 
   .dark\:h--titlebar {
