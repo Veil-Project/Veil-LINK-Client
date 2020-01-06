@@ -11,9 +11,28 @@ const Send = (props: RouteComponentProps) => {
       </h1>
       
       <div className="flex-1">
-        <input type="text" autoFocus className="bg-gray-800 text-lg h-12 w-full rounded px-4 placeholder-gray-400" placeholder="Recipient name or address" />
-        <div className="my-6 flex flex-wrap -m-1">
-          Contacts go here…
+        <div className="mb-6">
+          <label htmlFor="address" className="block font-medium mb-2">
+            Recipient address
+          </label>
+          <input 
+            autoFocus
+            type="text"
+            id="address"
+            className="bg-gray-800 text-lg h-12 w-full rounded px-4 placeholder-gray-400" 
+            placeholder="Recipient address"
+          />
+        </div>
+        <div>
+          <label htmlFor="amount" className="block font-medium mb-2">
+            Amount to send
+          </label>
+          <input 
+            type="text"
+            id="amount"
+            className="bg-gray-800 text-lg h-12 w-1/2 rounded px-4 placeholder-gray-400"
+            placeholder="Amount to send"
+          />
         </div>
       </div>
       <div className="flex">
