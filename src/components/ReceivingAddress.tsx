@@ -33,12 +33,12 @@ const ReceivingAddress = () => {
         </div>
         <div className="mt-4 flex">
           <div className="mr-1 flex-1 flex">
-            <Button size="sm" onClick={handleCopyAddress}>
+            <Button size="sm" className="w-full" onClick={handleCopyAddress}>
               Copy
             </Button>
           </div>
           <div className="ml-1 flex-1 flex">
-            <Button size="sm" onClick={handleRegenerateAddress}>
+            <Button size="sm" className="w-full" onClick={handleRegenerateAddress}>
               Regenerate
             </Button>
           </div>

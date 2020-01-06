@@ -4,7 +4,11 @@ import Sheet from 'components/UI/Sheet'
 
 const Transaction = (props: RouteComponentProps) => (
   <Sheet onClose={() => navigate('/')}>
-    Transaction details
+    <h1 className="leading-none text-2xl font-semibold border-b-2 border-gray-500 pb-3 mb-8">
+      Transaction details
+    </h1>
+
+    
   </Sheet>
 )
 
