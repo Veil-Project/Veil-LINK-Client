@@ -1,16 +1,20 @@
 import React, { useEffect } from 'react'
 
-import { useDispatch } from 'react-redux'
-import { createWallet } from 'reducers/wallet'
+import { useSelector } from 'react-redux'
+import { selectors } from 'store/slices/setup'
+import api from 'api'
 
 import Spinner from 'components/UI/Spinner'
 
-const WalletCreate = () => {  
-  const dispatch = useDispatch()
-  
+const WalletCreate = () => {
+  const seed = useSelector(selectors.seed)
+
   useEffect(() => {
-    dispatch(createWallet())
-  })
+    const doStartDaemon = async () => {
+      await api.start(seed.join(' '))
+    }
+    doStartDaemon()
+  }, [seed])
 
   return (
     <div className="flex-1 flex items-center justify-center">

@@ -1,16 +1,17 @@
 import { configureStore, Action } from '@reduxjs/toolkit'
 import { ThunkAction } from 'redux-thunk'
-import rootReducer, { RootState } from 'reducers'
-
-// TODO: Get persisted state and/or client-specific default values (locale, timezone, etc)
+import rootReducer, { RootState } from './slices'
+import bindIpcEventListeners from '../ipcListeners'
 
 const store = configureStore({
-  reducer: rootReducer
+  reducer: rootReducer,
 })
 
+bindIpcEventListeners(store.dispatch, store.getState)
+
 if (process.env.NODE_ENV === 'development' && module.hot) {
-  module.hot.accept('reducers', () => {
-    const newRootReducer = require('reducers').default
+  module.hot.accept('./slices', () => {
+    const newRootReducer = require('./slices').default
     store.replaceReducer(newRootReducer)
   })
 }

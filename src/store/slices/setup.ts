@@ -8,27 +8,28 @@ import scorePassword from 'utils/scorePassword'
 // ------------------------------------
 
 interface Seed {
-  seed: Array<string>,
-  seedIsVisible: boolean,
-  seedConfirmation: Array<string>,
-  focusedSeedIndex: number,
+  seed: Array<string>
+  seedIsVisible: boolean
+  seedConfirmation: Array<string>
+  focusedSeedIndex: number
 }
 
 interface Password {
-  password: string,
-  passwordConfirmation: string,
+  password: string
+  passwordConfirmation: string
 }
 
 interface SeedConfirmationPayload {
-  index: number,
-  value: string,
+  index: number
+  value: string
 }
 
 export type Mode = 'create-wallet' | 'restore-wallet' | 'open-wallet'
 type SetupState = {
-  mode: Mode,
-  step: number,
-} & Seed & Password
+  mode: Mode
+  step: number
+} & Seed &
+  Password
 
 // ------------------------------------
 // Slice
@@ -45,7 +46,7 @@ const initialState: SetupState = {
   passwordConfirmation: '',
 }
 
-const setupSlice = createSlice({
+const slice = createSlice({
   name: 'setup',
   initialState,
   reducers: {
@@ -57,17 +58,16 @@ const setupSlice = createSlice({
     },
     setSeed: (state, action: PayloadAction<Array<string>>) => {
       state.seed = action.payload
-    },
-    toggleSeedVisibility: (state) => {
-      state.seedIsVisible = !state.seedIsVisible
-    },
-    hideSeedVisibility: (state) => {
+      state.seedConfirmation = []
       state.seedIsVisible = false
     },
-    resetSeedConfirmation: (state) => {
-      state.seedConfirmation = []
+    toggleSeedVisibility: state => {
+      state.seedIsVisible = !state.seedIsVisible
     },
-    setSeedConfirmationValue: (state, action: PayloadAction<SeedConfirmationPayload>) => {
+    setSeedConfirmationValue: (
+      state,
+      action: PayloadAction<SeedConfirmationPayload>
+    ) => {
       const { index, value } = action.payload
       state.seedConfirmation[index] = value.toLowerCase().replace(' ', '')
     },
@@ -83,34 +83,14 @@ const setupSlice = createSlice({
   },
 })
 
-export const {
-  switchMode,
-  setStep,
-  setSeed,
-  toggleSeedVisibility,
-  setSeedConfirmationValue,
-  setFocusedSeedIndex,
-  setPassword,
-  setPasswordConfirmation,
-} = setupSlice.actions
-
 // ------------------------------------
 // Selectors
 // ------------------------------------
 
 const setupSelector = (state: { setup: SetupState }) => state.setup
-const modeSelector = createSelector(
-  setupSelector,
-  setup => setup.mode
-)
-const stepSelector = createSelector(
-  setupSelector,
-  setup => setup.step
-)
-const seedSelector = createSelector(
-  setupSelector,
-  setup => setup.seed
-)
+const modeSelector = createSelector(setupSelector, setup => setup.mode)
+const stepSelector = createSelector(setupSelector, setup => setup.step)
+const seedSelector = createSelector(setupSelector, setup => setup.seed)
 const seedVisibilitySelector = createSelector(
   setupSelector,
   setup => setup.seedIsVisible
@@ -126,14 +106,9 @@ const focusedSeedIndexSelector = createSelector(
 const currentSeedConfirmationValueSelector = createSelector(
   seedConfirmationSelector,
   focusedSeedIndexSelector,
-  (seedConfirmation, focusedIndex) => (
-    seedConfirmation[focusedIndex]
-  )
+  (seedConfirmation, focusedIndex) => seedConfirmation[focusedIndex]
 )
-const passwordSelector = createSelector(
-  setupSelector,
-  setup => setup.password
-)
+const passwordSelector = createSelector(setupSelector, setup => setup.password)
 const passwordConfirmationSelector = createSelector(
   setupSelector,
   setup => setup.passwordConfirmation
@@ -149,47 +124,53 @@ export const selectors = {
   isSeedConfirmationValid: createSelector(
     seedSelector,
     seedConfirmationSelector,
-    (seed, seedConfirmation) => (
+    (seed, seedConfirmation) =>
       JSON.stringify(seed) === JSON.stringify(seedConfirmation)
-    )
   ),
   password: passwordSelector,
   passwordConfirmation: passwordConfirmationSelector,
-  passwordStrength: createSelector(
-    passwordSelector,
-    password => (
-      scorePassword(password)
-    )
+  passwordStrength: createSelector(passwordSelector, password =>
+    scorePassword(password)
   ),
   isPasswordValid: createSelector(
     passwordSelector,
     passwordConfirmationSelector,
-    (password, passwordConfirmation) => (
-      password === passwordConfirmation &&
-      scorePassword(password) > 60
-    )
+    (password, passwordConfirmation) =>
+      password === passwordConfirmation && scorePassword(password) > 60
   ),
   seedAutocompleteMatches: createSelector(
     currentSeedConfirmationValueSelector,
-    (currentValue) => (
-      currentValue ? Bip39.wordlists.english.filter(w => w.startsWith(currentValue)).slice(0, 5) : []
-    )
-  )
+    currentValue =>
+      currentValue
+        ? Bip39.wordlists.english
+            .filter(w => w.startsWith(currentValue))
+            .slice(0, 5)
+        : []
+  ),
 }
 
 // ------------------------------------
-// Thunks
+// Actions
 // ------------------------------------
 
 export const generateSeed = (): AppThunk => async dispatch => {
   try {
     const seed = await Bip39.generateMnemonic(256)
-    dispatch(setSeed(seed.split(' ')))
-    dispatch(setupSlice.actions.resetSeedConfirmation())
-    dispatch(setupSlice.actions.hideSeedVisibility())
-  } catch(e) {
+    dispatch(slice.actions.setSeed(seed.split(' ')))
+  } catch (e) {
     console.error(e)
   }
 }
 
-export default setupSlice.reducer
+export const {
+  switchMode,
+  setStep,
+  setSeed,
+  toggleSeedVisibility,
+  setSeedConfirmationValue,
+  setFocusedSeedIndex,
+  setPassword,
+  setPasswordConfirmation,
+} = slice.actions
+
+export default slice.reducer

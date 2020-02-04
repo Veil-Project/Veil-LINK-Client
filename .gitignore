@@ -19,9 +19,14 @@
 .env.test.local
 .env.production.local
 
-# veild
-/veil
-
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+release
+electron/**/**/*.js
+electron/**/**/*.js.map
+*.tsbuildinfo
+
+# veild
+/veil

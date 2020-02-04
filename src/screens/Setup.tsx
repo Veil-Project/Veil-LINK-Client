@@ -3,15 +3,14 @@ import { FiArrowLeft } from 'react-icons/fi'
 import { RouteComponentProps } from '@reach/router'
 
 import { useSelector, useDispatch } from 'react-redux'
-import { switchMode, setStep, selectors, Mode } from 'reducers/setup'
-import { createWallet } from 'reducers/wallet'
+import { switchMode, setStep, selectors, Mode } from 'store/slices/setup'
 
-import * as Steps from './Steps'
+import * as Steps from './Setup/Steps'
 import Button from 'components/UI/Button'
- 
+
 interface Step {
-  screen: any,
-  valid?: boolean,
+  screen: any
+  valid?: boolean
 }
 type Steps = Array<Step>
 
@@ -27,10 +26,6 @@ const Setup = (props: RouteComponentProps) => {
   const focusedSeedIndex = useSelector(selectors.focusedSeedIndex)
   const isSeedConfirmationValid = useSelector(selectors.isSeedConfirmationValid)
 
-  const password = useSelector(selectors.password)
-  const passwordConfirmation = useSelector(selectors.passwordConfirmation)
-  const isPasswordValid = useSelector(selectors.isPasswordValid)
-
   const dispatch = useDispatch()
 
   const gotoPrevStep = () => {
@@ -45,10 +40,6 @@ const Setup = (props: RouteComponentProps) => {
     dispatch(switchMode(mode))
   }
 
-  const skipSetup = () => {
-    dispatch(createWallet())
-  }
-
   let steps: Steps
   switch (selectedMode) {
     case 'create-wallet':
@@ -58,77 +49,85 @@ const Setup = (props: RouteComponentProps) => {
           valid: seedIsVisible,
         },
         {
-          screen:
+          screen: (
             <Steps.SeedConfirm
               seed={seed}
               seedConfirmation={seedConfirmation}
               focusedSeedIndex={focusedSeedIndex}
               seedAutocompleteMatches={seedAutocompleteMatches}
-            />,
+            />
+          ),
           valid: isSeedConfirmationValid,
         },
         {
-          screen: <Steps.SetPassword password={password} passwordConfirmation={passwordConfirmation} />,
-          valid: isPasswordValid,
-        },
-        {
           screen: <Steps.WalletCreate />,
-        }
+        },
       ]
-      break;
+      break
 
     case 'restore-wallet':
       steps = [
         {
-          screen: <Steps.SeedConfirm
-            seed={seed}
-            seedConfirmation={seedConfirmation}
-            focusedSeedIndex={focusedSeedIndex}
-            seedAutocompleteMatches={seedAutocompleteMatches}
-          />,
-          valid: seedConfirmation && seedConfirmation.filter(word => !word || word === '').length === 0,
-        },
-        {
-          screen: <Steps.SetPassword password={password} passwordConfirmation={passwordConfirmation} />,
-          valid: !!password,
+          screen: (
+            <Steps.SeedConfirm
+              seed={seed}
+              seedConfirmation={seedConfirmation}
+              focusedSeedIndex={focusedSeedIndex}
+              seedAutocompleteMatches={seedAutocompleteMatches}
+            />
+          ),
+          valid:
+            seedConfirmation &&
+            seedConfirmation.filter(word => !word || word === '').length === 0,
         },
         {
           screen: <Steps.WalletRestore />,
         },
       ]
-      break;
+      break
+
+    case 'open-wallet':
+      steps = [
+        {
+          screen: <div>TODO</div>,
+          valid: true,
+        },
+      ]
+      break
 
     default:
       steps = []
   }
 
   steps.unshift({
-    screen: <Steps.Welcome selectedMode={selectedMode} switchMode={doSwitchMode} />,
-    valid: !!selectedMode
+    screen: (
+      <Steps.Welcome
+        selectedMode={selectedMode}
+        switchMode={doSwitchMode}
+        gotoNextStep={gotoNextStep}
+      />
+    ),
+    valid: !!selectedMode,
   })
 
   const step = steps[currentStep]
-  
+
   return (
     <div className="flex-1 w-full flex flex-col">
-      <div className="h-titlebar draggable"></div>
-      
+      <div className="h-titlebar draggable" />
+
       {step.screen}
 
-      {currentStep < steps.length-1 && (
+      {currentStep > 0 && currentStep < steps.length - 1 && (
         <footer className="flex justify-between items-center p-8 border-t border-gray-500">
-          {currentStep > 0 ? (
-            <button tabIndex={-1} className="text-gray-300 text-sm hover:text-white flex items-center p-4 -m-4" onClick={gotoPrevStep}>
-              <FiArrowLeft className="mr-1 mt-1" /> Back
-            </button>
-          ) : (
-            <div>
-              <button tabIndex={-1} className="text-gray-300 text-sm hover:text-white flex items-center p-4 -m-4" onClick={skipSetup}>
-                Skip setup
-              </button>
-            </div>
-          )}
-          <div>
+          <button
+            tabIndex={-1}
+            className="text-gray-300 text-sm hover:text-white flex items-center p-4 -m-4"
+            onClick={gotoPrevStep}
+          >
+            <FiArrowLeft className="mr-1 mt-1" /> Back
+          </button>
+          <div className="ml-auto">
             <Button primary disabled={!step.valid} onClick={gotoNextStep}>
               Continue
             </Button>

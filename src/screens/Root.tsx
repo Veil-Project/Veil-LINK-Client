@@ -1,42 +1,51 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Router } from '@reach/router'
 
 import { useSelector } from 'react-redux'
-import { selectors } from 'reducers/wallet'
+import { getAppStatus } from 'store/slices/app'
+import api from 'api'
 
-import Home from './Home'
-import About from './About'
-import Receive from './Receive'
-import Setup from './Setup/Setup'
-import Settings from './Settings/Settings'
-import Console from './Console'
-
-import AppSidebar from '../components/AppSidebar'
+import Setup from './Setup'
+import WalletRoot from './WalletRoot'
+import DaemonStatus from './DaemonStatus'
 import Notifications from 'components/UI/Notifications'
 
 const Root = () => {
-  const wallets = useSelector(selectors.wallets)
+  const status = useSelector(getAppStatus)
+
+  useEffect(() => {
+    const startDaemonAsync = async () => {
+      await api.start()
+    }
+    startDaemonAsync()
+  }, [])
+
+  const renderApp = () => {
+    switch (status) {
+      case 'initializing':
+      case 'daemon-stopping':
+      case 'daemon-error':
+        return (
+          <div className="m-auto">
+            <DaemonStatus showStartButton={status === 'daemon-error'} />
+          </div>
+        )
+      case 'wallet-missing':
+        return (
+          <Router className="flex-1 flex flex-col">
+            <Setup path="/*" />
+          </Router>
+        )
+      case 'wallet-loaded':
+        return <WalletRoot />
+      default:
+        return <div />
+    }
+  }
 
   return (
     <div className="h-screen overflow-hidden flex text-white antialiased">
-      {wallets.length === 0 ? (
-        <Router className="flex-1 flex flex-col">
-          <Setup path="/*" />
-        </Router>
-      ) : (
-        <>
-          <AppSidebar />
-          <Router className="flex-1 flex">
-            <Home path="/*" />
-          </Router>
-          <Router className="absolute inset-0 p-20 flex items-stretch justify-center" style={{ backgroundColor: 'rgba(0,0,0,.33)' }}>
-            <About path="/about" />
-            <Receive path="/receive" />
-            <Settings path="/settings/*" />
-            <Console path="/console" />
-          </Router>
-        </>
-      )}
+      {renderApp()}
       <Notifications />
     </div>
   )

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Router, Link, RouteComponentProps } from '@reach/router';
+import React from 'react'
+import { Router, Link, RouteComponentProps } from '@reach/router'
 
 import General from './General'
 import Network from './Network'
@@ -7,25 +7,28 @@ import Privacy from './Privacy'
 import Advanced from './Advanced'
 
 import Modal from 'components/UI/Modal'
-import Button from 'components/UI/Button';
+import Button from 'components/UI/Button'
 
 // TODO: figure out correct type for wrapping Link props
 const ActiveLink = (props: any) => (
   <Link
     {...props}
     getProps={({ isCurrent }) => ({
-      className: isCurrent ?
-        'px-4 h-10 rounded flex items-center justify-start bg-gray-600 text-sm text-white font-medium' :
-        'px-4 h-10 rounded flex items-center justify-start text-gray-300 text-sm font-medium hover:text-white hover:bg-gray-600'
+      className: isCurrent
+        ? 'px-4 h-10 rounded flex items-center justify-start bg-gray-600 text-sm text-white font-medium'
+        : 'px-4 h-10 rounded flex items-center justify-start text-gray-300 text-sm font-medium hover:text-white hover:bg-gray-600',
     })}
   />
 )
 
 const Settings = (props: RouteComponentProps) => (
-  <Modal>
+  <Modal hideClose={true}>
     <div className="w-full flex flex-col">
       <div className="flex-1 flex">
-        <div className="flex-none w-48 p-4 flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,.15)' }}>
+        <div
+          className="flex-none w-48 p-4 flex flex-col"
+          style={{ backgroundColor: 'rgba(0,0,0,.15)' }}
+        >
           <ActiveLink to="./">General</ActiveLink>
           <ActiveLink to="network">Network</ActiveLink>
           <ActiveLink to="privacy">Privacy</ActiveLink>
@@ -41,7 +44,7 @@ const Settings = (props: RouteComponentProps) => (
         </div>
       </div>
       <div className="flex-none flex justify-end px-6 py-4 bg-gray-600 border-t border-gray-700">
-        <Button to="/"primary>
+        <Button to="/" primary>
           Done
         </Button>
       </div>

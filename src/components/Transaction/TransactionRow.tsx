@@ -1,6 +1,6 @@
 import React from 'react'
 import { navigate } from '@reach/router'
-import { Transaction } from 'reducers/transaction'
+import { Transaction } from 'store/slices/transaction'
 import TransactionRowStatusIcon from './TransactionRowStatusIcon'
 
 // TODO: Move to transaction utils
@@ -31,35 +31,40 @@ const transactionColor = (type: string): string => {
   }
 }
 
-const formatDate = (date: Date, format: string):string => (
+const formatDate = (date: Date, format: string): string =>
   // @ts-ignore
   date.toLocaleDateString('en-US', { dateStyle: format })
-)
 
-const formatTime = (date: Date, format: string):string => (
+const formatTime = (date: Date, format: string): string =>
   // @ts-ignore
   date.toLocaleTimeString('en-US', { timeStyle: format })
-)
 
-const TransactionRow = ({ id, type, timestamp, address, amount }:Transaction) => (
+const TransactionRow = ({ txid, type, time, address, amount }: Transaction) => (
   <tr
-    onClick={() => navigate(`/transactions/${id}`)}
+    onClick={() => navigate(`/transactions/${txid}`)}
     className="cursor-pointer text-gray-400 hover:text-white hover:bg-gray-600 border-b border-gray-800"
   >
     <td className="pl-6">
       <TransactionRowStatusIcon type={type} />
     </td>
     <td className="text-white font-bold whitespace-no-wrap pr-3">
-      {formatDate(timestamp, 'medium')}
+      {formatDate(new Date(time), 'medium')}
     </td>
     <td className="whitespace-no-wrap pr-3">
-      {formatTime(timestamp, 'short')}
+      {formatTime(new Date(time), 'short')}
     </td>
     <td className="leading-tight w-full pr-3 truncate" style={{ maxWidth: 0 }}>
       {transactionDescription(type, address)}
     </td>
-    <td className={`text-right font-bold ${transactionColor(type)} whitespace-no-wrap pr-6 numeric-tabular-nums`}>
-      {amount.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}
+    <td
+      className={`text-right font-bold ${transactionColor(
+        type
+      )} whitespace-no-wrap pr-6 numeric-tabular-nums`}
+    >
+      {amount.toLocaleString('en-US', {
+        minimumFractionDigits: 4,
+        maximumFractionDigits: 4,
+      })}
     </td>
   </tr>
 )

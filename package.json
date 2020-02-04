@@ -1,89 +1,183 @@
 {
-  "name": "veil-wallet",
-  "productName": "Veil Wallet",
-  "main": "electron/main.js",
-  "version": "0.0.1",
+  "name": "veil-link-client",
+  "version": "0.1.0",
   "homepage": "./",
   "private": true,
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "nf start",
+    "build": "yarn app:build && yarn electron:compile",
+    "package": "rimraf release && yarn build && electron-builder build -c.extraMetadata.main=electron/main.js --publish never",
+    "package-all": "rimraf release && yarn build && electron-builder build -mwl",
+    "lint": "eslint 'electron/**/*.ts?(x)' && eslint 'src/**/*.ts?(x)'",
+    "app:dev": "BROWSER=false react-scripts start",
+    "app:build": "react-scripts build",
+    "electron:compile": "tsc --project electron/tsconfig.json",
+    "electron:dev": "NODE_ENV=development electron electron/main.js",
+    "component": "node scripts/component.js",
+    "get": "node scripts/type.js",
+    "redux": "node scripts/redux.js",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "build:styles": "postcss ./styles/tailwind.css -o src/styles.css && postcss ./styles/prompt.css -o electron/prompt.css",
+    "prebuild": "yarn build:styles",
+    "prestart": "yarn build:styles"
+  },
+  "build": {
+    "productName": "Veil Link Client",
+    "appId": "com.veil-project.link-client",
+    "directories": {
+      "buildResources": "public",
+      "output": "release"
+    },
+    "files": [
+      "build/index.html",
+      "build/**/*",
+      "electron/*.js",
+      "package.json"
+    ],
+    "extraResources": ["veil/veild"],
+    "publish": {
+      "provider": "github",
+      "repo": "veil-link-client",
+      "owner": "veil-project"
+    },
+    "mac": {
+      "target": ["dmg", "pkg", "zip"],
+      "darkModeSupport": true,
+      "icon": "public/logo512.png",
+      "type": "distribution"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "pkg": {},
+    "win": {
+      "target": ["nsis", "portable", "zip"],
+      "icon": "public/icon/icon.ico"
+    },
+    "nsis": {
+      "installerIcon": "public/icon/icon.ico",
+      "warningsAsErrors": false
+    },
+    "linux": {
+      "target": ["AppImage", "deb", "rpm", "snap"],
+      "icon": "public/icon"
+    },
+    "snap": {
+      "grade": "stable"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Veil-Project/Veil-Link-Client.git"
+  },
+  "author": {
+    "name": "The Veil Team",
+    "email": "support@veil-project.com",
+    "url": "https://veil-project.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Veil-Project/Veil-Link-Client/issues"
+  },
+  "eslintConfig": {
+    "extends": "react-app",
+    "rules": {
+      "react/self-closing-comp": "warn"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --max-warnings=0",
+      "prettier --ignore-path .eslintignore --write",
+      "git add"
+    ],
+    "{*.json,.{babelrc,eslintrc,prettierrc}}": [
+      "prettier --ignore-path .eslintignore --parser json --write",
+      "git add"
+    ],
+    "*.{css,scss}": [
+      "prettier --ignore-path .eslintignore --single-quote --write",
+      "git add"
+    ],
+    "*.{yml,md}": [
+      "prettier --ignore-path .eslintignore --single-quote --write",
+      "git add"
+    ]
+  },
+  "devEngines": {
+    "node": ">=7.x",
+    "npm": ">=4.x",
+    "yarn": ">=0.21.3"
+  },
+  "browserslist": ["last 1 chrome version"],
   "dependencies": {
     "@reach/router": "^1.2.1",
     "@reduxjs/toolkit": "^1.1.0",
+    "@reecelucas/react-use-hotkeys": "^1.1.2",
+    "bip39": "^3.0.2",
+    "classnames": "^2.2.6",
+    "electron-prompt": "^1.5.1",
+    "electron-updater": "^4.2.0",
+    "lodash": "^4.17.15",
+    "qrcode.react": "^1.0.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-hook-form": "^4.8.1",
+    "react-icons": "^3.8.0",
+    "react-json-view": "^1.19.1",
+    "react-redux": "^7.1.3",
+    "react-scripts": "^3.3.0",
+    "react-toastify": "^5.4.1",
+    "react-transition-group": "^4.3.0",
+    "redux": "^4.0.5"
+  },
+  "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^1.3.0",
     "@types/classnames": "^2.2.9",
+    "@types/electron-prompt": "^1.3.0",
     "@types/jest": "^24.0.24",
+    "@types/lodash": "^4.14.149",
     "@types/node": "^12.12.21",
+    "@types/qrcode.react": "^1.0.0",
     "@types/reach__router": "^1.2.6",
     "@types/react": "^16.9.16",
     "@types/react-dom": "^16.9.4",
     "@types/react-redux": "^7.1.5",
     "@types/react-transition-group": "^4.2.3",
     "@types/webpack-env": "^1.14.1",
-    "bip39": "^3.0.2",
-    "classnames": "^2.2.6",
-    "qrcode.react": "^1.0.0",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "react-icons": "^3.8.0",
-    "react-redux": "^7.1.3",
-    "react-scripts": "^3.3.0",
-    "react-toastify": "^5.4.1",
-    "react-transition-group": "^4.3.0",
-    "redux": "^4.0.4",
-    "tailwind.macro": "^0.5.10",
-    "typescript": "^3.7.3",
-    "veild-rpc": "^1.0.4"
-  },
-  "scripts": {
-    "start": "export BROWSER=none && react-scripts start",
-    "start-electron": "export ELECTRON_START_URL=http://localhost:3000 && electron .",
-    "build": "react-scripts build",
-    "build-electron": "mkdir build/src && cp -r electron/. build/electron && cp -r src/shared/. build/src/shared",
-    "package": "electron-builder build --mac -c.extraMetadata.main=build/electron/main.js --publish never",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "build:styles": "postcss tailwind.css -o src/styles.css",
-    "prebuild": "yarn build:styles",
-    "prestart": "yarn build:styles",
-    "storybook": "start-storybook -p 9009 -s public",
-    "build-storybook": "build-storybook -s public"
-  },
-  "build": {
-    "files": [
-      "build/**/*",
-      "node_modules/**/*"
-    ],
-    "publish": {
-      "provider": "github",
-      "repo": "veil-link-client",
-      "owner": "veil-project"
-    }
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "@fullhuman/postcss-purgecss": "^1.3.0",
     "autoprefixer": "^9.7.3",
     "electron": "^7.1.1",
     "electron-builder": "^22.1.0",
-    "electron-updater": "^4.2.0",
-    "nedb": "^1.8.0",
+    "foreman": "^3.0.1",
+    "husky": "^3.1.0",
+    "lint-staged": "^9.5.0",
     "postcss-cli": "^6.1.3",
+    "prettier": "^1.19.1",
+    "rimraf": "^3.0.0",
     "tailwindcss": "^1.1.4",
     "tailwindcss-animations": "^1.0.0",
     "tailwindcss-font-variant-numeric": "^0.1.3",
     "tailwindcss-gradients": "^2.3.1",
-    "tailwindcss-grid": "^1.2.1"
+    "tailwindcss-grid": "^1.2.1",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "3.7.4"
   }
 }
