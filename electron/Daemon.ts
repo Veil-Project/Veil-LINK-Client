@@ -50,7 +50,6 @@ export default class Daemon extends EventEmitter {
         `--rpcpassword=${this.pass}`,
         '--rpcport=8332',
         '--printtoconsole',
-        '--testnet',
         seed ? `--importseed=${seed}` : '',
       ].filter(opt => opt !== '')
     )
@@ -86,7 +85,7 @@ export default class Daemon extends EventEmitter {
         default:
           this.emit('message', message)
       }
-      console.log(message)
+      console.log('STDOUT', message)
     })
 
     this.daemon.stderr?.on('data', data => {
@@ -98,11 +97,11 @@ export default class Daemon extends EventEmitter {
         case /new wallet load detected/i.test(message):
           this.emit('wallet-missing')
           break
-        default:
+        case /error/i.test(message):
           this.emit('error')
           break
       }
-      console.error(message)
+      console.error('STDERR', message)
     })
   }
 

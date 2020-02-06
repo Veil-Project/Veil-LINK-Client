@@ -71,6 +71,7 @@ daemon.on('wallet-missing', function () {
     mainWindow.send('app-status-change', 'wallet-missing');
 });
 daemon.on('error', function () {
+    console.log('ERROR');
     mainWindow.send('app-status-change', 'daemon-error');
 });
 daemon.on('exit', function () {
@@ -117,6 +118,9 @@ electron_updater_1.autoUpdater.on('update-downloaded', function () {
     mainWindow.send('update-downloaded');
 });
 // API for renderer process
+electron_1.ipcMain.handle('daemon-status', function () {
+    return daemon.status;
+});
 electron_1.ipcMain.handle('start-daemon', function (_, seed) { return __awaiter(void 0, void 0, void 0, function () {
     var e_1;
     return __generator(this, function (_a) {
@@ -124,12 +128,12 @@ electron_1.ipcMain.handle('start-daemon', function (_, seed) { return __awaiter(
             case 0:
                 _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, daemon.start(seed)];
-            case 1:
-                _a.sent();
-                return [3 /*break*/, 3];
+            case 1: return [2 /*return*/, _a.sent()];
             case 2:
                 e_1 = _a.sent();
-                mainWindow.send('app-status-change', 'daemon-error');
+                if (e_1) {
+                    mainWindow.send('app-status-change', 'daemon-error');
+                }
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
@@ -147,7 +151,9 @@ electron_1.ipcMain.handle('stop-daemon', function (_) { return __awaiter(void 0,
                 return [3 /*break*/, 3];
             case 2:
                 e_2 = _a.sent();
-                mainWindow.send('app-status-change', 'daemon-error');
+                if (e_2) {
+                    mainWindow.send('app-status-change', 'daemon-error');
+                }
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }

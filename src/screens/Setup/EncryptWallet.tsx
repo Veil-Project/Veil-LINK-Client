@@ -2,6 +2,7 @@ import React, { useState, ChangeEvent } from 'react'
 import scorePassword from 'utils/scorePassword'
 import Button from 'components/UI/Button'
 import api from 'api'
+import { navigate } from '@reach/router'
 
 interface StrengthMeterProps {
   strength: number
@@ -15,7 +16,7 @@ const StrengthMeter = ({ strength }: StrengthMeterProps) => {
       ? 'bg-orange-400'
       : 'bg-green-400'
   return (
-    <div className="mt-4 h-2 bg-gray-900 flex rounded-full">
+    <div className="w-full mt-4 h-2 bg-gray-900 flex rounded-full">
       <div
         className={`flex-none rounded-full ${color}`}
         style={{ width: `${strength}%` }}
@@ -28,7 +29,6 @@ const EncryptWallet = () => {
   const [isEncrypting, setIsEncrypting] = useState(false)
   const [password, setPassword] = useState('')
   const [passwordConfirmation, setPasswordConfirmation] = useState('')
-
   const passwordStrength = scorePassword(password)
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -45,6 +45,7 @@ const EncryptWallet = () => {
     try {
       await api.encryptWallet(password)
       await api.restart()
+      navigate('/')
     } finally {
       setIsEncrypting(false)
     }
@@ -52,7 +53,8 @@ const EncryptWallet = () => {
 
   return (
     <div className="flex-1 flex flex-col">
-      <header className="pt-8 text-center max-w-lg mx-auto">
+      <div className="h-titlebar draggable" />
+      <header className="pt-8 text-center max-w-md mx-auto">
         <h1 className="text-2xl font-bold">
           Protect your wallet with a password
         </h1>
@@ -60,28 +62,32 @@ const EncryptWallet = () => {
           You’ll need it to unlock the wallet and make transfers.
         </p>
       </header>
-      <div className="mx-auto mt-8 p-8 text-center max-w-md">
-        <input
-          autoFocus
-          type="password"
-          placeholder="Enter password"
-          value={password}
-          onChange={handlePasswordChange}
-          className="h-12 bg-gray-500 rounded-t px-4 w-full text-lg outline-none"
-        />
-        <input
-          type="password"
-          placeholder="Repeat password"
-          value={passwordConfirmation}
-          onChange={handlePasswordConfirmationChange}
-          className="mt-px h-12 bg-gray-500 rounded-b px-4 w-full text-lg outline-none"
-        />
+      <div className="mx-auto p-8 flex flex-wrap max-w-md -m-1 items-center justify-center">
+        <div>
+          <input
+            autoFocus
+            type="password"
+            placeholder="Enter password"
+            value={password}
+            onChange={handlePasswordChange}
+            className="h-12 bg-gray-500 rounded-t px-4 w-full text-lg outline-none"
+          />
+          <input
+            type="password"
+            placeholder="Repeat password"
+            value={passwordConfirmation}
+            onChange={handlePasswordConfirmationChange}
+            className="mt-px h-12 bg-gray-500 rounded-b px-4 w-full text-lg outline-none"
+          />
+        </div>
         <StrengthMeter strength={passwordStrength} />
         <div className="mt-8 text-center text-sm text-gray-300">
           Note that this password can not be recovered. If you forget or lose
           it, the wallet will need to be restored from the seed.
         </div>
-        <div className="mt-8">
+      </div>
+      <footer className="mt-auto flex justify-between items-center p-8 border-t border-gray-500">
+        <div className="ml-auto">
           <Button
             disabled={
               isEncrypting ||
@@ -95,7 +101,7 @@ const EncryptWallet = () => {
             Encrypt wallet
           </Button>
         </div>
-      </div>
+      </footer>
     </div>
   )
 }

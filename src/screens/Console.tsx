@@ -67,6 +67,7 @@ const Console = (props: RouteComponentProps) => {
   ])
 
   useHotkeys('Meta+l', () => {
+    if (isLoading) return
     setCurrentIndex(0)
     setCommandHistory([{ input: '' }])
   })
@@ -140,7 +141,7 @@ const Console = (props: RouteComponentProps) => {
   }, [currentIndex])
 
   return (
-    <Modal onClose={() => navigate('/')}>
+    <Modal onClose={() => navigate('/')} canClose={!isLoading}>
       <label className="block w-full flex flex-col p-4 overflow-y-auto font-mono text-sm">
         <div>
           Welcome to the Veil RPC console.

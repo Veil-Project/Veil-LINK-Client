@@ -115,8 +115,11 @@ class Api {
     const [cmd, ...args] = command
       .match(/"[^"]+"|'[^']+'|\S+/g)
       ?.map(arg => arg.replace(/^["']|["']$/g, ''))
-    console.log(cmd, args)
     return await this._call(cmd, ...args)
+  }
+
+  getStatus() {
+    return window.ipcRenderer.invoke('daemon-status')
   }
 
   async start(seed?: string) {

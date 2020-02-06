@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { Router } from '@reach/router'
 
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { getAppStatus } from 'store/slices/app'
 import api from 'api'
 
@@ -9,16 +9,24 @@ import Setup from './Setup'
 import WalletRoot from './WalletRoot'
 import DaemonStatus from './DaemonStatus'
 import Notifications from 'components/UI/Notifications'
+import { getDaemonStatus, daemonStatusChanged } from 'store/slices/daemon'
 
 const Root = () => {
   const status = useSelector(getAppStatus)
+  const daemonStatus = useSelector(getDaemonStatus)
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const startDaemonAsync = async () => {
-      await api.start()
+      const status = await api.getStatus()
+      if (status === 'unknown') {
+        await api.start()
+      } else {
+        dispatch(daemonStatusChanged({ status }))
+      }
     }
     startDaemonAsync()
-  }, [])
+  }, [dispatch, daemonStatus])
 
   const renderApp = () => {
     switch (status) {

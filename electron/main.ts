@@ -52,6 +52,7 @@ daemon.on('wallet-missing', () => {
 })
 
 daemon.on('error', () => {
+  console.log('ERROR')
   mainWindow.send('app-status-change', 'daemon-error')
 })
 
@@ -99,17 +100,24 @@ autoUpdater.on('update-downloaded', () => {
 })
 
 // API for renderer process
+ipcMain.handle('daemon-status', () => {
+  return daemon.status
+})
 ipcMain.handle('start-daemon', async (_, seed?: string) => {
   try {
-    await daemon.start(seed)
+    return await daemon.start(seed)
   } catch (e) {
-    mainWindow.send('app-status-change', 'daemon-error')
+    if (e) {
+      mainWindow.send('app-status-change', 'daemon-error')
+    }
   }
 })
 ipcMain.handle('stop-daemon', async _ => {
   try {
     await daemon.stop()
   } catch (e) {
-    mainWindow.send('app-status-change', 'daemon-error')
+    if (e) {
+      mainWindow.send('app-status-change', 'daemon-error')
+    }
   }
 })

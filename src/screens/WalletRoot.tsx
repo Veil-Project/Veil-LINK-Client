@@ -13,7 +13,7 @@ import About from './About'
 import Receive from './Receive'
 import Settings from './Settings/Settings'
 import Console from './Console'
-import EncryptWallet from './EncryptWallet'
+import EncryptWallet from './Setup/EncryptWallet'
 import DaemonStatus from './DaemonStatus'
 
 import AppSidebar from 'components/AppSidebar'
@@ -28,15 +28,13 @@ const WalletRoot = () => {
 
   useEffect(() => {
     dispatch(initializeWallet())
-    const updateInterval = setInterval(() => {
-      dispatch(initializeWallet())
-    }, 1000)
-    return () => {
-      clearInterval(updateInterval)
-    }
+    // const updateInterval = setInterval(() => {
+    //   dispatch(initializeWallet())
+    // }, 1000)
+    // return () => {
+    //   clearInterval(updateInterval)
+    // }
   }, [dispatch])
-
-  console.log(walletLoaded)
 
   if (!walletLoaded) {
     return <DaemonStatus />

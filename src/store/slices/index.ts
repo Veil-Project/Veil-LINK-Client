@@ -4,7 +4,6 @@ import daemon from './daemon'
 import wallet from './wallet'
 import balance from './balance'
 import settings from './settings'
-import setup from './setup'
 import transaction from './transaction'
 
 const rootReducer = combineReducers({
@@ -13,7 +12,6 @@ const rootReducer = combineReducers({
   wallet,
   balance,
   settings,
-  setup,
   transaction,
 })
 
