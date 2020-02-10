@@ -36,14 +36,20 @@
       "electron/*.js",
       "package.json"
     ],
-    "extraResources": ["veil/veild"],
+    "extraResources": [
+      "veil/veild"
+    ],
     "publish": {
       "provider": "github",
       "repo": "veil-link-client",
       "owner": "veil-project"
     },
     "mac": {
-      "target": ["dmg", "pkg", "zip"],
+      "target": [
+        "dmg",
+        "pkg",
+        "zip"
+      ],
       "darkModeSupport": true,
       "icon": "public/logo512.png",
       "type": "distribution"
@@ -64,7 +70,11 @@
     },
     "pkg": {},
     "win": {
-      "target": ["nsis", "portable", "zip"],
+      "target": [
+        "nsis",
+        "portable",
+        "zip"
+      ],
       "icon": "public/icon/icon.ico"
     },
     "nsis": {
@@ -72,7 +82,12 @@
       "warningsAsErrors": false
     },
     "linux": {
-      "target": ["AppImage", "deb", "rpm", "snap"],
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm",
+        "snap"
+      ],
       "icon": "public/icon"
     },
     "snap": {
@@ -99,9 +114,7 @@
     }
   },
   "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
+    "hooks": {}
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -127,7 +140,9 @@
     "npm": ">=4.x",
     "yarn": ">=0.21.3"
   },
-  "browserslist": ["last 1 chrome version"],
+  "browserslist": [
+    "last 1 chrome version"
+  ],
   "dependencies": {
     "@reach/router": "^1.2.1",
     "@reduxjs/toolkit": "^1.1.0",
