@@ -3,7 +3,8 @@ import React, { useState, KeyboardEvent, InputHTMLAttributes } from 'react'
 interface SeedWordProps {
   index: number
   value: string
-  isValid: boolean
+  validate?: boolean
+  isValid?: boolean
   matchingWords: Array<string>
   isFocused: boolean
   onSelectWord: Function
@@ -12,6 +13,7 @@ interface SeedWordProps {
 const SeedWord = ({
   index,
   value,
+  validate,
   isValid,
   matchingWords,
   isFocused,
@@ -20,20 +22,22 @@ const SeedWord = ({
 }: SeedWordProps & InputHTMLAttributes<HTMLInputElement>) => {
   const [matchIndex, setMatchIndex] = useState(0)
 
-  const borderColor = isValid
-    ? 'border-green-600'
-    : isFocused
-    ? 'border-white'
-    : !value
-    ? 'border-gray-600'
-    : 'border-red-600'
-  const textColor = isValid
-    ? 'text-green-600'
-    : isFocused
-    ? 'text-white'
-    : !value
-    ? 'text-gray-600'
-    : 'text-red-600'
+  const borderColor =
+    validate && isValid
+      ? 'border-green-600'
+      : isFocused || (!validate && value)
+      ? 'border-white'
+      : !value
+      ? 'border-gray-600'
+      : 'border-red-600'
+  const textColor =
+    validate && isValid
+      ? 'text-green-600'
+      : isFocused || (!validate && value)
+      ? 'text-white'
+      : !value
+      ? 'text-gray-600'
+      : 'text-red-600'
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     switch (e.keyCode) {
@@ -77,6 +81,7 @@ const SeedWord = ({
           <div className="absolute top-100 z-50 left-0 w-full shadow-lg bg-gray-600 leading-none text-sm">
             {matchingWords.map((w, i) => (
               <button
+                key={w}
                 className={`w-full p-2 text-left ${
                   matchIndex === i ? 'text-white bg-blue-500' : 'text-gray-300'
                 }`}

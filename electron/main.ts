@@ -52,7 +52,6 @@ daemon.on('wallet-missing', () => {
 })
 
 daemon.on('error', () => {
-  console.log('ERROR')
   mainWindow.send('app-status-change', 'daemon-error')
 })
 
@@ -62,9 +61,9 @@ daemon.on('exit', () => {
 
 // App listeners
 app.on('before-quit', e => {
-  if (daemon.isStarted()) {
+  if (daemon.isRunning()) {
     e.preventDefault()
-    mainWindow.send('app-status-change', 'daemon-stopping')
+    mainWindow.send('app-status-change', 'terminating')
     const stopAndQuit = async () => {
       await daemon.stop()
       app.quit()
@@ -105,19 +104,15 @@ ipcMain.handle('daemon-status', () => {
 })
 ipcMain.handle('start-daemon', async (_, seed?: string) => {
   try {
-    return await daemon.start(seed)
+    await daemon.start(seed)
   } catch (e) {
-    if (e) {
-      mainWindow.send('app-status-change', 'daemon-error')
-    }
+    console.error(e)
   }
 })
 ipcMain.handle('stop-daemon', async _ => {
   try {
     await daemon.stop()
   } catch (e) {
-    if (e) {
-      mainWindow.send('app-status-change', 'daemon-error')
-    }
+    console.error(e)
   }
 })

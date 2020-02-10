@@ -3,39 +3,38 @@ import { Router } from '@reach/router'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { getAppStatus } from 'store/slices/app'
+
 import api from 'api'
 
 import Setup from './Setup'
 import WalletRoot from './WalletRoot'
 import DaemonStatus from './DaemonStatus'
 import Notifications from 'components/UI/Notifications'
-import { getDaemonStatus, daemonStatusChanged } from 'store/slices/daemon'
 
 const Root = () => {
   const status = useSelector(getAppStatus)
-  const daemonStatus = useSelector(getDaemonStatus)
   const dispatch = useDispatch()
 
   useEffect(() => {
     const startDaemonAsync = async () => {
-      const status = await api.getStatus()
-      if (status === 'unknown') {
-        await api.start()
-      } else {
-        dispatch(daemonStatusChanged({ status }))
-      }
+      await api.start()
     }
     startDaemonAsync()
-  }, [dispatch, daemonStatus])
+  }, [dispatch])
 
   const renderApp = () => {
     switch (status) {
       case 'initializing':
-      case 'daemon-stopping':
+      case 'terminating':
+        return (
+          <div className="m-auto">
+            <DaemonStatus />
+          </div>
+        )
       case 'daemon-error':
         return (
           <div className="m-auto">
-            <DaemonStatus showStartButton={status === 'daemon-error'} />
+            <DaemonStatus showStartButton={true} />
           </div>
         )
       case 'wallet-missing':

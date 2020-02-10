@@ -1,4 +1,5 @@
 import RpcClient from 'lib/veild-rpc.js'
+import { groupBy } from 'lodash'
 
 interface Api {
   client: any
@@ -41,7 +42,7 @@ class Api {
   }
 
   async listTransactions(count: number = 100, offset: number = 0) {
-    const { transactions } = await this._call('listSinceBlock') //, "*", count, offset)
+    const { transactions } = await this._call('listSinceBlock') //, '*', count, offset)
     const txids: string[] = Array.from(
       new Set(transactions.map((tx: any) => tx.txid))
     )
@@ -79,7 +80,7 @@ class Api {
   }
 
   async unlockWallet(password: string) {
-    return await this._call('walletpassphrase', password, false, 60)
+    return await this._call('walletpassphrase', password, false, 60 * 60)
   }
 
   async lockWallet() {
@@ -123,16 +124,16 @@ class Api {
   }
 
   async start(seed?: string) {
-    return await window.ipcRenderer.invoke('start-daemon', seed)
+    await window.ipcRenderer.invoke('start-daemon', seed)
   }
 
   async stop() {
-    return await window.ipcRenderer.invoke('stop-daemon')
+    await window.ipcRenderer.invoke('stop-daemon')
   }
 
   async restart() {
     await this.stop()
-    return await this.start()
+    await this.start()
   }
 }
 

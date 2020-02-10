@@ -4,6 +4,7 @@ import api from 'api'
 
 import Button from 'components/UI/Button'
 import SeedWord from 'components/Seed/SeedWord'
+import DaemonStatus from 'screens/DaemonStatus'
 
 interface Props {
   switchMode: Function
@@ -13,6 +14,7 @@ const RestoreWallet = ({ switchMode }: Props) => {
   const [seed, setSeed] = useState([...new Array(24)])
   const [focusedSeedIndex, setFocusedSeedIndex] = useState(0)
   const [autocompleteMatches, setAutocompleteMatches] = useState([] as string[])
+  const [isRestoring, setIsRestoring] = useState(false)
 
   const handleChange = (index: number, value: string) => {
     setSeed([...seed.slice(0, index), value, ...seed.slice(index + 1)])
@@ -28,19 +30,30 @@ const RestoreWallet = ({ switchMode }: Props) => {
   }, [focusedSeedIndex])
 
   const doRestoreWallet = async () => {
+    const isValidSeed = Bip39.validateMnemonic(seed.join(' '))
+
+    if (!isValidSeed) {
+      const confirmMsg =
+        'This seed does not appear to be valid. Are you sure you want to continue?'
+      if (!window.confirm(confirmMsg)) return
+    }
+
     try {
+      setIsRestoring(true)
       await api.start(seed.join(' '))
     } catch (e) {
       console.error(e)
       alert('Unable to restore wallet')
+    } finally {
+      setIsRestoring(false)
     }
   }
 
-  const isValidWord = (word: string) => {
-    return Bip39.wordlists.english.includes(word)
-  }
+  const isValid = seed.every(word => !!word)
 
-  const isValid = seed.every(word => isValidWord(word))
+  if (isRestoring) {
+    return <DaemonStatus />
+  }
 
   return (
     <div className="flex-1 flex flex-col">
@@ -56,7 +69,7 @@ const RestoreWallet = ({ switchMode }: Props) => {
             key={i}
             index={i}
             value={word}
-            isValid={isValidWord(word)}
+            validate={false}
             isFocused={focusedSeedIndex === i}
             matchingWords={autocompleteMatches}
             onSelectWord={(value: string) => handleChange(i, value)}

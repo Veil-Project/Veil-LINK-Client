@@ -11,7 +11,6 @@ const Transaction = ({ id }: RouteComponentProps<{ id: string }>) => {
     id,
     transactions,
   ])
-  console.log(transaction)
 
   if (!transaction) {
     return <div>Oops, that transaction can't be found.</div>

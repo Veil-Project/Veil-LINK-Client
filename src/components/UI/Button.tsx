@@ -32,7 +32,7 @@ const Button = ({
       'h-10 px-5': size === 'lg',
       'bg-blue-500': !disabled && primary,
       'bg-gray-600': !disabled && !primary,
-      'opacity-50 cursor-default text-gray-400': disabled,
+      'bg-gray-600 opacity-50 cursor-default text-gray-400': disabled,
     }
   )
 

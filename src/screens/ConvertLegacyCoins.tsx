@@ -34,7 +34,7 @@ const ConvertLegacyCoins = (props: RouteComponentProps) => {
   }
 
   return (
-    <Modal onClose={() => navigate('/')}>
+    <Modal onClose={() => navigate('/')} canClose={true}>
       <div className="flex-1 flex flex-col">
         <div className="bg-orange-400 h-12 flex-none flex items-center justify-center text-orange-800 font-medium text-sm">
           This screen is work in progress

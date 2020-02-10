@@ -44,7 +44,7 @@ const DaemonStatus = ({ showStartButton }: DaemonStatusProps) => {
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center">
-      {status === 'stopped' ? (
+      {status === 'stopped' && !isStarting ? (
         <FiAlertCircle size="48" className="text-orange-500" />
       ) : (
         <Spinner progress={progress} />

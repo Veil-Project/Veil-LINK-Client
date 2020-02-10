@@ -120,10 +120,7 @@ export const getStakingStatus = createSelector(
 // Actions
 // ------------------------------------
 
-export const initializeWallet = (): AppThunk => async (dispatch, getState) => {
-  const daemonStatus = getState().daemon.status
-  if (daemonStatus !== 'started') return
-
+export const initializeWallet = (): AppThunk => async dispatch => {
   try {
     const { staking_active, unlocked_until } = await api.getWalletInfo()
     const {

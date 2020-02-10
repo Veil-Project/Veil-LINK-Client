@@ -12,6 +12,8 @@ import useHotkeys from '@reecelucas/react-use-hotkeys'
 import api from 'api'
 import Modal from 'components/UI/Modal'
 import JsonViewer from 'components/JsonViewer'
+import { useSelector } from 'react-redux'
+import { getDaemonMessage } from 'store/slices/daemon'
 
 interface Command {
   input: string
@@ -66,6 +68,8 @@ const Console = (props: RouteComponentProps) => {
     { input: '' },
   ])
 
+  const message = useSelector(getDaemonMessage)
+
   useHotkeys('Meta+l', () => {
     if (isLoading) return
     setCurrentIndex(0)
@@ -74,6 +78,32 @@ const Console = (props: RouteComponentProps) => {
   useHotkeys('Escape', () => {
     navigate('/')
   })
+
+  const sendCommand = async (command: string): Promise<any> => {
+    try {
+      const response = await api.sendCommand(command)
+      return response || 'Command sent successfully'
+    } catch (e) {
+      if (e.code === -13) {
+        const password = await window.promptForInput({
+          title: 'Send command',
+          label: 'Enter wallet password',
+          inputAttrs: {
+            type: 'password',
+          },
+        })
+
+        if (password) {
+          await api.unlockWallet(password)
+          return await sendCommand(command)
+        }
+      }
+
+      throw e
+    } finally {
+      await api.lockWallet()
+    }
+  }
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newCommands = [...commandHistory]
@@ -105,8 +135,7 @@ const Console = (props: RouteComponentProps) => {
         newHistory.push({ input: '' })
 
         try {
-          const response = await api.sendCommand(value)
-          lastEntry.reply = response || 'Command sent successfully'
+          lastEntry.reply = await sendCommand(value)
         } catch (e) {
           lastEntry.error = e
         }
@@ -170,7 +199,7 @@ const Console = (props: RouteComponentProps) => {
           ))}
 
         {isLoading ? (
-          <div className="text-gray-300">Please wait…</div>
+          <div className="text-gray-300">{message || 'Please wait…'}</div>
         ) : (
           <div className="flex items-center text-teal-400">
             <span className="mr-2">></span>

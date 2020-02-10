@@ -53,12 +53,6 @@ const Transactions = () => {
 
   useEffect(() => {
     dispatch(fetchTransactions())
-    const updateInterval = setInterval(() => {
-      dispatch(fetchTransactions())
-    }, 1000)
-    return () => {
-      clearTimeout(updateInterval)
-    }
   }, [dispatch])
 
   const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {

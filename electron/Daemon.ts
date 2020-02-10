@@ -3,6 +3,7 @@ import { EventEmitter } from 'events'
 import path from 'path'
 
 export default class Daemon extends EventEmitter {
+  running: boolean = false
   status: string = 'unknown'
   message: string | null = null
   progress: number | null = null
@@ -18,10 +19,10 @@ export default class Daemon extends EventEmitter {
     this.pass = pass
   }
 
-  private updateStatus(status: string) {
+  private updateStatus(status: string, message?: string, progress?: number) {
     if (this.status !== status) {
-      this.message = null
-      this.progress = null
+      this.message = message || null
+      this.progress = progress || null
     }
     this.status = status
     this.emit('status-change', this.status, this.message, this.progress)
@@ -41,6 +42,7 @@ export default class Daemon extends EventEmitter {
   }
 
   private spawn(seed?: string) {
+    this.running = true
     this.daemon = spawn(
       process.env.ELECTRON_START_URL
         ? path.join(__dirname, '../veil/veild')
@@ -55,6 +57,7 @@ export default class Daemon extends EventEmitter {
     )
 
     this.daemon.on('exit', _code => {
+      this.running = false
       this.updateStatus('stopped')
       this.emit('exit')
     })
@@ -83,22 +86,21 @@ export default class Daemon extends EventEmitter {
           this.updateStatus('stopping')
           break
         default:
-          this.emit('message', message)
+          this.updateMessage(message)
       }
       console.log('STDOUT', message)
     })
 
     this.daemon.stderr?.on('data', data => {
       const message = data?.toString().trim() || ''
-      this.updateStatus('stopped')
-      this.updateMessage(message)
+      this.updateStatus('stopped', message)
 
       switch (true) {
         case /new wallet load detected/i.test(message):
           this.emit('wallet-missing')
           break
         case /error/i.test(message):
-          this.emit('error')
+          this.emit('error', message)
           break
       }
       console.error('STDERR', message)
@@ -117,22 +119,17 @@ export default class Daemon extends EventEmitter {
       this.spawn(seed)
 
       const startInterval = setInterval(() => {
-        switch (this.status) {
-          case 'started':
-            clearInterval(startInterval)
-            resolve()
-            break
-          case 'stopped':
-            clearInterval(startInterval)
-            reject()
-            break
+        if (this.isStarted()) {
+          clearInterval(startInterval)
+          resolve()
         }
+        // todo: add timeout
       }, 100)
     })
   }
 
   stop() {
-    if (this.daemon === null || this.daemon.killed || this.isStopped()) {
+    if (this.isStopped()) {
       this.updateStatus('stopped')
       return Promise.resolve()
     }
@@ -142,29 +139,24 @@ export default class Daemon extends EventEmitter {
       this.daemon?.kill()
 
       const stopInterval = setInterval(() => {
-        switch (this.status) {
-          case 'stopped':
-            clearInterval(stopInterval)
-            resolve()
-            break
-          case 'started':
-            clearInterval(stopInterval)
-            reject()
-            break
+        if (this.isStopped()) {
+          clearInterval(stopInterval)
+          resolve()
         }
+        // todo: add timeout
       }, 100)
     })
   }
 
+  isRunning(): boolean {
+    return this.running
+  }
+
   isStarted(): boolean {
-    return (
-      this.daemon !== null &&
-      !this.daemon.killed &&
-      !['unknown', 'stopped'].includes(this.status)
-    )
+    return this.running && this.status === 'started'
   }
 
   isStopped(): boolean {
-    return !this.isStarted()
+    return !this.running && this.status === 'stopped'
   }
 }

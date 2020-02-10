@@ -2,7 +2,7 @@ import React, { useState, ChangeEvent } from 'react'
 import scorePassword from 'utils/scorePassword'
 import Button from 'components/UI/Button'
 import api from 'api'
-import { navigate } from '@reach/router'
+import DaemonStatus from 'screens/DaemonStatus'
 
 interface StrengthMeterProps {
   strength: number
@@ -44,11 +44,13 @@ const EncryptWallet = () => {
     setIsEncrypting(true)
     try {
       await api.encryptWallet(password)
-      await api.restart()
-      navigate('/')
     } finally {
       setIsEncrypting(false)
     }
+  }
+
+  if (isEncrypting) {
+    return <DaemonStatus />
   }
 
   return (

@@ -8,7 +8,7 @@ export type AppStatus =
   | 'wallet-missing'
   | 'wallet-loaded'
   | 'daemon-error'
-  | 'daemon-stopping'
+  | 'terminating'
 
 type AppState = {
   status: AppStatus

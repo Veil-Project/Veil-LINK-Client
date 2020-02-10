@@ -2,19 +2,26 @@ import React from 'react'
 import { navigate } from '@reach/router'
 import { Transaction } from 'store/slices/transaction'
 import TransactionRowStatusIcon from './TransactionRowStatusIcon'
+import { sum } from 'lodash'
 
 // TODO: Move to transaction utils
-const transactionDescription = (type: string, address: string): string => {
-  switch (type) {
+const transactionDescription = (transaction: Transaction): string => {
+  const { category, address, vout, amount } = transaction.details[0]
+  const { type } = transaction.debug.vout[vout]
+
+  let verb
+  switch (category) {
     case 'receive':
-      return `Received from ${address}`
+      verb = 'received'
+      break
     case 'send':
-      return `Sent to ${address}`
-    case 'reward':
-      return `Staking reward`
+      verb = 'sent'
+      break
     default:
-      return address
+      verb = category
   }
+
+  return `${verb} ${type} to ${address}`
 }
 
 // TODO: Move to transaction utils
@@ -31,6 +38,9 @@ const transactionColor = (type: string): string => {
   }
 }
 
+const transactionAmount = (transaction: any): number =>
+  transaction.received - transaction.sent + transaction.fee
+
 const formatDate = (date: Date, format: string): string =>
   // @ts-ignore
   date.toLocaleDateString('en-US', { dateStyle: format })
@@ -39,34 +49,40 @@ const formatTime = (date: Date, format: string): string =>
   // @ts-ignore
   date.toLocaleTimeString('en-US', { timeStyle: format })
 
-const TransactionRow = ({ txid, type, time, address, amount }: Transaction) => (
-  <tr
-    onClick={() => navigate(`/transactions/${txid}`)}
-    className="cursor-pointer text-gray-400 hover:text-white hover:bg-gray-600 border-b border-gray-800"
-  >
-    <td className="pl-6">
-      <TransactionRowStatusIcon type={type} />
-    </td>
-    <td className="text-white font-bold whitespace-no-wrap pr-3">
-      {formatDate(new Date(time), 'medium')}
-    </td>
-    <td className="whitespace-no-wrap pr-3">
-      {formatTime(new Date(time), 'short')}
-    </td>
-    <td className="leading-tight w-full pr-3 truncate" style={{ maxWidth: 0 }}>
-      {transactionDescription(type, address)}
-    </td>
-    <td
-      className={`text-right font-bold ${transactionColor(
-        type
-      )} whitespace-no-wrap pr-6 numeric-tabular-nums`}
+const TransactionRow = (transaction: Transaction) => {
+  const { txid, type, time, address } = transaction
+  return (
+    <tr
+      onClick={() => navigate(`/transactions/${txid}`)}
+      className="cursor-pointer text-gray-400 hover:text-white hover:bg-gray-600 border-b border-gray-800"
     >
-      {amount.toLocaleString('en-US', {
-        minimumFractionDigits: 4,
-        maximumFractionDigits: 4,
-      })}
-    </td>
-  </tr>
-)
+      <td className="pl-6">
+        <TransactionRowStatusIcon type={type} />
+      </td>
+      <td className="text-white font-bold whitespace-no-wrap pr-3">
+        {formatDate(new Date(time), 'medium')}
+      </td>
+      <td className="whitespace-no-wrap pr-3">
+        {formatTime(new Date(time), 'short')}
+      </td>
+      <td
+        className="leading-tight w-full pr-3 truncate"
+        style={{ maxWidth: 0 }}
+      >
+        {transactionDescription(transaction)}
+      </td>
+      <td
+        className={`text-right font-bold ${transactionColor(
+          type
+        )} whitespace-no-wrap pr-6 numeric-tabular-nums`}
+      >
+        {transactionAmount(transaction).toLocaleString('en-US', {
+          minimumFractionDigits: 4,
+          maximumFractionDigits: 4,
+        })}
+      </td>
+    </tr>
+  )
+}
 
 export default TransactionRow
