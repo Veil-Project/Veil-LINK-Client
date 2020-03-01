@@ -1,40 +1,22 @@
 import { AsyncAction } from 'store'
 import { DaemonStatus } from './slices/daemon'
-// import crypto from 'crypto'
 
-export const onInitialize: AsyncAction = async ({
-  state,
-  effects,
-  actions,
-}) => {
-  // const user = 'letmein123' //crypto.randomBytes(256 / 8).toString('hex')
-  // const pass = 'letmein123' //crypto.randomBytes(256 / 8).toString('hex')
-
-  effects.wallet.initialize({
-    onLoaded: () => {
-      state.status = 'wallet'
-    },
-    onMissing: () => {
-      state.status = 'setup'
-    },
-  })
-
+export const onInitialize: AsyncAction = async ({ effects, actions }) => {
   effects.daemon.initialize({
-    onStatus: (status: DaemonStatus) => {
-      alert(status)
-      state.daemon.status = status
+    onStatus: (_event: any, status: DaemonStatus) => {
+      actions.daemon.changeStatus(status)
     },
-    onMessage: (message: string | null) => {
-      state.daemon.message = message
+    onMessage: (_event: any, message: string | null) => {
+      actions.daemon.setMessage(message)
     },
-    onProgress: (progress: number | null) => {
-      state.daemon.progress = progress
+    onProgress: (_event: any, progress: number | null) => {
+      actions.daemon.setProgress(progress)
     },
-    onStdout: (message: string) => {
-      state.daemon.stdout.push(message)
+    onStdout: (_event: any, message: string) => {
+      actions.daemon.logStdout(message)
     },
-    onStderr: (error: string) => {
-      state.daemon.error = error
+    onStderr: (_event: any, error: string) => {
+      actions.daemon.handleError(error)
     },
   })
 }

@@ -15,11 +15,11 @@ export default {
     onStderr && window.ipcRenderer.on('daemon-stderr', onStderr)
     onExit && window.ipcRenderer.on('daemon-exit', onExit)
   },
-  async start(user: string, pass: string) {
-    await window.ipcRenderer.invoke('start-daemon', user, pass)
+  async start() {
+    return await window.ipcRenderer.invoke('start-daemon')
   },
   async startFromSeed(seed: string) {
-    await window.ipcRenderer.invoke('start-daemon', seed)
+    return await window.ipcRenderer.invoke('start-daemon', seed)
   },
   async stop() {
     await window.ipcRenderer.invoke('stop-daemon')

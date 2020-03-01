@@ -99,7 +99,12 @@ const ConnectionForm = ({
   )
 }
 
-const Connect = () => {
+interface ConnectProps {
+  user?: string
+  pass?: string
+}
+
+const Connect = ({ user, pass }: ConnectProps) => {
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [warmupMessage, setWarmupMessage] = useState()
@@ -110,6 +115,13 @@ const Connect = () => {
     port: '58812',
   })
   const { effects, actions } = useStore()
+
+  useEffect(() => {
+    if (user && pass) {
+      effects.rpc.initialize({ user, pass })
+      actions.blockchain.load()
+    }
+  }, [user, pass])
 
   useEffect(() => {
     ;(async () => {

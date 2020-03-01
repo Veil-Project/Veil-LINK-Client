@@ -64,18 +64,18 @@ daemon.on('message', function (message) {
 daemon.on('progress', function (progress) {
     mainWindow.emit('daemon-progress', progress);
 });
+daemon.on('stdout', function (message) {
+    mainWindow.emit('daemon-stdout', message);
+});
+daemon.on('stderr', function (message) {
+    mainWindow.emit('daemon-stderr', message);
+});
 daemon.on('exit', function () {
     // mainWindow.emit('daemon-status', 'stopped')
 });
-daemon.on('wallet-loaded', function () {
-    mainWindow.emit('wallet-loaded');
-});
-daemon.on('wallet-missing', function () {
-    mainWindow.emit('wallet-missing');
-});
 // App listeners
 electron_1.app.on('before-quit', function (e) {
-    if (daemon.running) {
+    if (!daemon.isStopped()) {
         e.preventDefault();
         mainWindow.emit('app-quitting');
         var stopAndQuit = function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -114,19 +114,14 @@ electron_updater_1.autoUpdater.on('update-downloaded', function () {
     mainWindow.emit('update-downloaded');
 });
 // API for renderer process
-electron_1.ipcMain.handle('start-daemon', function (_, options) {
-    if (options === void 0) { options = {}; }
-    return __awaiter(void 0, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, daemon.start(options)];
-                case 1:
-                    _a.sent();
-                    return [2 /*return*/];
-            }
-        });
+electron_1.ipcMain.handle('start-daemon', function (_, seed) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, daemon.start(seed)];
+            case 1: return [2 /*return*/, _a.sent()];
+        }
     });
-});
+}); });
 electron_1.ipcMain.handle('stop-daemon', function (_) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {

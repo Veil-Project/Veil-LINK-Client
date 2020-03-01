@@ -10,8 +10,7 @@ import { namespaced, merge } from 'overmind/config'
 import { createHook } from 'overmind-react'
 
 import { onInitialize } from './onInitialize'
-import { state } from './state'
-import * as actions from './actions'
+import { state, actions } from './root'
 import * as effects from './effects'
 import * as slices from './slices'
 

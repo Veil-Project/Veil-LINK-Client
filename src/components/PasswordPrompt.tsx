@@ -8,7 +8,7 @@ const PasswordPrompt = ({ title, onCancel, onSubmit, disabled }: any) => {
     <Portal>
       <div
         className="fixed inset-0 flex items-center justify-center"
-        style={{ backgroundColor: 'rgba(0,0,0,.33)' }}
+        style={{ backgroundColor: 'rgba(0,0,0,.5)' }}
       >
         <div className="bg-gray-700 rounded-lg p-6 w-full max-w-xs shadow-lg">
           <header className="text-center mb-4">

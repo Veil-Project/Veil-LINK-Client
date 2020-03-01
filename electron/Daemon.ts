@@ -1,16 +1,20 @@
 import { spawn } from 'child_process'
 import { EventEmitter } from 'events'
 import path from 'path'
+import crypto from 'crypto'
 
-export type DaemonStatus = 'starting' | 'started' | 'stopping' | 'stopped'
 export interface DaemonOptions {
   user: string
   pass: string
   port?: string
-  seed?: string
 }
 
 export default class Daemon extends EventEmitter {
+  private options: DaemonOptions = {
+    user: crypto.randomBytes(256 / 8).toString('hex'),
+    pass: crypto.randomBytes(256 / 8).toString('hex'),
+    port: '58812',
+  }
   private daemon: ReturnType<typeof spawn> | null = null
 
   running: boolean = false
@@ -23,8 +27,7 @@ export default class Daemon extends EventEmitter {
     switch (true) {
       case /done loading/i.test(message):
         this.started = true
-        this.emit('wallet-loaded')
-        this.emit('status', 'started')
+        this.emit('status', 'wallet-loaded')
         break
       case /init message:/i.test(message):
         const messageMatch = message.match(/init message: (.*)/i)
@@ -48,10 +51,12 @@ export default class Daemon extends EventEmitter {
     this.emit('stderr', message)
 
     switch (true) {
+      case /cannot obtain a lock on data directory/i.test(message):
+        this.started = false
+        this.emit('status', 'already-running')
       case /new wallet load detected/i.test(message):
         this.started = false
-        this.emit('wallet-missing')
-        this.emit('status', 'stopped')
+        this.emit('status', 'new-wallet')
         break
       case /error/i.test(message):
         this.emit('error', message)
@@ -60,14 +65,13 @@ export default class Daemon extends EventEmitter {
   }
 
   private handleExit(_code: any) {
-    this.running = false
-    this.started = false
+    this.running = this.started = false
     this.emit('status', 'stopped')
-    // this.emit('exit')
+    this.emit('exit')
   }
 
-  private startDaemon(options: DaemonOptions) {
-    const { user, pass, port, seed } = options
+  private startDaemon(seed?: string) {
+    const { user, pass, port } = this.options
 
     this.running = true
     this.daemon = spawn(
@@ -77,32 +81,31 @@ export default class Daemon extends EventEmitter {
       [
         `--rpcuser=${user}`,
         `--rpcpassword=${pass}`,
-        `--rpcport=${port || '8332'}`,
+        `--rpcport=${port}`,
         '--printtoconsole',
         seed ? `--importseed=${seed}` : '',
       ].filter(opt => opt !== '')
     )
 
-    this.daemon.on('exit', this.handleExit)
-    this.daemon.stdout?.on('data', this.handleStdout)
-    this.daemon.stderr?.on('data', this.handleStderr)
+    this.daemon.on('exit', this.handleExit.bind(this))
+    this.daemon.stdout?.on('data', this.handleStdout.bind(this))
+    this.daemon.stderr?.on('data', this.handleStderr.bind(this))
   }
 
-  start(options: DaemonOptions) {
+  start(seed?: string): Promise<DaemonOptions> {
     if (this.started) {
-      this.emit('status', 'started')
-      this.emit('wallet-loaded')
-      return Promise.resolve()
+      this.emit('status', 'wallet-loaded')
+      return Promise.resolve(this.options)
     }
 
-    return new Promise((resolve, reject) => {
-      this.running = true
-      this.startDaemon(options)
+    this.emit('status', 'starting')
+    this.startDaemon(seed)
 
+    return new Promise((resolve, reject) => {
       const startInterval = setInterval(() => {
         if (this.started) {
           clearInterval(startInterval)
-          resolve()
+          resolve(this.options)
         }
         // todo: add timeout
       }, 100)
@@ -110,22 +113,26 @@ export default class Daemon extends EventEmitter {
   }
 
   stop() {
-    if ((!this.running && !this.started) || this.daemon?.killed) {
+    if (this.isStopped()) {
       this.emit('status', 'stopped')
       return Promise.resolve()
     }
 
-    return new Promise((resolve, reject) => {
-      this.emit('status', 'stopping')
-      this.daemon?.kill()
+    this.emit('status', 'stopping')
+    this.daemon?.kill()
 
+    return new Promise((resolve, reject) => {
       const stopInterval = setInterval(() => {
-        if (!this.running && !this.started) {
+        if (this.isStopped()) {
           clearInterval(stopInterval)
           resolve()
         }
         // todo: add timeout
       }, 100)
     })
+  }
+
+  isStopped() {
+    return (!this.running && !this.started) || !this.daemon
   }
 }

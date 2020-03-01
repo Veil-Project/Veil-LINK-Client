@@ -31,21 +31,21 @@ daemon.on('progress', (progress: number | null) => {
   mainWindow.emit('daemon-progress', progress)
 })
 
+daemon.on('stdout', (message: string | null) => {
+  mainWindow.emit('daemon-stdout', message)
+})
+
+daemon.on('stderr', (message: string | null) => {
+  mainWindow.emit('daemon-stderr', message)
+})
+
 daemon.on('exit', () => {
   // mainWindow.emit('daemon-status', 'stopped')
 })
 
-daemon.on('wallet-loaded', () => {
-  mainWindow.emit('wallet-loaded')
-})
-
-daemon.on('wallet-missing', () => {
-  mainWindow.emit('wallet-missing')
-})
-
 // App listeners
 app.on('before-quit', e => {
-  if (daemon.running) {
+  if (!daemon.isStopped()) {
     e.preventDefault()
     mainWindow.emit('app-quitting')
     const stopAndQuit = async () => {
@@ -83,8 +83,8 @@ autoUpdater.on('update-downloaded', () => {
 })
 
 // API for renderer process
-ipcMain.handle('start-daemon', async (_, options = {}) => {
-  await daemon.start(options)
+ipcMain.handle('start-daemon', async (_, seed?: string) => {
+  return await daemon.start(seed)
 })
 ipcMain.handle('stop-daemon', async _ => {
   await daemon.stop()
