@@ -1,21 +1,39 @@
-import { configureStore, Action } from '@reduxjs/toolkit'
-import { ThunkAction } from 'redux-thunk'
-import rootReducer, { RootState } from './slices'
-import bindIpcEventListeners from '../ipcListeners'
+import {
+  IConfig,
+  IOnInitialize,
+  IAction,
+  IOperator,
+  IDerive,
+  IState,
+} from 'overmind'
+import { namespaced, merge } from 'overmind/config'
+import { createHook } from 'overmind-react'
 
-const store = configureStore({
-  reducer: rootReducer,
-})
+import { onInitialize } from './onInitialize'
+import { state } from './state'
+import * as actions from './actions'
+import * as effects from './effects'
+import * as slices from './slices'
 
-bindIpcEventListeners(store.dispatch, store.getState)
+export const config = merge(
+  {
+    state,
+    actions,
+    effects,
+    onInitialize,
+  },
+  namespaced(slices)
+)
 
-if (process.env.NODE_ENV === 'development' && module.hot) {
-  module.hot.accept('./slices', () => {
-    const newRootReducer = require('./slices').default
-    store.replaceReducer(newRootReducer)
-  })
-}
+export const useStore = createHook<typeof config>()
 
-export type AppDispatch = typeof store.dispatch
-export type AppThunk = ThunkAction<void, RootState, null, Action<string>>
-export default store
+export interface Config extends IConfig<typeof config> {}
+export interface OnInitialize extends IOnInitialize<Config> {}
+export interface Action<Input = void, Output = void>
+  extends IAction<Config, Input, Output> {}
+export interface AsyncAction<Input = void, Output = void>
+  extends IAction<Config, Input, Promise<Output>> {}
+export interface Operator<Input = void, Output = Input>
+  extends IOperator<Config, Input, Output> {}
+export interface Derive<Parent extends IState, Output>
+  extends IDerive<Config, Parent, Output> {}

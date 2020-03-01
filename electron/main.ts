@@ -2,22 +2,8 @@ import { app, ipcMain } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import url from 'url'
 import path from 'path'
-import crypto from 'crypto'
 import Daemon from './Daemon'
 import AppWindow from './AppWindow'
-
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace NodeJS {
-    interface Global {
-      rpcUser: string
-      rpcPass: string
-    }
-  }
-}
-
-global.rpcUser = crypto.randomBytes(256 / 8).toString('hex')
-global.rpcPass = crypto.randomBytes(256 / 8).toString('hex')
 
 // Set up main window
 const startUrl =
@@ -31,39 +17,37 @@ const startUrl =
 const mainWindow = new AppWindow(startUrl)
 
 // Set up veild daemon
-const daemon = new Daemon({
-  user: global.rpcUser,
-  pass: global.rpcPass,
+const daemon = new Daemon()
+
+daemon.on('status', (status: string) => {
+  mainWindow.emit('daemon-status', status)
 })
 
-daemon.on(
-  'status-change',
-  (status: string, message?: string, progress?: number) => {
-    mainWindow.send('daemon-status-change', status, message, progress)
-  }
-)
-
-daemon.on('wallet-loaded', () => {
-  mainWindow.send('app-status-change', 'wallet-loaded')
+daemon.on('message', (message: string | null) => {
+  mainWindow.emit('daemon-message', message)
 })
 
-daemon.on('wallet-missing', () => {
-  mainWindow.send('app-status-change', 'wallet-missing')
-})
-
-daemon.on('error', () => {
-  mainWindow.send('app-status-change', 'daemon-error')
+daemon.on('progress', (progress: number | null) => {
+  mainWindow.emit('daemon-progress', progress)
 })
 
 daemon.on('exit', () => {
-  // mainWindow.send('daemon-status-change', 'stopped', null, null)
+  // mainWindow.emit('daemon-status', 'stopped')
+})
+
+daemon.on('wallet-loaded', () => {
+  mainWindow.emit('wallet-loaded')
+})
+
+daemon.on('wallet-missing', () => {
+  mainWindow.emit('wallet-missing')
 })
 
 // App listeners
 app.on('before-quit', e => {
-  if (daemon.isRunning()) {
+  if (daemon.running) {
     e.preventDefault()
-    mainWindow.send('app-status-change', 'terminating')
+    mainWindow.emit('app-quitting')
     const stopAndQuit = async () => {
       await daemon.stop()
       app.quit()
@@ -91,28 +75,17 @@ app.on('activate', e => {
 
 // Auto-update listeners
 autoUpdater.on('update-available', () => {
-  mainWindow.send('update-available')
+  mainWindow.emit('update-available')
 })
 
 autoUpdater.on('update-downloaded', () => {
-  mainWindow.send('update-downloaded')
+  mainWindow.emit('update-downloaded')
 })
 
 // API for renderer process
-ipcMain.handle('daemon-status', () => {
-  return daemon.status
-})
-ipcMain.handle('start-daemon', async (_, seed?: string) => {
-  try {
-    await daemon.start(seed)
-  } catch (e) {
-    console.error(e)
-  }
+ipcMain.handle('start-daemon', async (_, options = {}) => {
+  await daemon.start(options)
 })
 ipcMain.handle('stop-daemon', async _ => {
-  try {
-    await daemon.stop()
-  } catch (e) {
-    console.error(e)
-  }
+  await daemon.stop()
 })

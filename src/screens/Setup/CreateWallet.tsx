@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ChangeEvent } from 'react'
 import { toast } from 'react-toastify'
 import * as Bip39 from 'bip39'
-import api from 'api'
+import { useStore } from 'store'
 
 import Button from 'components/UI/Button'
 import Spinner from 'components/UI/Spinner'
@@ -151,6 +151,7 @@ const ConfirmSeed = ({ seed, onSubmit, onCancel }: any) => {
 const CreateWallet = ({ switchMode }: Props) => {
   const [step, setStep] = useState('view')
   const [seed, setSeed] = useState([...new Array(24)])
+  const { effects } = useStore()
 
   useEffect(() => {
     const generateSeed = async () => {
@@ -163,7 +164,7 @@ const CreateWallet = ({ switchMode }: Props) => {
   const doCreateWallet = async () => {
     try {
       setStep('create')
-      await api.start(seed.join(' '))
+      await effects.daemon.startFromSeed(seed.join(' '))
     } catch (e) {
       console.error(e)
       alert('Unable to create wallet')

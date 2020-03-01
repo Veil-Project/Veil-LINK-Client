@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
-import { RouteComponentProps } from '@reach/router'
 
 import Welcome from './Setup/Welcome'
 import CreateWallet from './Setup/CreateWallet'
 import RestoreWallet from './Setup/RestoreWallet'
 import OpenWallet from './Setup/OpenWallet'
 
-const Setup = (props: RouteComponentProps) => {
+const Setup = () => {
   const [mode, switchMode] = useState()
 
   const getCurrent = () => {

@@ -94,9 +94,7 @@ function rpc(request, callback) {
     })
 
     res.on('end', function() {
-      if (called) {
-        return
-      }
+      if (called) return
       called = true
 
       if (res.statusCode === 401) {
@@ -136,11 +134,9 @@ function rpc(request, callback) {
   })
 
   req.on('error', function(e) {
-    var err = new Error(errorMessage + 'Request Error: ' + e.message)
-    if (!called) {
-      called = true
-      callback(err)
-    }
+    if (called) return
+    called = true
+    callback(new Error(errorMessage + 'Request Error: ' + e.message))
   })
 
   req.setHeader('Content-Length', request.length)

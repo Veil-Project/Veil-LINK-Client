@@ -1,11 +1,10 @@
-import { createSlice, createSelector } from '@reduxjs/toolkit'
-import { pick, sum } from 'lodash'
-import { AppThunk } from 'store'
-import api from 'api'
-import { handleRpcError } from './app'
+import { Derive, AsyncAction } from 'store'
+import { sum, pick } from 'lodash'
 
-interface BalanceState {
+type State = {
   spendable: number | null
+  legacyBalance: Derive<State, number>
+  marketValue: Derive<State, number>
   breakdown: {
     basecoinSpendable: number
     basecoinUnconfirmed: number
@@ -21,10 +20,32 @@ interface BalanceState {
     zerocoinImmature: number
   }
   marketPrice: number | null
+  error: any
 }
 
-const initialState: BalanceState = {
+type Actions = {
+  fetchBalance: AsyncAction
+  fetchMarketPrice: AsyncAction
+}
+
+export const state: State = {
   spendable: null,
+  marketPrice: null,
+  legacyBalance: state =>
+    sum(
+      Object.values(
+        pick(
+          state.breakdown,
+          'basecoinSpendable',
+          'ctSpendable',
+          'zerocoinSpendable'
+        )
+      )
+    ),
+  marketValue: state =>
+    state.spendable && state.marketPrice
+      ? state.spendable * state.marketPrice
+      : 0,
   breakdown: {
     basecoinSpendable: 0,
     basecoinUnconfirmed: 0,
@@ -39,66 +60,16 @@ const initialState: BalanceState = {
     zerocoinUnconfirmed: 0,
     zerocoinImmature: 0,
   },
-  marketPrice: null,
+  error: null,
 }
 
-const slice = createSlice({
-  name: 'balance',
-  initialState,
-  reducers: {
-    balancesReceived(state, { payload }) {
-      state.spendable = payload.spendable
-      state.breakdown = payload.breakdown
-    },
-    marketPriceReceived(state, { payload }) {
-      state.marketPrice = payload
-    },
-  },
-})
-
-// ------------------------------------
-// Selectors
-// ------------------------------------
-
-const balanceSelector = (state: { balance: BalanceState }) => state.balance
-export const getMarketPrice = createSelector(
-  balanceSelector,
-  ({ marketPrice }) => marketPrice
-)
-export const getSpendableBalance = createSelector(
-  balanceSelector,
-  ({ spendable }) => spendable
-)
-export const getBalanceBreakdown = createSelector(
-  balanceSelector,
-  ({ breakdown }) => breakdown
-)
-export const getLegacyBalance = createSelector(
-  balanceSelector,
-  ({ breakdown }) =>
-    sum(
-      Object.values(
-        pick(breakdown, 'basecoinSpendable', 'ctSpendable', 'zerocoinSpendable')
-      )
-    )
-)
-export const getTotalMarketValue = createSelector(
-  getMarketPrice,
-  getSpendableBalance,
-  (marketPrice, spendableBalance) =>
-    spendableBalance && marketPrice ? spendableBalance * marketPrice : null
-)
-
-// ------------------------------------
-// Thunks
-// ------------------------------------
-
-export const fetchBalance = (): AppThunk => async dispatch => {
-  try {
-    const spendable = await api.getSpendableBalance()
-    const breakdown = await api.getBalances()
-    dispatch(
-      slice.actions.balancesReceived({
+export const actions: Actions = {
+  async fetchBalance({ state, effects, actions }) {
+    try {
+      const spendable = await effects.rpc.getSpendableBalance()
+      const breakdown = await effects.rpc.getBalances()
+      state.balance = {
+        ...state.balance,
         spendable,
         breakdown: {
           basecoinSpendable: parseFloat(breakdown.basecoin_spendable),
@@ -114,25 +85,22 @@ export const fetchBalance = (): AppThunk => async dispatch => {
           zerocoinUnconfirmed: parseFloat(breakdown.zerocoin_spendable),
           zerocoinImmature: parseFloat(breakdown.zerocoin_spendable),
         },
-      })
-    )
-  } catch (e) {
-    dispatch(handleRpcError(e))
-  }
-}
+        error: null,
+      }
+    } catch (e) {
+      state.balance.error = e
+    }
+  },
 
-export const fetchMarketPrice = (): AppThunk => async dispatch => {
-  try {
-    const response = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=veil&vs_currencies=usd'
-    )
-    const {
-      veil: { usd },
-    } = await response.json()
-    dispatch(slice.actions.marketPriceReceived(usd))
-  } catch (e) {
-    console.error(e)
-  }
+  async fetchMarketPrice({ state, effects, actions }) {
+    try {
+      const response = await fetch(
+        'https://api.coingecko.com/api/v3/simple/price?ids=veil&vs_currencies=usd'
+      )
+      const { veil } = await response.json()
+      state.balance.marketPrice = veil.usd
+    } catch (e) {
+      state.balance.marketPrice = null
+    }
+  },
 }
-
-export default slice.reducer

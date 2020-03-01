@@ -1,26 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useStore } from 'store'
+import { StakingStatus } from 'store/slices/staking'
 import { MdMenu } from 'react-icons/md'
-
-import {
-  enableStaking,
-  getStakingStatus,
-  StakingStatus,
-  getBlockchainInfo,
-} from 'store/slices/wallet'
-import {
-  getSpendableBalance,
-  getTotalMarketValue,
-  fetchBalance,
-  fetchMarketPrice,
-  getLegacyBalance,
-} from 'store/slices/balance'
 
 import Balance from './Balance'
 import AppMenu from './AppMenu'
 import ReceivingAddress from './ReceivingAddress'
 import Button from './UI/Button'
 import StatusBar from './UI/StatusBar'
+import PasswordPrompt from './PasswordPrompt'
+import { toast } from 'react-toastify'
 
 interface SidebarBlockProps {
   title: string
@@ -69,14 +58,11 @@ const Staking = ({
 }
 
 const AppSidebar = () => {
+  const [requiresPassword, setRequiresPassword] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { state, actions } = useStore()
 
-  const blockchainInfo = useSelector(getBlockchainInfo)
-  const stakingStatus = useSelector(getStakingStatus)
-  const spendableBalance = useSelector(getSpendableBalance)
-  const legacyBalance = useSelector(getLegacyBalance)
-  const marketValue = useSelector(getTotalMarketValue)
-  const dispatch = useDispatch()
+  const { blockchain, staking, balance } = state
 
   useEffect(() => {
     const closeDialog = () => isMenuOpen && setIsMenuOpen(false)
@@ -85,30 +71,29 @@ const AppSidebar = () => {
   })
 
   useEffect(() => {
-    dispatch(fetchBalance())
-    dispatch(fetchMarketPrice())
-    const updateInterval = setInterval(() => {
-      dispatch(fetchBalance())
-    }, 1000)
-    return () => {
-      clearInterval(updateInterval)
-    }
-  }, [dispatch])
+    actions.balance.fetchBalance()
+    actions.balance.fetchMarketPrice()
+  }, [actions.balance])
 
-  const handleEnableStaking = () => {
-    dispatch(enableStaking())
+  const handleEnableStaking = async (password: string) => {
+    const error = await actions.staking.enable(password)
+    if (error) {
+      toast(error.message, { type: 'error' })
+    } else {
+      setRequiresPassword(false)
+    }
   }
 
   return (
-    <aside className="flex-none flex flex-col relative" style={{ width: 360 }}>
+    <>
       <div className="bg-blue-500 draggable">
         <div className="h-titlebar -mb-titlebar px-titlebar flex items-center relative">
           <div className="flex-1" />
           <div className="text-sm font-medium">
             Veil Wallet{' '}
-            {blockchainInfo.chain !== 'main' && (
+            {blockchain.chain !== 'main' && (
               <span className="ml-1 text-xs font-bold uppercase inline-block leading-none p-1 bg-orange-500 rounded-sm">
-                {blockchainInfo.chain}
+                {blockchain.chain}
               </span>
             )}
           </div>
@@ -127,58 +112,68 @@ const AppSidebar = () => {
                 style={{ left: '100%' }}
               >
                 <div className="-m-1">
-                  <AppMenu version="0.1alpha" />
+                  <AppMenu
+                    version="0.1alpha"
+                    onEnableStaking={() => setRequiresPassword(true)}
+                  />
                 </div>
               </div>
             )}
           </div>
         </div>
         <div className="h-32 px-6 flex items-center justify-center text-center">
-          {spendableBalance !== null && (
+          {balance.spendable !== null && (
             <Balance
-              veilBalance={spendableBalance}
-              fiatBalance={marketValue}
+              veilBalance={balance.spendable}
+              fiatBalance={balance.marketValue}
               currency="USD"
             />
           )}
         </div>
       </div>
-      <div className="flex-1 bg-gray-800 overflow-y-auto p-6">
+      <div className="flex-1 bg-gray-700 overflow-y-auto p-6">
         <SidebarBlock title="Staking">
           <div className="h-32 rounded flex items-center justify-center border border-gray-600 border-dashed text-sm text-gray-500">
             <Staking
-              currentStatus={stakingStatus.current}
-              requestedStatus={stakingStatus.requested}
-              onEnable={handleEnableStaking}
+              currentStatus={staking.status.current}
+              requestedStatus={staking.status.requested}
+              onEnable={() => setRequiresPassword(true)}
             />
+            {requiresPassword && (
+              <PasswordPrompt
+                title="Enable staking"
+                onCancel={() => setRequiresPassword(false)}
+                onSubmit={(password: string) => handleEnableStaking(password)}
+              />
+            )}
           </div>
         </SidebarBlock>
-        <hr className="my-6 border-b border-gray-700" />
+        <hr className="my-6 border-b border-gray-600" />
         <SidebarBlock title="Receive">
           <ReceivingAddress />
         </SidebarBlock>
       </div>
-      {legacyBalance > 0 && (
+      {balance.legacyBalance > 0 && (
         <div className="flex-none bg-gray-600 p-6">
           <p className="mb-2 text-sm">
-            You have {legacyBalance.toLocaleString()} legacy coins.
+            You have {balance.legacyBalance.toLocaleString()} legacy coins.
           </p>
           <Button size="sm" primary to="/convert">
             Review &amp; Convert…
           </Button>
         </div>
       )}
-      {blockchainInfo.initialBlockDownload && (
+      {blockchain.initialBlockDownload && (
         <div className="py-4 px-6 bg-gray-800">
           <StatusBar
-            progress={blockchainInfo.verificationProgress * 100}
-            label={`Syncing ${(
-              blockchainInfo.verificationProgress * 100
-            ).toFixed(2)}%`}
+            progress={blockchain.verificationProgress * 100}
+            label={`Syncing ${(blockchain.verificationProgress * 100).toFixed(
+              2
+            )}%`}
           />
         </div>
       )}
-    </aside>
+    </>
   )
 }
 

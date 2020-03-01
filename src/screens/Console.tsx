@@ -9,11 +9,11 @@ import React, {
 } from 'react'
 import { navigate, RouteComponentProps } from '@reach/router'
 import useHotkeys from '@reecelucas/react-use-hotkeys'
-import api from 'api'
 import Modal from 'components/UI/Modal'
 import JsonViewer from 'components/JsonViewer'
-import { useSelector } from 'react-redux'
-import { getDaemonMessage } from 'store/slices/daemon'
+import { useStore } from 'store'
+import PasswordPrompt from 'components/PasswordPrompt'
+import RPC_ERRORS from 'constants/rpcErrors'
 
 interface Command {
   input: string
@@ -62,13 +62,16 @@ const Command = memo(({ command, reply, error }: CommandProps) => {
 })
 
 const Console = (props: RouteComponentProps) => {
+  const [requiresPassword, setRequiresPassword] = useState()
+  const [password, setPassword] = useState()
   const [isLoading, setIsLoading] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [commandHistory, setCommandHistory] = useState<Command[]>([
     { input: '' },
   ])
 
-  const message = useSelector(getDaemonMessage)
+  const { state, effects } = useStore()
+  const messages = state.daemon.stdout
 
   useHotkeys('Meta+l', () => {
     if (isLoading) return
@@ -76,83 +79,89 @@ const Console = (props: RouteComponentProps) => {
     setCommandHistory([{ input: '' }])
   })
   useHotkeys('Escape', () => {
+    if (isLoading) return
     navigate('/')
+  })
+  useHotkeys('Enter', () => {
+    if (isLoading && !password) return
+    submitCommand()
+  })
+  useHotkeys('Control+c', () => {
+    setPassword(null)
+    setRequiresPassword(false)
+    setIsLoading(false)
+    resetCommand()
+    setCurrentIndex(commandHistory.length - 1)
+  })
+  useHotkeys('ArrowUp', () => {
+    if (isLoading) return
+    setCurrentIndex(Math.max(currentIndex - 1, 0))
+  })
+  useHotkeys('ArrowDown', () => {
+    if (isLoading) return
+    setCurrentIndex(Math.min(currentIndex + 1, commandHistory.length - 1))
   })
 
   const sendCommand = async (command: string): Promise<any> => {
-    try {
-      const response = await api.sendCommand(command)
-      return response || 'Command sent successfully'
-    } catch (e) {
-      if (e.code === -13) {
-        const password = await window.promptForInput({
-          title: 'Send command',
-          label: 'Enter wallet password',
-          inputAttrs: {
-            type: 'password',
-          },
-        })
+    const response = await effects.rpc.sendCommand(command)
+    return response || 'Command sent successfully'
+  }
 
-        if (password) {
-          await api.unlockWallet(password)
-          return await sendCommand(command)
-        }
-      }
+  const submitCommand = async () => {
+    setIsLoading(true)
 
-      throw e
-    } finally {
-      await api.lockWallet()
+    const command = commandHistory[currentIndex].input
+
+    const newHistory = [...commandHistory]
+    const lastEntry = newHistory[newHistory.length - 1]
+    const currentEntry = newHistory[currentIndex]
+
+    if (currentEntry.command) {
+      // Reset the original command
+      currentEntry.input = currentEntry.command
     }
+
+    lastEntry.input = lastEntry.command = command
+    newHistory.push({ input: '' })
+
+    try {
+      if (password) await effects.rpc.unlockWallet(password)
+      lastEntry.reply = await sendCommand(command)
+    } catch (e) {
+      switch (e.code) {
+        case RPC_ERRORS.RPC_WALLET_UNLOCK_NEEDED:
+          setRequiresPassword(true)
+          return
+        case RPC_ERRORS.RPC_WALLET_PASSPHRASE_INCORRECT:
+        default:
+          lastEntry.error = e
+      }
+    } finally {
+      setPassword(null)
+      if (password) {
+        setRequiresPassword(false)
+        await effects.rpc.lockWallet()
+      }
+    }
+
+    setCommandHistory(newHistory)
+    setCurrentIndex(newHistory.length - 1)
+    setIsLoading(false)
+
+    inputRef.current?.focus()
+  }
+
+  const resetCommand = () => {
+    const newHistory = [...commandHistory]
+    const lastEntry = newHistory[newHistory.length - 1]
+    lastEntry.input = lastEntry.command = ''
+    setCommandHistory(newHistory)
   }
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newCommands = [...commandHistory]
     newCommands[currentIndex].input = e.target.value
     setCommandHistory(newCommands)
-  }
-
-  const handleKeyDown = async (
-    e: KeyboardEvent<HTMLInputElement> & ChangeEvent<HTMLInputElement>
-  ) => {
-    const { value } = e.target
-
-    switch (e.key) {
-      case 'Enter':
-        if (value === '') return
-
-        setIsLoading(true)
-
-        const newHistory = [...commandHistory]
-        const lastEntry = newHistory[newHistory.length - 1]
-        const currentEntry = newHistory[currentIndex]
-
-        if (currentEntry.command) {
-          // Reset the original command
-          currentEntry.input = currentEntry.command
-        }
-
-        lastEntry.input = lastEntry.command = value
-        newHistory.push({ input: '' })
-
-        try {
-          lastEntry.reply = await sendCommand(value)
-        } catch (e) {
-          lastEntry.error = e
-        }
-
-        setCommandHistory(newHistory)
-        setCurrentIndex(newHistory.length - 1)
-        setIsLoading(false)
-
-        inputRef.current?.focus()
-        break
-      case 'ArrowDown':
-        setCurrentIndex(Math.min(currentIndex + 1, commandHistory.length - 1))
-        break
-      case 'ArrowUp':
-        setCurrentIndex(Math.max(currentIndex - 1, 0))
-        break
-    }
   }
 
   const inputRef: React.RefObject<HTMLInputElement> = useRef(null)
@@ -192,14 +201,27 @@ const Console = (props: RouteComponentProps) => {
           here, stealing their wallet contents. Do not use this console without
           fully understanding the ramifications of a command.
         </div>
+
         {commandHistory
           .filter(cmd => cmd.command)
           .map((cmd: any, i: number) => (
             <Command {...cmd} key={i} />
           ))}
 
-        {isLoading ? (
-          <div className="text-gray-300">{message || 'Please wait…'}</div>
+        {requiresPassword ? (
+          <div className="flex items-center text-white">
+            <span className="mr-2">Password:</span>
+            <input
+              type="password"
+              className="w-full text-white bg-transparent outline-none font-mono"
+              style={{ caretColor: '#8adeff' }}
+              autoFocus
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+            />
+          </div>
+        ) : isLoading ? (
+          <div className="text-gray-300">{messages[0] || 'Please wait…'}</div>
         ) : (
           <div className="flex items-center text-teal-400">
             <span className="mr-2">></span>
@@ -210,7 +232,6 @@ const Console = (props: RouteComponentProps) => {
               autoFocus
               value={commandHistory[currentIndex].input}
               onChange={handleChange}
-              onKeyDown={handleKeyDown}
               disabled={isLoading}
               ref={inputRef}
             />

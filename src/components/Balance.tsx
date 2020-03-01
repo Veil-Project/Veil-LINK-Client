@@ -17,7 +17,7 @@ const Balance = ({ veilBalance, fiatBalance, currency }: BalanceProps) => (
         VEIL
       </span>
     </div>
-    {fiatBalance && (
+    {fiatBalance !== null && fiatBalance > 0 && (
       <div className="font-bold text-teal-500 mt-2">
         {fiatBalance.toLocaleString('en-US', {
           minimumFractionDigits: 2,

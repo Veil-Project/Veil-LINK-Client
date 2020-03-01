@@ -1,11 +1,12 @@
 import React, { useState, ChangeEvent } from 'react'
 import { RouteComponentProps } from '@reach/router'
 import Button from 'components/UI/Button'
-import api from 'api'
+import { useStore } from 'store'
 
 const UnlockWallet = (props: RouteComponentProps) => {
   const [password, setPassword] = useState('')
   const [isUnlocking, setIsUnlocking] = useState(false)
+  const { effects } = useStore()
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value)
@@ -13,7 +14,7 @@ const UnlockWallet = (props: RouteComponentProps) => {
 
   const doUnlock = async () => {
     setIsUnlocking(true)
-    await api.unlockWallet(password)
+    await effects.rpc.unlockWallet(password)
     setIsUnlocking(false)
   }
 

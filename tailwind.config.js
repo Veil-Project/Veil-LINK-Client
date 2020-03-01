@@ -2,16 +2,16 @@ module.exports = {
   theme: {
     extend: {
       screens: {
-        'dark': {'raw': '(prefers-color-scheme: dark)'},
+        dark: { raw: '(prefers-color-scheme: dark)' },
       },
       spacing: {
         '2px': '2px',
         '9': '2.25rem',
-        'titlebar': '12px',
+        titlebar: '12px',
         '-titlebar': '-12px',
       },
       height: {
-        'titlebar': '36px',
+        titlebar: '36px',
       },
       colors: {
         gray: {
@@ -50,10 +50,10 @@ module.exports = {
       },
       linearGradients: theme => ({
         directions: {
-          'r': 'to right',
+          r: 'to right',
         },
         colors: {
-          'blue': [theme('colors.blue.400'), theme('colors.blue.500')],
+          blue: [theme('colors.blue.400'), theme('colors.blue.500')],
         },
       }),
       inset: theme => ({
@@ -62,7 +62,7 @@ module.exports = {
       }),
     },
     animations: {
-      'spin': {
+      spin: {
         from: {
           transform: 'rotate(0deg)',
         },
@@ -75,14 +75,14 @@ module.exports = {
   variants: {},
   plugins: [
     require('tailwindcss-gradients')(),
-    require("tailwindcss-font-variant-numeric"),
-    require('tailwindcss-animations')(),
+    require('tailwindcss-font-variant-numeric'),
+    require('tailwindcss-animations'),
     function({ addUtilities }) {
       addUtilities({
         '.draggable': {
-          '-webkit-app-region': 'drag'
-        }
+          '-webkit-app-region': 'drag',
+        },
       })
-    }
-  ]
+    },
+  ],
 }

@@ -3,5 +3,4 @@ declare interface Window {
   ipcRenderer: any
   remote: any
   clipboard: any
-  promptForInput: any
 }

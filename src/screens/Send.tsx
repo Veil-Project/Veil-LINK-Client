@@ -3,9 +3,10 @@ import { useForm } from 'react-hook-form'
 import Button from '../components/UI/Button'
 import Sheet from '../components/UI/Sheet'
 import { navigate, RouteComponentProps } from '@reach/router'
-import api from 'api'
 import classnames from 'classnames'
 import { toast } from 'react-toastify'
+import { useStore } from 'store'
+import PasswordPrompt from 'components/PasswordPrompt'
 
 interface AddressValidityProps {
   valid: boolean
@@ -24,13 +25,15 @@ const AddressValidity = ({ valid }: AddressValidityProps) => {
 }
 
 const Send = (props: RouteComponentProps) => {
+  const [requiresPassword, setRequiresPassword] = useState(false)
   const [isAddressValid, setIsAddressValid] = useState(false)
-  const { register, watch, handleSubmit } = useForm()
+  const { register, watch, handleSubmit, getValues } = useForm()
+  const { effects } = useStore()
 
   const checkAddressValidity = async (e: ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = e.target
     try {
-      const { isvalid } = await api.validateAddress(value)
+      const { isvalid } = await effects.rpc.validateAddress(value)
       setIsAddressValid(isvalid)
     } catch (e) {
       alert('Unable to validate address')
@@ -39,25 +42,23 @@ const Send = (props: RouteComponentProps) => {
   }
 
   const onSubmit = async (data: any) => {
-    const password = await window.promptForInput({
-      title: 'Send transaction',
-      label: 'Please enter wallet password',
-      inputAttrs: {
-        type: 'password',
-      },
-    })
+    setRequiresPassword(true)
+  }
 
+  const sendTransaction = async (password: string) => {
     if (!password) return
 
+    const { address, amount } = getValues()
+
     try {
-      await api.unlockWallet(password)
-      await api.sendStealthToStealth(data.address, data.amount)
+      await effects.rpc.unlockWallet(password)
+      await effects.rpc.sendStealthToStealth(address, amount)
       toast('Transaction sent!', { type: 'success' })
       navigate('/')
     } catch (e) {
       toast(e.message, { type: 'error' })
     } finally {
-      api.lockWallet()
+      effects.rpc.lockWallet()
     }
   }
 
@@ -109,6 +110,14 @@ const Send = (props: RouteComponentProps) => {
           </Button>
         </div>
       </form>
+
+      {requiresPassword && (
+        <PasswordPrompt
+          title={`Send ${watchAmount} Veil`}
+          onCancel={() => setRequiresPassword(false)}
+          onSubmit={sendTransaction}
+        />
+      )}
     </Sheet>
   )
 }

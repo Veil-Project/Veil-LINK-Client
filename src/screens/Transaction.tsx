@@ -1,16 +1,17 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import { navigate, RouteComponentProps } from '@reach/router'
 import Sheet from 'components/UI/Sheet'
-import { useSelector } from 'react-redux'
-import { getTransactions } from 'store/slices/transaction'
+import { useStore } from 'store'
 import JsonViewer from 'components/JsonViewer'
 
 const Transaction = ({ id }: RouteComponentProps<{ id: string }>) => {
-  const transactions = useSelector(getTransactions)
-  const transaction = useMemo(() => transactions.find(t => t.txid === id), [
-    id,
-    transactions,
-  ])
+  const { state } = useStore()
+
+  if (!id) {
+    return <div>Oops, that transaction can't be found.</div>
+  }
+
+  const transaction = state.transactions.find(id)
 
   if (!transaction) {
     return <div>Oops, that transaction can't be found.</div>

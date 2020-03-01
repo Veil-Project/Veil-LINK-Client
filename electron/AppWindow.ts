@@ -34,7 +34,7 @@ export default class AppWindow {
     })
   }
 
-  send(event: string, ...args: any) {
+  emit(event: string, ...args: any) {
     this.window?.webContents?.send(event, ...args)
   }
 }

@@ -43,11 +43,8 @@ var electron_1 = require("electron");
 var electron_updater_1 = require("electron-updater");
 var url_1 = __importDefault(require("url"));
 var path_1 = __importDefault(require("path"));
-var crypto_1 = __importDefault(require("crypto"));
 var Daemon_1 = __importDefault(require("./Daemon"));
 var AppWindow_1 = __importDefault(require("./AppWindow"));
-global.rpcUser = crypto_1.default.randomBytes(256 / 8).toString('hex');
-global.rpcPass = crypto_1.default.randomBytes(256 / 8).toString('hex');
 // Set up main window
 var startUrl = process.env.ELECTRON_START_URL ||
     url_1.default.format({
@@ -57,30 +54,30 @@ var startUrl = process.env.ELECTRON_START_URL ||
     });
 var mainWindow = new AppWindow_1.default(startUrl);
 // Set up veild daemon
-var daemon = new Daemon_1.default({
-    user: global.rpcUser,
-    pass: global.rpcPass,
+var daemon = new Daemon_1.default();
+daemon.on('status', function (status) {
+    mainWindow.emit('daemon-status', status);
 });
-daemon.on('status-change', function (status, message, progress) {
-    mainWindow.send('daemon-status-change', status, message, progress);
+daemon.on('message', function (message) {
+    mainWindow.emit('daemon-message', message);
 });
-daemon.on('wallet-loaded', function () {
-    mainWindow.send('app-status-change', 'wallet-loaded');
-});
-daemon.on('wallet-missing', function () {
-    mainWindow.send('app-status-change', 'wallet-missing');
-});
-daemon.on('error', function () {
-    mainWindow.send('app-status-change', 'daemon-error');
+daemon.on('progress', function (progress) {
+    mainWindow.emit('daemon-progress', progress);
 });
 daemon.on('exit', function () {
-    // mainWindow.send('daemon-status-change', 'stopped', null, null)
+    // mainWindow.emit('daemon-status', 'stopped')
+});
+daemon.on('wallet-loaded', function () {
+    mainWindow.emit('wallet-loaded');
+});
+daemon.on('wallet-missing', function () {
+    mainWindow.emit('wallet-missing');
 });
 // App listeners
 electron_1.app.on('before-quit', function (e) {
-    if (daemon.isRunning()) {
+    if (daemon.running) {
         e.preventDefault();
-        mainWindow.send('app-status-change', 'terminating');
+        mainWindow.emit('app-quitting');
         var stopAndQuit = function () { return __awaiter(void 0, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -111,48 +108,32 @@ electron_1.app.on('activate', function (e) {
 });
 // Auto-update listeners
 electron_updater_1.autoUpdater.on('update-available', function () {
-    mainWindow.send('update-available');
+    mainWindow.emit('update-available');
 });
 electron_updater_1.autoUpdater.on('update-downloaded', function () {
-    mainWindow.send('update-downloaded');
+    mainWindow.emit('update-downloaded');
 });
 // API for renderer process
-electron_1.ipcMain.handle('daemon-status', function () {
-    return daemon.status;
-});
-electron_1.ipcMain.handle('start-daemon', function (_, seed) { return __awaiter(void 0, void 0, void 0, function () {
-    var e_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, daemon.start(seed)];
-            case 1:
-                _a.sent();
-                return [3 /*break*/, 3];
-            case 2:
-                e_1 = _a.sent();
-                console.error(e_1);
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
-        }
+electron_1.ipcMain.handle('start-daemon', function (_, options) {
+    if (options === void 0) { options = {}; }
+    return __awaiter(void 0, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, daemon.start(options)];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
     });
-}); });
+});
 electron_1.ipcMain.handle('stop-daemon', function (_) { return __awaiter(void 0, void 0, void 0, function () {
-    var e_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, daemon.stop()];
+            case 0: return [4 /*yield*/, daemon.stop()];
             case 1:
                 _a.sent();
-                return [3 /*break*/, 3];
-            case 2:
-                e_2 = _a.sent();
-                console.error(e_2);
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
+                return [2 /*return*/];
         }
     });
 }); });

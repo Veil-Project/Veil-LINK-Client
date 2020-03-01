@@ -1,5 +1,4 @@
 import { ipcRenderer, remote, clipboard } from 'electron'
-import prompt from 'electron-prompt'
 import fs from 'fs'
 import path from 'path'
 
@@ -9,9 +8,9 @@ declare global {
     remote: any
     clipboard: any
     getConfig: any
-    promptForInput: any
   }
 }
+
 window.ipcRenderer = ipcRenderer
 window.remote = remote
 window.clipboard = clipboard
@@ -22,11 +21,4 @@ window.getConfig = () => {
   } catch (error) {
     console.error(error)
   }
-}
-window.promptForInput = async (options: any) => {
-  return await prompt({
-    ...options,
-    parentWindow: remote.BrowserWindow,
-    customStylesheet: path.join(__dirname, 'prompt.css'),
-  })
 }

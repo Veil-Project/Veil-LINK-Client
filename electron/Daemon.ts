@@ -2,124 +2,105 @@ import { spawn } from 'child_process'
 import { EventEmitter } from 'events'
 import path from 'path'
 
-export default class Daemon extends EventEmitter {
-  running: boolean = false
-  status: string = 'unknown'
-  message: string | null = null
-  progress: number | null = null
-
+export type DaemonStatus = 'starting' | 'started' | 'stopping' | 'stopped'
+export interface DaemonOptions {
   user: string
   pass: string
-  daemon: ReturnType<typeof spawn> | null = null
+  port?: string
+  seed?: string
+}
 
-  constructor({ user, pass }: { user: string; pass: string }) {
-    super()
+export default class Daemon extends EventEmitter {
+  private daemon: ReturnType<typeof spawn> | null = null
 
-    this.user = user
-    this.pass = pass
-  }
+  running: boolean = false
+  started: boolean = false
 
-  private updateStatus(status: string, message?: string, progress?: number) {
-    if (this.status !== status) {
-      this.message = message || null
-      this.progress = progress || null
+  private handleStdout(data: any) {
+    const message = data?.toString().trim() || ''
+    this.emit('stdout', message)
+
+    switch (true) {
+      case /done loading/i.test(message):
+        this.started = true
+        this.emit('wallet-loaded')
+        this.emit('status', 'started')
+        break
+      case /init message:/i.test(message):
+        const messageMatch = message.match(/init message: (.*)/i)
+        if (messageMatch) this.emit('message', messageMatch[1])
+        break
+      case /\d*%/i.test(message):
+        const progressMatch = message.match(/(\d*)%/i)
+        if (progressMatch) this.emit('progress', parseInt(progressMatch[1]))
+        break
+      case /[DONE]]/i.test(message):
+        this.emit('progress', 100)
+        break
+      case /shutdown/i.test(message):
+        this.emit('status', 'stopping')
+        break
     }
-    this.status = status
-    this.emit('status-change', this.status, this.message, this.progress)
   }
 
-  private updateMessage(message: string | null) {
-    if (this.message !== message) {
-      this.progress = null
+  private handleStderr(data: any) {
+    const message = data?.toString().trim() || ''
+    this.emit('stderr', message)
+
+    switch (true) {
+      case /new wallet load detected/i.test(message):
+        this.started = false
+        this.emit('wallet-missing')
+        this.emit('status', 'stopped')
+        break
+      case /error/i.test(message):
+        this.emit('error', message)
+        break
     }
-    this.message = message
-    this.emit('status-change', this.status, this.message, this.progress)
   }
 
-  private updateProgress(progress: number | null) {
-    this.progress = progress
-    this.emit('status-change', this.status, this.message, this.progress)
+  private handleExit(_code: any) {
+    this.running = false
+    this.started = false
+    this.emit('status', 'stopped')
+    // this.emit('exit')
   }
 
-  private spawn(seed?: string) {
+  private startDaemon(options: DaemonOptions) {
+    const { user, pass, port, seed } = options
+
     this.running = true
     this.daemon = spawn(
       process.env.ELECTRON_START_URL
         ? path.join(__dirname, '../veil/veild')
         : path.join(process.resourcesPath, 'veil/veild'),
       [
-        `--rpcuser=${this.user}`,
-        `--rpcpassword=${this.pass}`,
-        '--rpcport=8332',
+        `--rpcuser=${user}`,
+        `--rpcpassword=${pass}`,
+        `--rpcport=${port || '8332'}`,
         '--printtoconsole',
         seed ? `--importseed=${seed}` : '',
       ].filter(opt => opt !== '')
     )
 
-    this.daemon.on('exit', _code => {
-      this.running = false
-      this.updateStatus('stopped')
-      this.emit('exit')
-    })
-
-    this.daemon.stdout?.on('data', data => {
-      const message = data?.toString().trim()
-      switch (true) {
-        case /done loading/i.test(message):
-          this.updateStatus('started')
-          this.emit('wallet-loaded')
-          break
-        case /init message:/i.test(message):
-          if (this.status === 'starting') {
-            const messageMatch = message.match(/init message: (.*)/i)
-            this.updateMessage(messageMatch && messageMatch[1])
-          }
-          break
-        case /\d*%/i.test(message):
-          const progressMatch = message.match(/(\d*)%/i)
-          this.updateProgress(progressMatch && parseInt(progressMatch[1]))
-          break
-        case /[DONE]]/i.test(message):
-          this.updateProgress(100)
-          break
-        case /shutdown/i.test(message):
-          this.updateStatus('stopping')
-          break
-        default:
-          this.updateMessage(message)
-      }
-      console.log('STDOUT', message)
-    })
-
-    this.daemon.stderr?.on('data', data => {
-      const message = data?.toString().trim() || ''
-      this.updateStatus('stopped', message)
-
-      switch (true) {
-        case /new wallet load detected/i.test(message):
-          this.emit('wallet-missing')
-          break
-        case /error/i.test(message):
-          this.emit('error', message)
-          break
-      }
-      console.error('STDERR', message)
-    })
+    this.daemon.on('exit', this.handleExit)
+    this.daemon.stdout?.on('data', this.handleStdout)
+    this.daemon.stderr?.on('data', this.handleStderr)
   }
 
-  start(seed?: string) {
-    if (this.isStarted()) {
-      this.updateStatus('started')
+  start(options: DaemonOptions) {
+    if (this.started) {
+      this.emit('status', 'started')
       this.emit('wallet-loaded')
       return Promise.resolve()
     }
 
     return new Promise((resolve, reject) => {
-      this.updateStatus('starting')
-      this.spawn(seed)
+      this.running = true
+      this.startDaemon(options)
 
       const startInterval = setInterval(() => {
-        if (this.isStarted()) {
+        if (this.started) {
           clearInterval(startInterval)
           resolve()
         }
@@ -129,34 +110,22 @@ export default class Daemon extends EventEmitter {
   }
 
   stop() {
-    if (this.isStopped()) {
-      this.updateStatus('stopped')
+    if ((!this.running && !this.started) || this.daemon?.killed) {
+      this.emit('status', 'stopped')
       return Promise.resolve()
     }
 
     return new Promise((resolve, reject) => {
-      this.updateStatus('stopping')
+      this.emit('status', 'stopping')
       this.daemon?.kill()
 
       const stopInterval = setInterval(() => {
-        if (this.isStopped()) {
+        if (!this.running && !this.started) {
           clearInterval(stopInterval)
           resolve()
         }
         // todo: add timeout
       }, 100)
     })
-  }
-
-  isRunning(): boolean {
-    return this.running
-  }
-
-  isStarted(): boolean {
-    return this.running && this.status === 'started'
-  }
-
-  isStopped(): boolean {
-    return !this.running && this.status === 'stopped'
   }
 }

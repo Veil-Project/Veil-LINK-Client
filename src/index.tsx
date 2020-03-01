@@ -1,15 +1,23 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Provider } from 'react-redux'
 import * as serviceWorker from './serviceWorker'
-import store from './store'
+
+import { createOvermind } from 'overmind'
+import { Provider } from 'overmind-react'
+import { config } from './store'
+
 import Root from './screens/Root'
 import './styles.css'
+import Layout from 'components/Layout'
+
+const overmind = createOvermind(config)
 
 const render = () => {
   ReactDOM.render(
-    <Provider store={store}>
-      <Root />
+    <Provider value={overmind}>
+      <Layout>
+        <Root />
+      </Layout>
     </Provider>,
     document.getElementById('root')
   )

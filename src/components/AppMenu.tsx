@@ -1,14 +1,7 @@
 import React, { MouseEvent } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useStore } from 'store'
 import { Link } from '@reach/router'
 import cx from 'classnames'
-
-import {
-  getStakingStatus,
-  enableStaking,
-  disableStaking,
-} from 'store/slices/wallet'
-import api from 'api'
 
 interface MenuLinkProps {
   label: string
@@ -26,35 +19,40 @@ const MenuLink = ({ label, to }: MenuLinkProps) => (
 
 interface AppMenuProps {
   version: string
+  onEnableStaking(): void
 }
 
-const AppMenu = ({ version }: AppMenuProps) => {
-  const stakingStatus = useSelector(getStakingStatus)
-  const dispatch = useDispatch()
+const AppMenu = ({ version, onEnableStaking }: AppMenuProps) => {
+  const { state, actions, effects } = useStore()
+  const { staking, daemon } = state
 
-  const handleToggleStaking = (e: MouseEvent<HTMLDivElement>) => {
+  const handleDisableStaking = (e: MouseEvent<HTMLDivElement>) => {
     e.nativeEvent.stopImmediatePropagation()
-    if (
-      stakingStatus.current === 'enabled' ||
-      stakingStatus.requested === 'enabled'
-    ) {
-      dispatch(disableStaking())
-    } else {
-      dispatch(enableStaking())
-    }
+    actions.staking.disable()
   }
 
+  const handleEnableStaking = (e: MouseEvent<HTMLDivElement>) => {
+    e.nativeEvent.stopImmediatePropagation()
+    onEnableStaking()
+  }
+
+  const stakingEnabled =
+    staking.status.current === 'enabled' ||
+    staking.status.requested === 'enabled'
+
   const handleRestartDaemon = async () => {
-    await api.restart()
+    // TODO: fix the user and pass
+    // await effects.daemon.stop()
+    // await effects.daemon.start()
   }
 
   const stakingToggleClass = cx('rounded-full p-2px flex w-8', {
     'bg-blue-500 justify-end':
-      (stakingStatus.current === 'enabled' && !stakingStatus.requested) ||
-      stakingStatus.requested === 'enabled',
+      (staking.status.current === 'enabled' && !staking.status.requested) ||
+      staking.status.requested === 'enabled',
     'bg-gray-700 justify-start':
-      (stakingStatus.current === 'disabled' && !stakingStatus.requested) ||
-      stakingStatus.requested === 'disabled',
+      (staking.status.current === 'disabled' && !staking.status.requested) ||
+      staking.status.requested === 'disabled',
   })
 
   return (
@@ -65,18 +63,23 @@ const AppMenu = ({ version }: AppMenuProps) => {
       </div>
       <div className="border-t border-gray-500 flex items-center justify-between p-4">
         <div>Staking</div>
-        <div onClick={handleToggleStaking} className={stakingToggleClass}>
+        <div
+          onClick={stakingEnabled ? handleDisableStaking : handleEnableStaking}
+          className={stakingToggleClass}
+        >
           <div className="w-4 h-4 bg-white rounded-full pointer-events-none" />
         </div>
       </div>
-      <div className="border-t border-gray-500 p-2">
-        <button
-          className="block w-full px-2 h-8 rounded flex items-center justify-start font-medium hover:text-white hover:bg-gray-500"
-          onClick={handleRestartDaemon}
-        >
-          Restart Veil server
-        </button>
-      </div>
+      {daemon.status !== 'unknown' && (
+        <div className="border-t border-gray-500 p-2">
+          <button
+            className="block w-full px-2 h-8 rounded flex items-center justify-start font-medium hover:text-white hover:bg-gray-500"
+            onClick={handleRestartDaemon}
+          >
+            Restart Veil server
+          </button>
+        </div>
+      )}
       <div className="border-t border-gray-500 flex items-center justify-between py-2 px-4 text-xs text-gray-400">
         <div>Veil Lite</div>
         <div>{version}</div>

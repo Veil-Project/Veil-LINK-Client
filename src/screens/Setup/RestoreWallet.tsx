@@ -1,10 +1,10 @@
 import React, { useState, ChangeEvent, useEffect } from 'react'
 import * as Bip39 from 'bip39'
-import api from 'api'
 
 import Button from 'components/UI/Button'
 import SeedWord from 'components/Seed/SeedWord'
 import DaemonStatus from 'screens/DaemonStatus'
+import { useStore } from 'store'
 
 interface Props {
   switchMode: Function
@@ -15,6 +15,7 @@ const RestoreWallet = ({ switchMode }: Props) => {
   const [focusedSeedIndex, setFocusedSeedIndex] = useState(0)
   const [autocompleteMatches, setAutocompleteMatches] = useState([] as string[])
   const [isRestoring, setIsRestoring] = useState(false)
+  const { effects } = useStore()
 
   const handleChange = (index: number, value: string) => {
     setSeed([...seed.slice(0, index), value, ...seed.slice(index + 1)])
@@ -40,7 +41,7 @@ const RestoreWallet = ({ switchMode }: Props) => {
 
     try {
       setIsRestoring(true)
-      await api.start(seed.join(' '))
+      await effects.daemon.startFromSeed(seed.join(' '))
     } catch (e) {
       console.error(e)
       alert('Unable to restore wallet')

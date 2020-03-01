@@ -1,35 +1,35 @@
 import React from 'react'
 import { RouteComponentProps, navigate } from '@reach/router'
-import api from 'api'
 import Button from 'components/UI/Button'
 import Modal from 'components/UI/Modal'
 import { toast } from 'react-toastify'
-import { useSelector } from 'react-redux'
-import { getBalanceBreakdown } from 'store/slices/balance'
+import { useStore } from 'store'
 import JsonViewer from 'components/JsonViewer'
 
 const ConvertLegacyCoins = (props: RouteComponentProps) => {
-  const breakdown = useSelector(getBalanceBreakdown)
+  const { state, effects } = useStore()
+  const breakdown = state.balance
 
   const doConvertAll = async () => {
-    const password = await window.promptForInput({
-      title: 'Convert legacy coins',
-      label: 'Enter wallet password',
-      inputAttrs: {
-        type: 'password',
-      },
-    })
+    // const password = await window.promptForInput({
+    //   title: 'Convert legacy coins',
+    //   label: 'Enter wallet password',
+    //   inputAttrs: {
+    //     type: 'password',
+    //   },
+    // })
+    const password = ''
 
     if (!password) return
 
     try {
-      await api.unlockWallet(password)
+      await effects.rpc.unlockWallet(password)
       alert('TODO: convert coins')
     } catch (e) {
       toast(e.message, { type: 'error' })
       console.error(e)
     } finally {
-      api.lockWallet()
+      effects.rpc.lockWallet()
     }
   }
 

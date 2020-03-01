@@ -1,12 +1,6 @@
 import React, { useState } from 'react'
-import api from 'api'
 import Button from 'components/UI/Button'
-import { useSelector } from 'react-redux'
-import {
-  getDaemonStatus,
-  getDaemonMessage,
-  getDaemonProgress,
-} from 'store/slices/daemon'
+import { useStore } from 'store'
 import Spinner from 'components/UI/Spinner'
 import { FiAlertCircle } from 'react-icons/fi'
 
@@ -16,14 +10,13 @@ interface DaemonStatusProps {
 
 const DaemonStatus = ({ showStartButton }: DaemonStatusProps) => {
   const [isStarting, setIsStarting] = useState(false)
-  const status = useSelector(getDaemonStatus)
-  const message = useSelector(getDaemonMessage)
-  const progress = useSelector(getDaemonProgress)
+  const { state } = useStore()
+  const { status, message, progress } = state.daemon
 
   const handleStartDaemon = async () => {
     setIsStarting(true)
     try {
-      await api.start()
+      // await effects.daemon.start()
     } finally {
       setIsStarting(false)
     }
@@ -40,6 +33,8 @@ const DaemonStatus = ({ showStartButton }: DaemonStatusProps) => {
     case 'stopped':
       fallbackMessage = 'Veil server stopped.'
       break
+    default:
+      fallbackMessage = 'Default'
   }
 
   return (
@@ -47,7 +42,7 @@ const DaemonStatus = ({ showStartButton }: DaemonStatusProps) => {
       {status === 'stopped' && !isStarting ? (
         <FiAlertCircle size="48" className="text-orange-500" />
       ) : (
-        <Spinner progress={progress} />
+        progress && <Spinner progress={progress} />
       )}
       <div className="mt-10 max-w-md text-center">
         {message || fallbackMessage}

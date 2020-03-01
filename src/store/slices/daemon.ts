@@ -1,6 +1,3 @@
-import { createSlice } from '@reduxjs/toolkit'
-import { createSelector } from 'reselect'
-
 export type DaemonStatus =
   | 'unknown'
   | 'starting'
@@ -8,60 +5,22 @@ export type DaemonStatus =
   | 'stopping'
   | 'stopped'
 
-type DaemonState = {
+type State = {
   status: DaemonStatus
-  message?: string
-  progress?: number
+  message: string | null
+  progress: number | null
+  stdout: string[]
+  error: any
 }
 
-const initialState: DaemonState = {
+type Actions = {}
+
+export const state: State = {
   status: 'unknown',
-  message: undefined,
-  progress: undefined,
+  progress: null,
+  message: null,
+  stdout: [],
+  error: null,
 }
 
-// ------------------------------------
-// Slice
-// ------------------------------------
-
-const slice = createSlice({
-  name: 'daemon',
-  initialState,
-  reducers: {
-    daemonStatusChanged(state, { payload }) {
-      state.status = payload.status
-      state.message = payload.message
-      state.progress = payload.progress
-    },
-  },
-})
-
-// ------------------------------------
-// Selectors
-// ------------------------------------
-
-const daemonSelector = (state: { daemon: DaemonState }) => state.daemon
-export const getDaemonStatus = createSelector(
-  daemonSelector,
-  ({ status }) => status
-)
-export const getDaemonMessage = createSelector(
-  daemonSelector,
-  ({ message }) => message
-)
-export const getDaemonProgress = createSelector(
-  daemonSelector,
-  ({ progress }) => progress
-)
-
-// ------------------------------------
-// Actions
-// ------------------------------------
-
-export const { daemonStatusChanged } = slice.actions
-
-// ------------------------------------
-// Reducer
-// ------------------------------------
-
-export default slice.reducer
+export const actions: Actions = {}

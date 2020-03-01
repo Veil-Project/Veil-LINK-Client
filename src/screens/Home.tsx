@@ -4,15 +4,16 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group'
 import { FiSearch } from 'react-icons/fi'
 import './Home.css'
 
-import { useSelector, useDispatch } from 'react-redux'
-import { getTransactions, fetchTransactions } from '../store/slices/transaction'
+import { useStore } from 'store'
 
 import Send from './Send'
-import Transaction from './Transaction'
 import Button from '../components/UI/Button'
-import TransactionTable from '../components/Transaction/TransactionTable'
+import { Transaction } from 'store/models/transaction'
+import TransactionSummary from '../components/Transaction/Summary'
+import { toast } from 'react-toastify'
+import Spinner from 'components/UI/Spinner'
 
-const ModalTransitionRouter = (props: { children: Array<any> }) => (
+const ModalTransitionRouter = (props: { children: any }) => (
   <Location>
     {({ location }) => (
       <TransitionGroup>
@@ -35,25 +36,33 @@ interface SearchFieldProps {
 const SearchField = ({ placeholder, value, onChange }: SearchFieldProps) => (
   <div className="h-9 w-64 flex relative">
     <input
-      className="flex-1 bg-gray-800 placeholder-gray-400 rounded text-sm pr-3 pl-8"
+      className="flex-1 placeholder-gray-400 bg-transparent border-none p-0 pr-3 pl-8 outline-none"
       value={value}
       onChange={onChange}
       placeholder={placeholder}
     />
-    <div className="absolute top-0 left-0 bottom-0 pl-2 flex items-center justify-center">
+    <div className="absolute top-0 left-0 bottom-0 ml-1 flex items-center justify-center">
       <FiSearch size="18" />
     </div>
   </div>
 )
 
 const Transactions = () => {
+  const [isLoading, setIsLoading] = useState(false)
   const [query, setQuery] = useState('')
-  const transactions = useSelector(getTransactions)
-  const dispatch = useDispatch()
+  const { state, actions } = useStore()
+  const transactions = state.transactions.forDisplay
 
   useEffect(() => {
-    dispatch(fetchTransactions())
-  }, [dispatch])
+    ;(async () => {
+      setIsLoading(true)
+      const error = await actions.transactions.fetch()
+      if (error) {
+        toast(error.message, { type: 'error' })
+      }
+      setIsLoading(false)
+    })()
+  }, [actions.transactions])
 
   const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value)
@@ -62,9 +71,9 @@ const Transactions = () => {
   // const filteredTransactions = transactions.filter(t => t.amount.toString().includes(query))
 
   return (
-    <div className="flex-1 flex flex-col">
+    <>
       <header
-        className={`sticky top-0 p-6 bg-gray-700 py-4 flex items-center justify-between draggable shadow-md`}
+        className={`sticky top-0 p-4 bg-gray-700 flex items-center justify-between shadow-md draggable`}
         style={{ transition: 'box-shadow .2s ease-out' }}
       >
         <SearchField
@@ -79,20 +88,26 @@ const Transactions = () => {
         </div>
       </header>
 
-      <div className="flex-1 w-full overflow-y-auto overflow-x-hidden">
-        <TransactionTable transactions={transactions} />
-      </div>
-    </div>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <div className="flex-1 p-2 overflow-y-auto w-full overflow-x-hidden">
+          {transactions.map((tx: Transaction) => (
+            <TransactionSummary key={tx.txid} transaction={tx} />
+          ))}
+        </div>
+      )}
+    </>
   )
 }
 
-const Home = (props: RouteComponentProps) => {
+const Home = () => {
   return (
-    <div className="flex-1 flex relative bg-gray-700">
+    <div className="h-screen flex flex-col relative">
       <Transactions />
+
       <ModalTransitionRouter>
         <Send path="/send" />
-        <Transaction path="/transactions/:id" />
       </ModalTransitionRouter>
     </div>
   )
