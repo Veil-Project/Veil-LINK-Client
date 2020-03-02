@@ -71,7 +71,7 @@ const Console = (props: RouteComponentProps) => {
   ])
 
   const { state, effects } = useStore()
-  const messages = state.daemon.stdout
+  const message = [...state.daemon.stdout].reverse()[0]
 
   useHotkeys('Meta+l', () => {
     if (isLoading) return
@@ -221,7 +221,7 @@ const Console = (props: RouteComponentProps) => {
             />
           </div>
         ) : isLoading ? (
-          <div className="text-gray-300">{messages[0] || 'Please wait…'}</div>
+          <div className="text-gray-300">{message || 'Please wait…'}</div>
         ) : (
           <div className="flex items-center text-teal-400">
             <span className="mr-2">></span>
