@@ -12,6 +12,8 @@ import { Transaction } from 'store/models/transaction'
 import TransactionSummary from '../components/Transaction/Summary'
 import { toast } from 'react-toastify'
 import Spinner from 'components/UI/Spinner'
+import ReceivingAddress from 'components/ReceivingAddress'
+import VeilLogo from 'components/Icon/VeilLogo'
 
 const ModalTransitionRouter = (props: { children: any }) => (
   <Location>
@@ -70,7 +72,9 @@ const Transactions = () => {
 
   // const filteredTransactions = transactions.filter(t => t.amount.toString().includes(query))
 
-  return (
+  return isLoading ? (
+    <Spinner />
+  ) : transactions.length > 0 ? (
     <>
       <header
         className={`sticky top-0 p-4 bg-gray-700 flex items-center justify-between shadow-md draggable`}
@@ -81,23 +85,36 @@ const Transactions = () => {
           value={query}
           onChange={handleQueryChange}
         />
-        <div>
-          <Button to="/send" primary>
-            Send
-          </Button>
-        </div>
+        {state.balance.spendable !== null && state.balance.spendable > 0 && (
+          <div>
+            <Button to="/send" primary>
+              Send
+            </Button>
+          </div>
+        )}
       </header>
-
-      {isLoading ? (
-        <Spinner />
-      ) : (
-        <div className="flex-1 p-2 overflow-y-auto w-full overflow-x-hidden">
-          {transactions.map((tx: Transaction) => (
-            <TransactionSummary key={tx.txid} transaction={tx} />
-          ))}
-        </div>
-      )}
+      <div className="flex-1 p-2 overflow-y-auto w-full overflow-x-hidden">
+        {transactions.map((tx: Transaction) => (
+          <TransactionSummary key={tx.txid} transaction={tx} />
+        ))}
+      </div>
     </>
+  ) : (
+    <div className="max-w-md m-auto text-center">
+      <VeilLogo className="mx-auto mb-8 h-16" />
+      <h1 className="text-xl font-bold">
+        Time to transfer some Veil to your wallet.
+      </h1>
+      <p className="text-gray-300 text-lg">
+        You can now send Veil to your receiving address.
+      </p>
+      <div className="rounded-lg bg-gray-700 text-left flex items-center justify-center p-6 my-8">
+        <ReceivingAddress size="lg" />
+      </div>
+      <Button primary to="/">
+        Learn more about Veil
+      </Button>
+    </div>
   )
 }
 

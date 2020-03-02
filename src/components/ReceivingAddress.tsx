@@ -5,7 +5,11 @@ import QRCode from 'qrcode.react'
 import Button from 'components/UI/Button'
 import PasswordPrompt from 'components/PasswordPrompt'
 
-const ReceivingAddress = () => {
+interface ReceivingAddressProps {
+  size?: 'lg'
+}
+
+const ReceivingAddress = ({ size }: ReceivingAddressProps) => {
   const [requiresPassword, setRequiresPassword] = useState(false)
   const [isRegenerating, setIsRegenerating] = useState(false)
   const { state, actions } = useStore()
@@ -45,11 +49,22 @@ const ReceivingAddress = () => {
       {currentReceivingAddress ? (
         <div>
           <div className="flex items-start justify-between">
-            <div className="w-1/2 text-xs text-gray-300 font-mono break-all">
+            <div
+              className={`${
+                size === 'lg' ? 'w-3/5 text-base' : 'w-1/2 text-xs'
+              } text-gray-300 font-mono break-all`}
+            >
               {currentReceivingAddress}
             </div>
-            <div className="-mt-10 border-4 border-white">
-              <QRCode value={currentReceivingAddress} size={136} />
+            <div
+              className={`${
+                size === 'lg' ? '' : '-mt-10'
+              } border-4 border-white`}
+            >
+              <QRCode
+                value={currentReceivingAddress}
+                size={size === 'lg' ? 110 : 132}
+              />
             </div>
           </div>
           <div className="mt-4 flex">
