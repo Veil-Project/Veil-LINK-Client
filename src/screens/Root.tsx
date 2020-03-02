@@ -34,11 +34,15 @@ const Root = () => {
     case 'stopping':
       return <Loading message={daemon.message || 'Stopping Veil Core…'} />
     case 'already-running':
-      return <Connect />
+      return (
+        <Connect message="We detected veild is already running. Connect with the --rpcuser and --rpcpassword you've configured." />
+      )
     case 'wallet-loaded':
       return <Connect user={user} pass={pass} />
     default:
-      return <Connect />
+      return (
+        <Connect message="Please start veild and enter the values you used for the --rpcuser and --rpcpassword options." />
+      )
   }
 }
 

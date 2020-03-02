@@ -70,6 +70,9 @@ daemon.on('stdout', function (message) {
 daemon.on('stderr', function (message) {
     mainWindow.emit('daemon-stderr', message);
 });
+daemon.on('error', function () {
+    // mainWindow.emit('daemon-status', 'error')
+});
 daemon.on('exit', function () {
     // mainWindow.emit('daemon-status', 'stopped')
 });

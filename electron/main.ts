@@ -39,6 +39,10 @@ daemon.on('stderr', (message: string | null) => {
   mainWindow.emit('daemon-stderr', message)
 })
 
+daemon.on('error', () => {
+  // mainWindow.emit('daemon-status', 'error')
+})
+
 daemon.on('exit', () => {
   // mainWindow.emit('daemon-status', 'stopped')
 })

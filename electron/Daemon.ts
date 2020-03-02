@@ -60,37 +60,47 @@ export default class Daemon extends EventEmitter {
         this.emit('status', 'new-wallet')
         break
       case /error/i.test(message):
-        this.emit('error', message)
+        // TODO: figure out if this needs special handling
+        // this.emit('error', message)
         break
     }
   }
 
+  private handleError(_error: any) {
+    this.emit('status', 'crashed')
+  }
+
   private handleExit(_code: any) {
     this.running = this.started = false
-    // this.emit('status', 'stopped')
-    this.emit('exit')
+    this.emit('status', 'stopped')
+    // this.emit('exit')
   }
 
   private startDaemon(seed?: string) {
     const { user, pass, port } = this.options
 
     this.running = true
-    this.daemon = spawn(
-      process.env.ELECTRON_START_URL
-        ? path.join(__dirname, '../veil/veild')
-        : path.join(process.resourcesPath, 'veil/veild'),
-      [
-        `--rpcuser=${user}`,
-        `--rpcpassword=${pass}`,
-        `--rpcport=${port}`,
-        '--printtoconsole',
-        seed ? `--importseed=${seed}` : '',
-      ].filter(opt => opt !== '')
-    )
+    try {
+      this.daemon = spawn(
+        process.env.ELECTRON_START_URL
+          ? path.join(__dirname, '../veil/veild')
+          : path.join(process.resourcesPath, 'veil/veild'),
+        [
+          `--rpcuser=${user}`,
+          `--rpcpassword=${pass}`,
+          `--rpcport=${port}`,
+          '--printtoconsole',
+          seed ? `--importseed=${seed}` : '',
+        ].filter(opt => opt !== '')
+      )
 
-    this.daemon.on('exit', this.handleExit.bind(this))
-    this.daemon.stdout?.on('data', this.handleStdout.bind(this))
-    this.daemon.stderr?.on('data', this.handleStderr.bind(this))
+      this.daemon.on('exit', this.handleExit.bind(this))
+      this.daemon.on('error', this.handleError.bind(this))
+      this.daemon.stdout?.on('data', this.handleStdout.bind(this))
+      this.daemon.stderr?.on('data', this.handleStderr.bind(this))
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   start(seed?: string): Promise<DaemonOptions> {

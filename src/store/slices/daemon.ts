@@ -8,6 +8,7 @@ export type DaemonStatus =
   | 'wallet-loaded'
   | 'stopping'
   | 'stopped'
+  | 'crashed'
 
 type State = {
   status: DaemonStatus

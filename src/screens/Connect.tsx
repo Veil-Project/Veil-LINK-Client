@@ -42,7 +42,7 @@ const LoginForm = ({
 
       <div className="mt-4">
         <Button primary size="lg" disabled={disabled} className="h-12 w-full">
-          Try again
+          Connect now
         </Button>
       </div>
     </form>
@@ -102,9 +102,10 @@ const ConnectionForm = ({
 interface ConnectProps {
   user?: string
   pass?: string
+  message?: string
 }
 
-const Connect = ({ user, pass }: ConnectProps) => {
+const Connect = ({ user, pass, message }: ConnectProps) => {
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [warmupMessage, setWarmupMessage] = useState()
@@ -181,18 +182,21 @@ const Connect = ({ user, pass }: ConnectProps) => {
         <h1 className="leading-none text-2xl font-semibold mb-2">
           Connect to veild
         </h1>
-        <p className="text-gray-300 text-lg">
-          Please make sure veild is running and enter the values you used for
-          the{' '}
-          <span className="inline-block text-base font-medium font-mono h-6 rounded-sm bg-gray-500 px-2 text-white align-baseline">
-            --rpcuser
-          </span>{' '}
-          and{' '}
-          <span className="inline-block text-base font-medium font-mono h-6 rounded-sm bg-gray-500 px-2 text-white align-baseline">
-            --rpcpassword
-          </span>{' '}
-          options.
-        </p>
+        {message && (
+          <p className="text-gray-300 text-lg">
+            {message
+              .split(' ')
+              .map(word =>
+                word.match(/(--)/gi) ? (
+                  <span className="inline-block mx-1 text-base font-medium font-mono h-6 rounded-sm bg-gray-500 px-2 text-white align-baseline">
+                    {word}
+                  </span>
+                ) : (
+                  word + ' '
+                )
+              )}
+          </p>
+        )}
       </header>
 
       {isEditingConnection ? (
