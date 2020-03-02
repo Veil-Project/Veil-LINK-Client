@@ -25,7 +25,7 @@ export const state: State = {
   currentReceivingAddress: null,
   loaded: state => state.name !== null,
   locked: state => state.unlockedUntil === 0,
-  encrypted: state => state.unlockedUntil !== null,
+  encrypted: state => state.unlockedUntil !== undefined,
   error: null,
 }
 

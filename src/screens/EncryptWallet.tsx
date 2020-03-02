@@ -47,6 +47,8 @@ const EncryptWallet = () => {
     setIsEncrypting(true)
     try {
       await effects.rpc.encryptWallet(password)
+      await effects.daemon.stop()
+      await effects.daemon.start()
     } catch (e) {
       setError(e.message)
       setPassword('')
@@ -76,7 +78,7 @@ const EncryptWallet = () => {
           </p>
         </header>
 
-        <div className="bg-gray-700 rounded-lg p-6 w-full max-w-md">
+        <div className="bg-gray-700 rounded-lg p-6 w-full max-w-sm">
           <div>
             <input
               autoFocus
@@ -114,8 +116,8 @@ const EncryptWallet = () => {
           </Button>
 
           <div className="mt-4 text-center text-sm text-gray-400">
-            Note that this password can not be recovered. If you forget or lose
-            it, the wallet will need to be restored from the seed.
+            This password can not be recovered. If you forget or lose it, the
+            wallet must be restored from the seed.
           </div>
         </div>
       </div>
