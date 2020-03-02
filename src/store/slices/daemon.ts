@@ -11,10 +11,6 @@ export type DaemonStatus =
 
 type State = {
   status: DaemonStatus
-  options: {
-    user?: string
-    pass?: string
-  }
   message: string | null
   progress: number | null
   stdout: string[]
@@ -31,7 +27,6 @@ type Actions = {
 
 export const state: State = {
   status: 'unknown',
-  options: {},
   progress: null,
   message: null,
   stdout: [],
