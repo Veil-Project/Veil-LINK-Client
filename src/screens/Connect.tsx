@@ -112,7 +112,7 @@ const Connect = ({ user, pass }: ConnectProps) => {
   const [connection, setConnection] = useState({
     protocol: 'http',
     host: 'localhost',
-    port: '58812',
+    port: '8332',
   })
   const { effects, actions } = useStore()
 

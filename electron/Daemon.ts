@@ -13,7 +13,7 @@ export default class Daemon extends EventEmitter {
   private options: DaemonOptions = {
     user: crypto.randomBytes(256 / 8).toString('hex'),
     pass: crypto.randomBytes(256 / 8).toString('hex'),
-    port: '58812',
+    port: '8332',
   }
   private daemon: ReturnType<typeof spawn> | null = null
 
@@ -41,7 +41,7 @@ export default class Daemon extends EventEmitter {
         this.emit('progress', 100)
         break
       case /shutdown/i.test(message):
-        this.emit('status', 'stopping')
+        // this.emit('status', 'stopping')
         break
     }
   }
@@ -54,6 +54,7 @@ export default class Daemon extends EventEmitter {
       case /cannot obtain a lock on data directory/i.test(message):
         this.started = false
         this.emit('status', 'already-running')
+        break
       case /new wallet load detected/i.test(message):
         this.started = false
         this.emit('status', 'new-wallet')
@@ -66,7 +67,7 @@ export default class Daemon extends EventEmitter {
 
   private handleExit(_code: any) {
     this.running = this.started = false
-    this.emit('status', 'stopped')
+    // this.emit('status', 'stopped')
     this.emit('exit')
   }
 
