@@ -118,6 +118,7 @@ const ConfirmSeed = ({ seed, onSubmit, onCancel }: any) => {
             key={i}
             index={i}
             value={word}
+            validate={true}
             isValid={word && word === seed[i]}
             isFocused={focusedSeedIndex === i}
             matchingWords={autocompleteMatches}
