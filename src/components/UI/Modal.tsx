@@ -15,7 +15,7 @@ const Modal = ({ children, onClose, canClose, hideClose }: ModalProps) => (
         onClick={onClose}
         disabled={!canClose}
         className={
-          'rounded-full p-4 absolute top-0 right-0 ' +
+          'rounded-full p-4 absolute top-0 right-0 z-50 ' +
           (canClose
             ? 'text-gray-300 hover:text-white'
             : 'text-gray-400 cursor-not-allowed')
