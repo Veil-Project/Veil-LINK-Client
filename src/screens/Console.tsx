@@ -108,9 +108,10 @@ const Console = (props: RouteComponentProps) => {
   }
 
   const submitCommand = async () => {
-    setIsLoading(true)
-
     const command = commandHistory[currentIndex].input
+    if (!command || command === '') return
+
+    setIsLoading(true)
 
     const newHistory = [...commandHistory]
     const lastEntry = newHistory[newHistory.length - 1]
