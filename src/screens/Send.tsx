@@ -27,8 +27,9 @@ const AddressValidity = ({ valid }: AddressValidityProps) => {
 const Send = (props: RouteComponentProps) => {
   const [requiresPassword, setRequiresPassword] = useState(false)
   const [isAddressValid, setIsAddressValid] = useState(false)
-  const { register, watch, handleSubmit, getValues } = useForm()
-  const { effects } = useStore()
+  const { register, watch, handleSubmit, getValues, setValue } = useForm()
+  const { state, effects } = useStore()
+  const spendableBalance = state.balance.breakdown.ringctSpendable
 
   const checkAddressValidity = async (e: ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = e.target
@@ -97,13 +98,24 @@ const Send = (props: RouteComponentProps) => {
               className="block bg-gray-100 text-gray-900 text-lg w-full rounded py-2 px-3 placeholder-gray-400"
               placeholder="Amount to send"
             />
+            <div className="text-sm text-gray-300 mt-1">
+              Maximum available:{' '}
+              <button onClick={() => setValue('amount', spendableBalance)}>
+                {spendableBalance} Veil
+              </button>
+            </div>
           </div>
         </div>
         <div className="mt-8 flex">
           <Button
             primary
             size="lg"
-            disabled={!isAddressValid || !watchAmount || watchAmount < 1}
+            disabled={
+              !isAddressValid ||
+              !watchAmount ||
+              watchAmount < 1 ||
+              spendableBalance === 0
+            }
             disabledClassName="bg-gray-500 opacity-100"
           >
             Send transaction
