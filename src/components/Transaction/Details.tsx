@@ -3,6 +3,7 @@ import { Transaction } from 'store/models/transaction'
 import formatDate from 'utils/formatDate'
 import formatTime from 'utils/formatTime'
 import ExternalLink from 'components/ExternalLink'
+import JsonViewer from 'components/JsonViewer'
 
 const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
   return (
@@ -74,6 +75,7 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
           Open in block explorer
         </ExternalLink>
       </div>
+      <JsonViewer src={transaction} />
     </div>
   )
 }

@@ -17,11 +17,11 @@ const Wallet = (props: RouteComponentProps) => {
 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>
-    const loadWallet = async () => {
-      await actions.wallet.load()
-      timeout = setTimeout(loadWallet, 1000)
+    const updateAppData = async () => {
+      await actions.app.update()
+      timeout = setTimeout(updateAppData, 1000)
     }
-    loadWallet()
+    updateAppData()
     return () => {
       clearTimeout(timeout)
     }

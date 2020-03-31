@@ -1,4 +1,3 @@
-import { app } from 'electron'
 import { createWriteStream } from 'fs'
 import request from 'request'
 // @ts-ignore

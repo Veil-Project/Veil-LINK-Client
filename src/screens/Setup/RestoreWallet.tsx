@@ -3,8 +3,8 @@ import * as Bip39 from 'bip39'
 
 import Button from 'components/UI/Button'
 import SeedWord from 'components/Seed/SeedWord'
-import DaemonStatus from 'screens/DaemonStatus'
 import { useStore } from 'store'
+import DaemonWarmup from 'components/DaemonWarmup'
 
 interface Props {
   switchMode: Function
@@ -54,7 +54,7 @@ const RestoreWallet = ({ switchMode }: Props) => {
   const isValid = seed.every(word => !!word)
 
   if (isRestoring) {
-    return <DaemonStatus />
+    return <DaemonWarmup />
   }
 
   return (

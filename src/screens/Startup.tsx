@@ -32,8 +32,8 @@ const Startup = () => {
         }}
         onAnimationComplete={isStarted ? doTransition : noop}
         transition={{
-          duration: isStarted ? 0.25 : 0.75,
-          delay: isStarted ? 0.5 : 0,
+          duration: isStarted ? 0.33 : 0.75,
+          delay: isStarted ? 0.75 : 0,
         }}
         initial={{ scale: 0, rotateY: 0, opacity: 0 }}
         className="m-auto"

@@ -4,6 +4,7 @@ import { useStore } from 'store'
 import Spinner from 'components/UI/Spinner'
 import { FiAlertCircle } from 'react-icons/fi'
 import DaemonWarmup from 'components/DaemonWarmup'
+import ConnectToRpc from 'components/ConnectToRpc'
 
 interface DaemonStatusProps {
   showStartButton?: boolean
@@ -11,6 +12,7 @@ interface DaemonStatusProps {
 
 const DaemonStatus = ({ showStartButton }: DaemonStatusProps) => {
   const [isStarting, setIsStarting] = useState(false)
+  const [isRpc, setIsRpc] = useState(false)
   const { state, actions } = useStore()
   const { status } = state.daemon
 
@@ -39,8 +41,6 @@ const DaemonStatus = ({ showStartButton }: DaemonStatusProps) => {
       message =
         'It looks like another instance of Veil is already running. Please stop it and try again.'
       break
-    default:
-      message = 'Default'
   }
 
   return (
@@ -49,20 +49,39 @@ const DaemonStatus = ({ showStartButton }: DaemonStatusProps) => {
         <DaemonWarmup />
       ) : (
         <>
-          <FiAlertCircle size="48" className="text-orange-500" />
-          <div className="mt-4 max-w-md text-lg text-center">{message}</div>
-          {showStartButton && (
-            <div className="mt-10">
-              <Button
-                size="lg"
-                disabled={isStarting}
-                onClick={handleStartDaemon}
-                primary
-              >
-                Try Again
-              </Button>
-            </div>
+          {message && (
+            <>
+              <FiAlertCircle size="48" className="text-orange-500" />
+              <div className="mt-4 max-w-md text-lg text-center">{message}</div>
+            </>
           )}
+
+          <div className="mt-10 w-full max-w-xs">
+            {isRpc ? (
+              <ConnectToRpc />
+            ) : (
+              <div className="w-full max-w-xs bg-gray-700 rounded p-6 flex flex-col">
+                <Button
+                  size="lg"
+                  disabled={isStarting}
+                  onClick={handleStartDaemon}
+                  primary
+                >
+                  Try Again
+                </Button>
+                {status === 'already-started' && (
+                  <Button
+                    size="lg"
+                    disabled={isStarting}
+                    onClick={() => setIsRpc(true)}
+                    className="mt-3"
+                  >
+                    Connect via RPC
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
         </>
       )}
     </div>

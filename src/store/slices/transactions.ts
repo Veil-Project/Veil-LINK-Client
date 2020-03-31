@@ -8,6 +8,7 @@ type State = {
   forDisplay: Derive<State, Transaction[]>
   find: Derive<State, (id: string) => Transaction>
   latestBlockHash: Derive<State, string | undefined>
+  safeBlockhash: Derive<State, string | undefined>
 }
 
 type Actions = {
@@ -22,19 +23,21 @@ export const state: State = {
     state.all.filter(tx => tx.isVisible).sort((a, b) => b.time - a.time),
   find: state => id => state.index[id],
   latestBlockHash: state => state.forDisplay[0]?.walletTx?.blockhash,
+  safeBlockhash: state =>
+    state.forDisplay.filter(tx => tx.confirmations < 100)[0]?.walletTx
+      ?.blockhash,
 }
 
 export const actions: Actions = {
   async fetch({ state, effects, actions }) {
     try {
-      const transactions: WalletTransaction[] = await effects.rpc
-        .listTransactions
-        //state.transactions.latestBlockHash
-        ()
-      state.transactions.index = keyBy(
-        transactions.map(tx => new Transaction(tx)),
-        'txid'
+      console.log(state.transactions.safeBlockhash)
+      const transactions: WalletTransaction[] = await effects.rpc.listTransactions(
+        state.transactions.safeBlockhash
       )
+      transactions.forEach(tx => {
+        state.transactions.index[tx.txid] = new Transaction(tx)
+      })
       return null
     } catch (e) {
       return e

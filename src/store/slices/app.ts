@@ -15,11 +15,13 @@ type AppStatus =
 type State = {
   locale: string
   status: AppStatus
+  connectionMethod: 'daemon' | 'rpc'
 }
 
 export const state: State = {
   locale: 'en',
   status: 'initial',
+  connectionMethod: 'daemon',
 }
 
 interface RpcError {
@@ -29,6 +31,8 @@ interface RpcError {
 
 type Actions = {
   transition: AsyncAction
+  connectViaRpc: AsyncAction
+  update: AsyncAction
   reset: AsyncAction
   handleShutdown: Action
   handleDaemonExit: Action
@@ -37,16 +41,17 @@ type Actions = {
 
 export const actions: Actions = {
   async transition({ state, actions }) {
+    if (state.app.connectionMethod === 'rpc') {
+      await actions.app.update()
+      state.app.status = 'wallet'
+      return
+    }
+
     const { status, installed, configured } = state.daemon
 
     switch (status) {
       case 'wallet-loaded':
-        // Load wallet data
-        await actions.blockchain.load()
-        await actions.wallet.load()
-        await actions.transactions.fetch()
-
-        // Transition to wallet UI
+        await actions.app.update()
         state.app.status = 'wallet'
         break
       case 'starting':
@@ -69,6 +74,19 @@ export const actions: Actions = {
       case null:
         state.app.status = installed && configured ? 'startup' : 'connect'
         break
+    }
+  },
+
+  async connectViaRpc({ state, actions }) {
+    state.app.connectionMethod = 'rpc'
+    await actions.app.transition()
+  },
+
+  async update({ state, actions }) {
+    await actions.blockchain.load()
+    await actions.wallet.load()
+    if (state.app.connectionMethod === 'rpc') {
+      await actions.transactions.fetch()
     }
   },
 
