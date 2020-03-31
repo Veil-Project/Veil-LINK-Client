@@ -1,49 +1,90 @@
 import React, { useEffect, useState } from 'react'
 import { useStore } from 'store'
 
+import AppLayout, { Sidebar } from 'layouts/App'
+import Startup from './Startup'
 import Setup from './Setup'
-import WalletRoot from './WalletRoot'
 import Connect from './Connect'
-import Loading from './Loading'
+import Wallet from './Wallet'
+import Shutdown from './Shutdown'
+import Error from './Error'
+import Welcome from 'components/Welcome'
+import AppSidebar from 'components/AppSidebar'
+import EncryptWallet from './EncryptWallet'
+import DaemonStatus from './DaemonStatus'
 
 const Root = () => {
-  const [daemonOptions, setDaemonOptions] = useState({ user: '', pass: '' })
-  const { state, effects } = useStore()
-  const { daemon } = state
-  const { connected } = state.blockchain
+  const [isStarted, setIsStarted] = useState(false)
+  const { actions, state } = useStore()
 
   useEffect(() => {
     ;(async () => {
-      const options = await effects.daemon.start()
-      setDaemonOptions(options)
+      await actions.daemon.load()
+      await actions.app.transition()
     })()
   }, [])
 
-  if (connected) {
-    return <WalletRoot />
-  }
-
-  const { user, pass } = daemonOptions
-
-  switch (daemon.status) {
-    case 'unknown':
-    case 'starting':
-      return <Loading message={daemon.message || ''} />
-    case 'new-wallet':
-      return <Setup />
-    case 'stopping':
-      return <Loading message={daemon.message || 'Stopping Veil Core…'} />
-    case 'already-running':
-      return (
-        <Connect message="We detected veild is already running. Connect with the --rpcuser and --rpcpassword you've configured." />
-      )
-    case 'wallet-loaded':
-      return <Connect user={user} pass={pass} />
+  let width, delay, sidebar, body
+  switch (state.app.status) {
+    case 'initial':
+      width = '100vw'
+      body = null
+      sidebar = <div key="initial" />
+      break
+    case 'startup':
+      width = '100vw'
+      body = null
+      sidebar = <Startup key="startup" />
+      break
+    case 'connect':
+      width = isStarted ? '50vw' : '100vw'
+      delay = 0.3
+      body = <Connect />
+      sidebar = <Welcome key="welcome" onStart={() => setIsStarted(true)} />
+      break
+    case 'setup':
+      width = '0'
+      body = <Setup />
+      sidebar = <div key="setup" />
+      break
+    case 'conflict':
+      width = '100vw'
+      body = null
+      sidebar = <DaemonStatus showStartButton={true} />
+      break
+    case 'wallet':
+      if (!state.wallet.encrypted) {
+        body = <EncryptWallet />
+        sidebar = <div key="wallet"></div>
+        width = 0
+      } else {
+        width = '360px'
+        body = <Wallet />
+        sidebar = <AppSidebar key="wallet" />
+      }
+      break
+    case 'shutdown':
+      width = '100vw'
+      body = null
+      sidebar = <Shutdown key="shutdown" />
+      break
     default:
-      return (
-        <Connect message="Please start veild and enter the values you used for the --rpcuser and --rpcpassword options." />
-      )
+      width = '100vw'
+      body = null
+      sidebar = <Error key="error" message="Unknown app state" />
   }
+
+  return (
+    <AppLayout
+      sidebar={
+        <Sidebar width={width} delay={delay}>
+          {sidebar}
+        </Sidebar>
+      }
+    >
+      {body}
+    </AppLayout>
+  )
 }
 
 export default Root

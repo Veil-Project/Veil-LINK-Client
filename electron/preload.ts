@@ -1,4 +1,4 @@
-import { ipcRenderer, remote, clipboard } from 'electron'
+import { ipcRenderer, remote, app, clipboard } from 'electron'
 import fs from 'fs'
 import path from 'path'
 
@@ -15,7 +15,7 @@ window.ipcRenderer = ipcRenderer
 window.remote = remote
 window.clipboard = clipboard
 window.getConfig = () => {
-  const configPath = path.join(remote.app.getPath('userData'), 'config.json')
+  const configPath = path.join(app.getPath('userData'), 'config.json')
   try {
     return JSON.parse(fs.readFileSync(configPath, 'utf-8'))
   } catch (error) {

@@ -1,24 +1,45 @@
-import { spawn } from 'child_process'
+import { app } from 'electron'
+import { spawn, execFileSync } from 'child_process'
 import { EventEmitter } from 'events'
-import path from 'path'
 import crypto from 'crypto'
+import fs from 'fs'
+import download from './download'
+
+const VEILD_USER = crypto.randomBytes(256 / 8).toString('hex')
+const VEILD_PASS = crypto.randomBytes(256 / 8).toString('hex')
+const VEILD_DEFAULT_PATH = `${app.getPath('userData')}/veild`
+
+export type DaemonStatus =
+  | 'unknown'
+  | 'starting'
+  | 'already-started'
+  | 'new-wallet'
+  | 'wallet-loaded'
+  | 'stopping'
+  | 'stopped'
+  | 'crashed'
 
 export interface DaemonOptions {
+  port?: string
+  datadir?: string
+  network?: 'main' | 'test' | 'regtest' | 'dev'
+  seed?: string
+}
+
+export interface DaemonCredentials {
   user: string
   pass: string
-  port?: string
 }
 
 export default class Daemon extends EventEmitter {
-  private options: DaemonOptions = {
-    user: crypto.randomBytes(256 / 8).toString('hex'),
-    pass: crypto.randomBytes(256 / 8).toString('hex'),
-    port: '8332',
-  }
   private daemon: ReturnType<typeof spawn> | null = null
+  private credentials: DaemonCredentials = {
+    user: VEILD_USER,
+    pass: VEILD_PASS,
+  }
 
-  running: boolean = false
-  started: boolean = false
+  path: string | null = VEILD_DEFAULT_PATH
+  status: DaemonStatus = 'unknown'
 
   private handleStdout(data: any) {
     const message = data?.toString().trim() || ''
@@ -26,22 +47,32 @@ export default class Daemon extends EventEmitter {
 
     switch (true) {
       case /done loading/i.test(message):
-        this.started = true
-        this.emit('status', 'wallet-loaded')
+        this.status = 'wallet-loaded'
         break
       case /init message:/i.test(message):
         const messageMatch = message.match(/init message: (.*)/i)
-        if (messageMatch) this.emit('message', messageMatch[1])
+        if (messageMatch) this.emit('warmup', { message: messageMatch[1] })
         break
       case /\d*%/i.test(message):
         const progressMatch = message.match(/(\d*)%/i)
-        if (progressMatch) this.emit('progress', parseInt(progressMatch[1]))
+        if (progressMatch)
+          this.emit('warmup', {
+            progress: parseInt(progressMatch[1]),
+          })
         break
       case /[DONE]]/i.test(message):
-        this.emit('progress', 100)
+        this.emit('warmup', { progress: 100 })
+        break
+      case /AddToWallet/i.test(message):
+        const txMatch = message.match(/addtowallet (.*) (new|update)/i)
+        if (txMatch) this.emit('transaction', txMatch[1], txMatch[2])
+        break
+      case /updatetip/i.test(message):
+        const dateMatch = message.match(/date='(.*)'/i)
+        if (dateMatch) this.emit('blockchain-tip', dateMatch[1])
         break
       case /shutdown/i.test(message):
-        // this.emit('status', 'stopping')
+        // this.status = 'stopping'
         break
     }
   }
@@ -52,98 +83,169 @@ export default class Daemon extends EventEmitter {
 
     switch (true) {
       case /cannot obtain a lock on data directory/i.test(message):
-        this.started = false
-        this.emit('status', 'already-running')
+        this.status = 'already-started'
         break
       case /new wallet load detected/i.test(message):
-        this.started = false
-        this.emit('status', 'new-wallet')
+        this.status = 'new-wallet'
         break
       case /error/i.test(message):
-        // TODO: figure out if this needs special handling
-        // this.emit('error', message)
+        this.emit('error', message)
         break
     }
   }
 
   private handleError(_error: any) {
-    this.emit('status', 'crashed')
+    console.log(_error)
   }
 
   private handleExit(_code: any) {
-    this.running = this.started = false
-    this.emit('status', 'stopped')
-    // this.emit('exit')
+    if (this.status === 'stopping') {
+      this.status = 'stopped'
+    }
+    this.emit('exit')
   }
 
-  private startDaemon(seed?: string) {
-    const { user, pass, port } = this.options
+  private get installed() {
+    if (!this.path) return false
+    return fs.existsSync(this.path)
+  }
 
-    this.running = true
+  private get checksum() {
+    if (!this.path || !this.installed) {
+      return null
+    }
+
+    let data
     try {
-      this.daemon = spawn(
-        process.env.ELECTRON_START_URL
-          ? path.join(__dirname, '../veil/veild')
-          : path.join(process.resourcesPath, 'veil/veild'),
-        [
-          `--rpcuser=${user}`,
-          `--rpcpassword=${pass}`,
-          `--rpcport=${port}`,
-          '--printtoconsole',
-          seed ? `--importseed=${seed}` : '',
-        ].filter(opt => opt !== '')
-      )
+      data = fs.readFileSync(this.path, 'utf8')
+    } catch (err) {
+      return console.error('Error: ', err)
+    }
 
-      this.daemon.on('exit', this.handleExit.bind(this))
-      this.daemon.on('error', this.handleError.bind(this))
-      this.daemon.stdout?.on('data', this.handleStdout.bind(this))
-      this.daemon.stderr?.on('data', this.handleStderr.bind(this))
+    return crypto
+      .createHash('md5')
+      .update(data, 'utf8')
+      .digest('hex')
+  }
+
+  private get version() {
+    if (!this.path || !this.installed) {
+      return null
+    }
+
+    try {
+      const output = execFileSync(this.path, [`--version`])
+      const version =
+        output
+          ?.toString()
+          ?.trim()
+          ?.match(/veil core daemon version (.*)/i) || []
+      return version[1]
     } catch (e) {
-      console.log(e)
+      return null
     }
   }
 
-  start(seed?: string): Promise<DaemonOptions> {
-    if (this.started) {
-      this.emit('status', 'wallet-loaded')
-      return Promise.resolve(this.options)
+  get running() {
+    return ['starting', 'wallet-loaded'].includes(this.status)
+  }
+
+  getInfo() {
+    const { path, version, installed, checksum, status, credentials } = this
+    return {
+      path,
+      status,
+      installed,
+      checksum,
+      version,
+      credentials,
+    }
+  }
+
+  // todo: prevent dupe downloads
+  download(url: string) {
+    return new Promise((resolve, reject) => {
+      download(url, VEILD_DEFAULT_PATH)
+        .on('progress', (state: any) => {
+          this.emit('download-progress', state)
+        })
+        .on('error', reject)
+        .on('end', () => {
+          fs.chmodSync(VEILD_DEFAULT_PATH, 0o755)
+          this.path = VEILD_DEFAULT_PATH
+          resolve()
+        })
+    })
+  }
+
+  start({ network, datadir, port, seed }: DaemonOptions) {
+    if (!this.path || !this.installed) {
+      return Promise.reject()
     }
 
-    this.emit('status', 'starting')
-    this.startDaemon(seed)
+    if (this.status === 'wallet-loaded') {
+      return Promise.resolve(this.status)
+    }
 
-    return new Promise((resolve, reject) => {
-      const startInterval = setInterval(() => {
-        if (this.started) {
-          clearInterval(startInterval)
-          resolve(this.options)
-        }
-        // todo: add timeout
-      }, 100)
-    })
+    try {
+      // Avoid dupe starts
+      if (this.status !== 'starting') {
+        this.status = 'starting'
+        this.daemon = spawn(
+          this.path,
+          [
+            `--rpcuser=${this.credentials.user}`,
+            `--rpcpassword=${this.credentials.pass}`,
+            `--rpcport=${port}`,
+            '--printtoconsole',
+            network === 'test' ? '--testnet' : '',
+            datadir ? `--datadir=${datadir}` : '',
+            seed ? `--importseed=${seed}` : '',
+          ].filter(opt => opt !== '')
+        )
+
+        this.daemon.on('exit', this.handleExit.bind(this))
+        this.daemon.on('error', this.handleError.bind(this))
+        this.daemon.stdout?.on('data', this.handleStdout.bind(this))
+        this.daemon.stderr?.on('data', this.handleStderr.bind(this))
+      }
+
+      return new Promise((resolve, reject) => {
+        const startInterval = setInterval(() => {
+          if (this.status !== 'starting') {
+            clearInterval(startInterval)
+            resolve(this.status)
+          }
+        }, 100)
+      })
+    } catch (e) {
+      this.status = 'crashed'
+      return Promise.reject(e)
+    }
   }
 
   stop() {
-    if (this.isStopped()) {
-      this.emit('status', 'stopped')
-      return Promise.resolve()
+    if (!this.installed) {
+      return Promise.reject()
     }
 
-    this.emit('status', 'stopping')
-    this.daemon?.kill()
+    if (this.status === 'stopped') {
+      return Promise.resolve(this.status)
+    }
+
+    // Avoid dupe stops
+    if (this.status !== 'stopping') {
+      this.status = 'stopping'
+      this.daemon?.kill()
+    }
 
     return new Promise((resolve, reject) => {
       const stopInterval = setInterval(() => {
-        if (this.isStopped()) {
+        if (this.status !== 'stopping') {
           clearInterval(stopInterval)
-          resolve()
+          resolve(this.status)
         }
-        // todo: add timeout
       }, 100)
     })
-  }
-
-  isStopped() {
-    return (!this.running && !this.started) || !this.daemon
   }
 }

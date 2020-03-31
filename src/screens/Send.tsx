@@ -68,58 +68,68 @@ const Send = (props: RouteComponentProps) => {
 
   return (
     <Sheet onClose={() => navigate('/')}>
-      <h1 className="leading-none text-2xl font-semibold border-b-2 border-gray-500 pb-3 mb-8">
-        Send Veil
-      </h1>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="max-w-sm w-full m-auto text-center"
+      >
+        <h1 className="mb-6 leading-none text-2xl font-bold">Send Veil</h1>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex-1">
-          <div className="relative">
-            <textarea
-              autoFocus
-              rows={3}
-              name="address"
-              ref={register({ required: true })}
-              onChange={checkAddressValidity}
-              className="block bg-gray-100 text-gray-900 text-lg w-full rounded py-2 px-3 placeholder-gray-400 resize-none"
-              placeholder="Recipient address"
-            />
-            {watchAddress && (
-              <div className="absolute bottom-0 right-0 mr-2 mb-2">
-                <AddressValidity valid={isAddressValid} />
+        <div className="bg-gray-700 rounded p-6">
+          <div className="flex-1">
+            <div className="relative">
+              <textarea
+                autoFocus
+                rows={4}
+                name="address"
+                ref={register({ required: true })}
+                onChange={checkAddressValidity}
+                className="block bg-gray-600 text-white text-lg w-full rounded py-2 px-3 placeholder-gray-400 resize-none"
+                placeholder="Recipient address"
+              />
+              {watchAddress && (
+                <div className="absolute bottom-0 right-0 mr-2 mb-2">
+                  <AddressValidity valid={isAddressValid} />
+                </div>
+              )}
+            </div>
+            <div className="mt-2 relative">
+              <input
+                type="text"
+                name="amount"
+                ref={register({ required: true, min: 1 })}
+                className="block bg-gray-600 text-white text-lg w-full rounded py-2 px-3 placeholder-gray-400"
+                placeholder="Amount to send"
+              />
+              <div className="absolute top-0 bottom-0 right-0 flex items-center pr-4 text-sm text-gray-300">
+                Maximum:
+                <button
+                  className="ml-1 underline hover:text-white hover:no-underline"
+                  onClick={e => {
+                    e.preventDefault()
+                    setValue('amount', spendableBalance)
+                  }}
+                >
+                  {spendableBalance} Veil
+                </button>
               </div>
-            )}
-          </div>
-          <div className="mt-4">
-            <input
-              type="text"
-              name="amount"
-              ref={register({ required: true, min: 1 })}
-              className="block bg-gray-100 text-gray-900 text-lg w-full rounded py-2 px-3 placeholder-gray-400"
-              placeholder="Amount to send"
-            />
-            <div className="text-sm text-gray-300 mt-1">
-              Maximum available:{' '}
-              <button onClick={() => setValue('amount', spendableBalance)}>
-                {spendableBalance} Veil
-              </button>
             </div>
           </div>
-        </div>
-        <div className="mt-8 flex">
-          <Button
-            primary
-            size="lg"
-            disabled={
-              !isAddressValid ||
-              !watchAmount ||
-              watchAmount < 1 ||
-              spendableBalance === 0
-            }
-            disabledClassName="bg-gray-500 opacity-100"
-          >
-            Send transaction
-          </Button>
+          <div className="mt-6 flex justify-center">
+            <Button
+              primary
+              size="xl"
+              disabled={
+                !isAddressValid ||
+                !watchAmount ||
+                watchAmount < 1 ||
+                spendableBalance === 0
+              }
+              className="w-full"
+              disabledClassName="bg-gray-500 opacity-100"
+            >
+              Send transaction
+            </Button>
+          </div>
         </div>
       </form>
 

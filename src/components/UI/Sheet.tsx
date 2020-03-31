@@ -7,11 +7,17 @@ interface SheetProps {
 }
 
 const Sheet = ({ children, onClose }: SheetProps) => (
-  <div className="h-screen p-4 pb-0 flex flex-col">
-    <div className="flex-1 flex flex-col p-8 rounded-t bg-gray-600 shadow-lg border border-gray-800 relative overflow-auto">
+  <div className="h-screen pb-0 flex flex-col">
+    <div
+      className="flex-1 flex flex-col border-l border-gray-800 relative overflow-auto"
+      style={{
+        backgroundColor: 'rgba(26,30,33,.9)',
+        backdropFilter: 'blur(8px)',
+      }}
+    >
       <button
         onClick={onClose}
-        className="rounded-full p-4 absolute top-0 right-0 text-gray-300 hover:text-white"
+        className="rounded-full p-6 absolute top-0 right-0 text-gray-300 hover:text-white"
       >
         <FiX size="20" />
       </button>

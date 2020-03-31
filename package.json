@@ -1,11 +1,11 @@
 {
-  "name": "veil-link-client",
-  "version": "0.1.0",
+  "name": "veil-x",
+  "version": "1.0.beta1",
   "license": "MIT",
   "homepage": "./",
   "repository": {
     "type": "git",
-    "url": "git@github.com:Veil-Project/Veil-Link-Client.git"
+    "url": "git@github.com:Veil-Project/Veil-X.git"
   },
   "author": {
     "name": "The Veil Team",
@@ -13,7 +13,7 @@
     "url": "https://veil-project.com"
   },
   "bugs": {
-    "url": "https://github.com/Veil-Project/Veil-Link-Client/issues"
+    "url": "https://github.com/Veil-Project/Veil-X/issues"
   },
   "private": true,
   "main": "electron/main.js",
@@ -34,8 +34,8 @@
     "prestart": "yarn build:styles"
   },
   "build": {
-    "productName": "Veil Link Client",
-    "appId": "com.veil-project.link-client",
+    "productName": "Veil X",
+    "appId": "com.veil-project.veil-x",
     "directories": {
       "buildResources": "public",
       "output": "release"
@@ -46,12 +46,9 @@
       "electron/*.js",
       "package.json"
     ],
-    "extraResources": [
-      "veil/veild"
-    ],
     "publish": {
       "provider": "github",
-      "repo": "veil-link-client",
+      "repo": "veil-x",
       "owner": "veil-project"
     },
     "mac": {
@@ -113,9 +110,11 @@
   "dependencies": {
     "@reach/router": "^1.2.1",
     "@reecelucas/react-use-hotkeys": "^1.1.2",
+    "@types/request": "^2.48.4",
     "bip39": "^3.0.2",
     "classnames": "^2.2.6",
     "electron-updater": "^4.2.0",
+    "framer-motion": "^1.10.2",
     "lodash": "^4.17.15",
     "overmind": "^22.0.4",
     "overmind-react": "^23.0.4",
@@ -126,7 +125,8 @@
     "react-icons": "^3.8.0",
     "react-json-view": "^1.19.1",
     "react-toastify": "^5.4.1",
-    "react-transition-group": "^4.3.0"
+    "react-transition-group": "^4.3.0",
+    "request-progress": "^3.0.0"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^1.3.0",

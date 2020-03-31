@@ -1,7 +1,7 @@
 import React, { SVGProps } from 'react'
 
 const VeilLogo = (props: SVGProps<SVGSVGElement>) => (
-  <svg width="96px" height="96px" viewBox="0 0 299 259" {...props}>
+  <svg width="110px" height="96px" viewBox="0 0 299 259" {...props}>
     <defs>
       <linearGradient
         x1="50.0000671%"

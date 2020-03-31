@@ -1,9 +1,11 @@
 import React, { useState, memo } from 'react'
 import cx from 'classnames'
-import { WalletTransaction, Transaction } from 'store/models/transaction'
+import { Transaction } from 'store/models/transaction'
 import StatusIcon from './StatusIcon'
 import Details from './Details'
-import JsonViewer from 'components/JsonViewer'
+import formatDate from 'utils/formatDate'
+import formatTime from 'utils/formatTime'
+import formatAmount from 'utils/formatAmount'
 
 // TODO: Move to transaction utils
 const transactionDescription = (transaction: Transaction): string => {
@@ -38,35 +40,22 @@ const transactionColor = (category: string): string => {
   }
 }
 
-const formatDate = (date: Date, format: string): string =>
-  // @ts-ignore
-  date.toLocaleDateString('en-US', { dateStyle: format })
-
-const formatTime = (date: Date, format: string): string =>
-  // @ts-ignore
-  date.toLocaleTimeString('en-US', { timeStyle: format })
-
-const formatAmount = (amount: number): string =>
-  amount.toLocaleString('en-US', {
-    minimumFractionDigits: 4,
-    maximumFractionDigits: 4,
-  })
-
 const TransactionSummary = memo(
   ({ transaction }: { transaction: Transaction }) => {
     const [isOpen, setIsOpen] = useState(false)
     const { time, type, category } = transaction
 
-    const classes = cx(
-      'w-full px-2 mb-px rounded cursor-pointer text-sm text-gray-400 hover:text-white hover:bg-gray-700',
-      {
-        'bg-gray-700': isOpen,
-      }
-    )
+    const classes = cx('w-full px-2 mb-2px rounded text-sm hover:bg-gray-700', {
+      'text-gray-400 hover:text-white': !isOpen,
+      'bg-gray-700': isOpen,
+    })
 
     return (
       <div className={classes}>
-        <div onClick={() => setIsOpen(!isOpen)} className="flex items-center">
+        <div
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center cursor-pointer"
+        >
           <div className="flex-none">
             <StatusIcon category={category} />
           </div>
@@ -78,17 +67,19 @@ const TransactionSummary = memo(
           </div>
           <div
             className="max-w-md flex-shrink truncate"
-            style={{ minWidth: 0 }}
+            style={{ minWidth: 0, maxWidth: '220px' }}
           >
             {transactionDescription(transaction)}
           </div>
-          <div
-            className={`ml-auto pl-3 text-right font-bold ${transactionColor(
-              category
-            )} whitespace-no-wrap numeric-tabular-nums`}
-          >
-            {formatAmount(transaction.totalAmount)}
-          </div>
+          {!isOpen && (
+            <div
+              className={`ml-auto pl-3 text-right font-bold ${transactionColor(
+                category
+              )} whitespace-no-wrap numeric-tabular-nums`}
+            >
+              {formatAmount(transaction.totalAmount)}
+            </div>
+          )}
         </div>
 
         {isOpen && <Details transaction={transaction} />}

@@ -2,6 +2,7 @@ import { sum } from 'lodash'
 
 type WalletTransactionInput = {
   from_me: boolean
+  is_change: boolean
   prevout_hash: string
   prevout_n: number
   type: string
@@ -74,8 +75,16 @@ export class Transaction {
     return this.myOutputs[0]?.type || this.myInputs[0]?.type
   }
 
-  get category() {
-    return this.myDetails[0]?.category || this.walletTx.details[0].category
+  get category(): string {
+    return this.totalAmount > 0 ? 'receive' : 'send'
+  }
+
+  get confirmed() {
+    return this.confirmations >= 10
+  }
+
+  get toSelf() {
+    return
   }
 
   get address() {
@@ -121,10 +130,19 @@ export class Transaction {
   }
 
   get isVisible() {
-    return !this.isConversion && this.totalAmount !== 0
+    return true
+    // return !this.isConversion && this.totalAmount !== 0
   }
 
   get sentAmount() {
+    return sum(
+      this.myInputs
+        .filter(vin => !vin.is_change)
+        .map((vin: any) =>
+          Number(vin.amount || vin.denom || vin.output_record?.amount || 0)
+        )
+    )
+
     const sends = this.walletTx.details
       .filter(detail => detail.category === 'send')
       .map(detail => Number(detail.amount))
@@ -133,12 +151,16 @@ export class Transaction {
         ? sum(this.walletTx.debug.vin.map(vin => vin.denom || 0))
         : 0
     return sum(sends) + zerocoinSpends
+  }
 
-    //return sum(
-    //  this.myInputs.map((vin: any) =>
-    //    Number(vin.amount || vin.denom || vin.output_record?.amount || 0)
-    //  )
-    //)
+  get change() {
+    return sum(
+      this.myInputs
+        .filter(vin => vin.is_change)
+        .map((vin: any) =>
+          Number(vin.amount || vin.denom || vin.output_record?.amount || 0)
+        )
+    )
   }
 
   get receivedAmount() {
@@ -154,7 +176,15 @@ export class Transaction {
   }
 
   get totalAmount() {
-    return this.receivedAmount - this.sentAmount - this.fee
+    return this.receivedAmount - this.sentAmount
+  }
+
+  get confirmations() {
+    return this.walletTx.confirmations
+  }
+
+  get explorerUrl() {
+    return `https://explorer.veil-project.com/tx/${this.txid}`
   }
 }
 

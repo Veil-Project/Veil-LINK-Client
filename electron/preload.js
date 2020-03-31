@@ -10,7 +10,7 @@ window.ipcRenderer = electron_1.ipcRenderer;
 window.remote = electron_1.remote;
 window.clipboard = electron_1.clipboard;
 window.getConfig = function () {
-    var configPath = path_1.default.join(electron_1.remote.app.getPath('userData'), 'config.json');
+    var configPath = path_1.default.join(electron_1.app.getPath('userData'), 'config.json');
     try {
         return JSON.parse(fs_1.default.readFileSync(configPath, 'utf-8'));
     }

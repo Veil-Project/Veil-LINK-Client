@@ -47,8 +47,7 @@ const EncryptWallet = () => {
     setIsEncrypting(true)
     try {
       await effects.rpc.encryptWallet(password)
-      await effects.daemon.stop()
-      await effects.daemon.start()
+      await effects.electron.relaunch()
     } catch (e) {
       setError(e.message)
       setPassword('')

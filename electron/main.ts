@@ -1,8 +1,8 @@
-import { app, ipcMain } from 'electron'
+import { app, dialog, ipcMain, shell } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import url from 'url'
 import path from 'path'
-import Daemon from './Daemon'
+import Daemon, { DaemonOptions } from './Daemon'
 import AppWindow from './AppWindow'
 
 // Set up main window
@@ -19,17 +19,20 @@ const mainWindow = new AppWindow(startUrl)
 // Set up veild daemon
 const daemon = new Daemon()
 
-daemon.on('status', (status: string) => {
-  mainWindow.emit('daemon-status', status)
+daemon.on('transaction', (txid: string, event: string) => {
+  mainWindow.emit('daemon-transaction', txid, event)
 })
 
-daemon.on('message', (message: string | null) => {
-  mainWindow.emit('daemon-message', message)
+daemon.on('download-progress', (state: any) => {
+  mainWindow.emit('daemon-download-progress', state)
 })
 
-daemon.on('progress', (progress: number | null) => {
-  mainWindow.emit('daemon-progress', progress)
-})
+daemon.on(
+  'warmup',
+  (status: { message: string | null; progress: number | null }) => {
+    mainWindow.emit('daemon-warmup', status)
+  }
+)
 
 daemon.on('stdout', (message: string | null) => {
   mainWindow.emit('daemon-stdout', message)
@@ -39,17 +42,21 @@ daemon.on('stderr', (message: string | null) => {
   mainWindow.emit('daemon-stderr', message)
 })
 
-daemon.on('error', () => {
-  // mainWindow.emit('daemon-status', 'error')
+daemon.on('blockchain-tip', (date: string) => {
+  mainWindow.emit('daemon-blockchain-tip', date)
+})
+
+daemon.on('error', (message: string) => {
+  mainWindow.emit('daemon-error', message)
 })
 
 daemon.on('exit', () => {
-  // mainWindow.emit('daemon-status', 'stopped')
+  mainWindow.emit('daemon-exit')
 })
 
 // App listeners
 app.on('before-quit', e => {
-  if (!daemon.isStopped()) {
+  if (daemon.running) {
     e.preventDefault()
     mainWindow.emit('app-quitting')
     const stopAndQuit = async () => {
@@ -87,9 +94,31 @@ autoUpdater.on('update-downloaded', () => {
 })
 
 // API for renderer process
-ipcMain.handle('start-daemon', async (_, seed?: string) => {
-  return await daemon.start(seed)
+ipcMain.handle('show-open-dialog', (_, options: any) => {
+  if (mainWindow.window === null) return
+  return dialog.showOpenDialogSync(mainWindow.window, options)
+})
+ipcMain.handle('open-external-link', (_, url: string) => {
+  shell.openExternal(url)
+})
+ipcMain.handle('relaunch', () => {
+  app.relaunch()
+  app.quit()
+})
+
+// Daemon API for renderer
+ipcMain.handle('set-daemon-path', (_, path: string | null) => {
+  daemon.path = path
+})
+ipcMain.handle('get-daemon-info', _ => {
+  return daemon.getInfo()
+})
+ipcMain.handle('download-daemon', async (_, url: string) => {
+  return await daemon.download(url)
+})
+ipcMain.handle('start-daemon', async (_, options: DaemonOptions) => {
+  return await daemon.start(options)
 })
 ipcMain.handle('stop-daemon', async _ => {
-  await daemon.stop()
+  return await daemon.stop()
 })

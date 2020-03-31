@@ -2,6 +2,7 @@ import React, { MouseEvent } from 'react'
 import { useStore } from 'store'
 import { Link } from '@reach/router'
 import cx from 'classnames'
+import { version } from '../../package.json'
 
 interface MenuLinkProps {
   label: string
@@ -18,11 +19,10 @@ const MenuLink = ({ label, to }: MenuLinkProps) => (
 )
 
 interface AppMenuProps {
-  version: string
   onEnableStaking(): void
 }
 
-const AppMenu = ({ version, onEnableStaking }: AppMenuProps) => {
+const AppMenu = ({ onEnableStaking }: AppMenuProps) => {
   const { state, actions, effects } = useStore()
   const { staking, daemon } = state
 
@@ -41,9 +41,7 @@ const AppMenu = ({ version, onEnableStaking }: AppMenuProps) => {
     staking.status.requested === 'enabled'
 
   const handleRestartDaemon = async () => {
-    // TODO: fix the user and pass
-    // await effects.daemon.stop()
-    // await effects.daemon.start()
+    await effects.daemon.stop()
   }
 
   const stakingToggleClass = cx('rounded-full p-2px flex w-8', {
@@ -70,19 +68,18 @@ const AppMenu = ({ version, onEnableStaking }: AppMenuProps) => {
           <div className="w-4 h-4 bg-white rounded-full pointer-events-none" />
         </div>
       </div>
-      {daemon.status !== 'unknown' && (
-        <div className="border-t border-gray-500 p-2">
-          <button
-            className="block w-full px-2 h-8 rounded flex items-center justify-start font-medium hover:text-white hover:bg-gray-500"
-            onClick={handleRestartDaemon}
-          >
-            Restart Veil server
-          </button>
-        </div>
-      )}
-      <div className="border-t border-gray-500 flex items-center justify-between py-2 px-4 text-xs text-gray-400">
-        <div>Veil Lite</div>
-        <div>{version}</div>
+      <div className="border-t border-gray-500 p-2">
+        <button
+          className="block w-full px-2 h-8 rounded flex items-center justify-start font-medium hover:text-white hover:bg-gray-500"
+          onClick={handleRestartDaemon}
+        >
+          Restart Veil server
+        </button>
+      </div>
+      <div className="border-t border-gray-500 py-3 pl-4 text-xs text-gray-400">
+        Veil X: {version}
+        <br />
+        Veil Core: {state.daemon.version}
       </div>
     </div>
   )

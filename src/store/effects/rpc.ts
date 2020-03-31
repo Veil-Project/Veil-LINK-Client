@@ -68,7 +68,21 @@ export default {
   },
 
   async getBalances() {
-    return await callAsync('getbalances')
+    const breakdown = await callAsync('getbalances')
+    return {
+      basecoinSpendable: parseFloat(breakdown.basecoin_spendable),
+      basecoinUnconfirmed: parseFloat(breakdown.basecoin_unconfirmed),
+      basecoinImmature: parseFloat(breakdown.basecoin_immature),
+      ctSpendable: parseFloat(breakdown.ct_spendable),
+      ctUnconfirmed: parseFloat(breakdown.ct_spendable),
+      ctImmature: parseFloat(breakdown.ct_spendable),
+      ringctSpendable: parseFloat(breakdown.ringct_spendable),
+      ringctUnconfirmed: parseFloat(breakdown.ringct_spendable),
+      ringctImmature: parseFloat(breakdown.ringct_spendable),
+      zerocoinSpendable: parseFloat(breakdown.zerocoin_spendable),
+      zerocoinUnconfirmed: parseFloat(breakdown.zerocoin_spendable),
+      zerocoinImmature: parseFloat(breakdown.zerocoin_spendable),
+    }
   },
 
   async getBlockchainInfo() {

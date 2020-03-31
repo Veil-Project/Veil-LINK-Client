@@ -10,8 +10,6 @@ import Send from './Send'
 import Button from '../components/UI/Button'
 import { Transaction } from 'store/models/transaction'
 import TransactionSummary from '../components/Transaction/Summary'
-import { toast } from 'react-toastify'
-import Spinner from 'components/UI/Spinner'
 import ReceivingAddress from 'components/ReceivingAddress'
 import VeilLogo from 'components/Icon/VeilLogo'
 
@@ -50,21 +48,9 @@ const SearchField = ({ placeholder, value, onChange }: SearchFieldProps) => (
 )
 
 const Transactions = () => {
-  const [isLoading, setIsLoading] = useState(false)
   const [query, setQuery] = useState('')
-  const { state, actions } = useStore()
+  const { state } = useStore()
   const transactions = state.transactions.forDisplay
-
-  useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const error = await actions.transactions.fetch()
-      if (error) {
-        toast(error.message, { type: 'error' })
-      }
-      setIsLoading(false)
-    })()
-  }, [actions.transactions])
 
   const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value)
@@ -72,12 +58,10 @@ const Transactions = () => {
 
   // const filteredTransactions = transactions.filter(t => t.amount.toString().includes(query))
 
-  return isLoading ? (
-    <Spinner />
-  ) : transactions.length > 0 ? (
+  return transactions.length > 0 ? (
     <>
-      <header
-        className={`sticky top-0 p-4 bg-gray-700 flex items-center justify-between shadow-md draggable`}
+      <div
+        className={`sticky top-0 h-16 p-4 bg-gray-700 shadow-md draggable flex items-center justify-between`}
         style={{ transition: 'box-shadow .2s ease-out' }}
       >
         <SearchField
@@ -92,7 +76,7 @@ const Transactions = () => {
             </Button>
           </div>
         )}
-      </header>
+      </div>
       <div className="flex-1 p-2 overflow-y-auto w-full overflow-x-hidden">
         {transactions.map((tx: Transaction) => (
           <TransactionSummary key={tx.txid} transaction={tx} />

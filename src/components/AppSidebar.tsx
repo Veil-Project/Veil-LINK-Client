@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useStore } from 'store'
 import { StakingStatus } from 'store/slices/staking'
 import { MdMenu } from 'react-icons/md'
+import { motion } from 'framer-motion'
 
 import Balance from './Balance'
 import AppMenu from './AppMenu'
@@ -12,7 +13,7 @@ import PasswordPrompt from './PasswordPrompt'
 import { toast } from 'react-toastify'
 
 interface SidebarBlockProps {
-  title: string
+  title?: string
   children: any
 }
 
@@ -23,11 +24,13 @@ interface StakingProps {
 }
 
 const SidebarBlock = ({ title, children }: SidebarBlockProps) => (
-  <section className="">
-    <header className="mb-4 leading-none">
-      <h1 className="text-sm font-semibold">{title}</h1>
-      <div className="h-2px w-8 mt-2 bg-teal-500" />
-    </header>
+  <section className="p-6">
+    {title && (
+      <header className="mb-4 leading-none">
+        <h1 className="text-sm font-semibold">{title}</h1>
+        <div className="h-2px w-8 mt-2 bg-teal-500" />
+      </header>
+    )}
     {children}
   </section>
 )
@@ -86,52 +89,74 @@ const AppSidebar = () => {
 
   return (
     <>
-      <div className="bg-blue-500 draggable">
-        <div className="h-titlebar -mb-titlebar px-titlebar flex items-center relative">
-          <div className="flex-1" />
-          <div className="text-sm font-medium">
-            Veil Wallet{' '}
-            {blockchain.chain !== 'main' && (
-              <span className="ml-1 text-xs font-bold uppercase inline-block leading-none p-1 bg-orange-500 rounded-sm">
-                {blockchain.chain}
-              </span>
-            )}
-          </div>
-          <div className="flex-1 flex justify-end">
-            <button
-              className={`p-1 -m-1 rounded pointer outline-none ${
-                isMenuOpen ? 'bg-blue-700' : 'hover:bg-blue-600'
-              } active:bg-blue-700`}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              <MdMenu size={18} />
-            </button>
-            {isMenuOpen && (
-              <div
-                className="absolute z-10 top-0 ml-titlebar mt-titlebar"
-                style={{ left: '100%' }}
+      <motion.div className="bg-blue-500 draggable">
+        <motion.div
+          initial={{ opacity: 0 }}
+          transition={{ delay: 0.2, duration: 0.1, ease: 'easeOut' }}
+          animate={{ opacity: 1 }}
+        >
+          <div className="h-titlebar -mb-titlebar px-titlebar flex items-center relative">
+            <div className="flex-1" />
+            <div className="text-sm font-medium">
+              Veil Wallet{' '}
+              {blockchain.chain !== 'main' && (
+                <span className="ml-1 text-xs font-bold uppercase inline-block leading-none p-1 bg-orange-500 rounded-sm">
+                  {blockchain.chain}
+                </span>
+              )}
+            </div>
+            <div className="flex-1 flex justify-end">
+              <button
+                className={`p-1 -m-1 rounded pointer outline-none ${
+                  isMenuOpen ? 'bg-blue-700' : 'hover:bg-blue-600'
+                } active:bg-blue-700`}
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
-                <div className="-m-1">
-                  <AppMenu
-                    version="0.1alpha"
-                    onEnableStaking={() => setRequiresPassword(true)}
-                  />
+                <MdMenu size={18} />
+              </button>
+              {isMenuOpen && (
+                <div
+                  className="absolute z-10 top-0 ml-titlebar mt-titlebar"
+                  style={{ left: '100%' }}
+                >
+                  <div className="-m-1">
+                    <AppMenu
+                      onEnableStaking={() => setRequiresPassword(true)}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
+            </div>
+          </div>
+          <div className="h-32 px-6 flex items-center justify-center text-center">
+            {balance.spendable !== null && (
+              <Balance
+                veilBalance={balance.spendable}
+                fiatBalance={balance.marketValue}
+                currency="USD"
+              />
             )}
           </div>
-        </div>
-        <div className="h-32 px-6 flex items-center justify-center text-center">
-          {balance.spendable !== null && (
-            <Balance
-              veilBalance={balance.spendable}
-              fiatBalance={balance.marketValue}
-              currency="USD"
-            />
-          )}
-        </div>
-      </div>
-      <div className="flex-1 bg-gray-700 overflow-y-auto p-6">
+        </motion.div>
+      </motion.div>
+
+      <div className="flex-1 bg-gray-700 overflow-y-auto">
+        {balance.legacyBalance > 0 && (
+          <>
+            <SidebarBlock>
+              <div className="flex-none bg-gray-600 rounded p-6">
+                <p className="mb-2 text-sm">
+                  You have {balance.legacyBalance.toLocaleString()} legacy
+                  coins.
+                </p>
+                <Button primary to="/convert">
+                  Review &amp; Convert…
+                </Button>
+              </div>
+            </SidebarBlock>
+            <hr className="border-gray-800" />
+          </>
+        )}
         <SidebarBlock title="Staking">
           <div className="h-32 rounded flex items-center justify-center border border-gray-600 border-dashed text-sm text-gray-500">
             <Staking
@@ -148,21 +173,11 @@ const AppSidebar = () => {
             )}
           </div>
         </SidebarBlock>
-        <hr className="my-6 border-b border-gray-600" />
+        <hr className="border-gray-800" />
         <SidebarBlock title="Receive">
           <ReceivingAddress />
         </SidebarBlock>
       </div>
-      {balance.legacyBalance > 0 && (
-        <div className="flex-none bg-gray-600 p-6">
-          <p className="mb-2 text-sm">
-            You have {balance.legacyBalance.toLocaleString()} legacy coins.
-          </p>
-          <Button size="sm" primary to="/convert">
-            Review &amp; Convert…
-          </Button>
-        </div>
-      )}
       {blockchain.initialBlockDownload && (
         <div className="py-4 px-6 bg-gray-800">
           <StatusBar

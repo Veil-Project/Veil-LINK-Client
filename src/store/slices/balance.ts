@@ -66,27 +66,9 @@ export const state: State = {
 export const actions: Actions = {
   async fetchBalance({ state, effects, actions }) {
     try {
-      const spendable = await effects.rpc.getSpendableBalance()
-      const breakdown = await effects.rpc.getBalances()
-      state.balance = {
-        ...state.balance,
-        spendable,
-        breakdown: {
-          basecoinSpendable: parseFloat(breakdown.basecoin_spendable),
-          basecoinUnconfirmed: parseFloat(breakdown.basecoin_unconfirmed),
-          basecoinImmature: parseFloat(breakdown.basecoin_immature),
-          ctSpendable: parseFloat(breakdown.ct_spendable),
-          ctUnconfirmed: parseFloat(breakdown.ct_spendable),
-          ctImmature: parseFloat(breakdown.ct_spendable),
-          ringctSpendable: parseFloat(breakdown.ringct_spendable),
-          ringctUnconfirmed: parseFloat(breakdown.ringct_spendable),
-          ringctImmature: parseFloat(breakdown.ringct_spendable),
-          zerocoinSpendable: parseFloat(breakdown.zerocoin_spendable),
-          zerocoinUnconfirmed: parseFloat(breakdown.zerocoin_spendable),
-          zerocoinImmature: parseFloat(breakdown.zerocoin_spendable),
-        },
-        error: null,
-      }
+      state.balance.error = null
+      state.balance.spendable = await effects.rpc.getSpendableBalance()
+      state.balance.breakdown = await effects.rpc.getBalances()
     } catch (e) {
       state.balance.error = e
     }

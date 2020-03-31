@@ -1,22 +1,37 @@
 import { AsyncAction } from 'store'
-import { DaemonStatus } from './slices/daemon'
 
 export const onInitialize: AsyncAction = async ({ effects, actions }) => {
   effects.daemon.initialize({
-    onStatus: (_event: any, status: DaemonStatus) => {
-      actions.daemon.changeStatus(status)
+    onWarmup(
+      _: any,
+      status: { message: string | null; progress: number | null }
+    ) {
+      actions.daemon.handleWarmup(status)
     },
-    onMessage: (_event: any, message: string | null) => {
-      actions.daemon.setMessage(message)
+    onTransaction(_: any, txid: string, _event: string) {
+      actions.transactions.update(txid)
+      actions.balance.fetchBalance()
     },
-    onProgress: (_event: any, progress: number | null) => {
-      actions.daemon.setProgress(progress)
-    },
-    onStdout: (_event: any, message: string) => {
+    onStdout(_: any, message: string) {
       actions.daemon.logStdout(message)
     },
-    onStderr: (_event: any, error: string) => {
-      actions.daemon.handleError(error)
+    onStderr(_: any, error: string) {
+      actions.daemon.logStderr(error)
+    },
+    onBlockchainTip(_: any, date: string) {
+      actions.blockchain.setTip(date)
+    },
+    onError(_: any, message: string) {
+      actions.daemon.handleError(message)
+    },
+    onExit(_: any) {
+      actions.app.handleDaemonExit()
+    },
+  })
+
+  effects.electron.initialize({
+    onQuit(_: any) {
+      actions.app.handleShutdown()
     },
   })
 }

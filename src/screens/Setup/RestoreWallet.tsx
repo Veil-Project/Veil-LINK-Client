@@ -15,7 +15,7 @@ const RestoreWallet = ({ switchMode }: Props) => {
   const [focusedSeedIndex, setFocusedSeedIndex] = useState(0)
   const [autocompleteMatches, setAutocompleteMatches] = useState([] as string[])
   const [isRestoring, setIsRestoring] = useState(false)
-  const { effects } = useStore()
+  const { effects, actions } = useStore()
 
   const handleChange = (index: number, value: string) => {
     setSeed([...seed.slice(0, index), value, ...seed.slice(index + 1)])
@@ -41,7 +41,8 @@ const RestoreWallet = ({ switchMode }: Props) => {
 
     try {
       setIsRestoring(true)
-      await effects.daemon.startFromSeed(seed.join(' '))
+      await actions.daemon.start(seed.join(' '))
+      await actions.app.transition()
     } catch (e) {
       console.error(e)
       alert('Unable to restore wallet')

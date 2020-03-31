@@ -12,6 +12,7 @@ type State = {
 
 type Actions = {
   fetch: AsyncAction<void, Error>
+  update: AsyncAction<string>
 }
 
 export const state: State = {
@@ -38,5 +39,10 @@ export const actions: Actions = {
     } catch (e) {
       return e
     }
+  },
+
+  async update({ state, effects }, txid) {
+    const tx = await effects.rpc.getTransaction(txid)
+    state.transactions.index[txid] = new Transaction(tx)
   },
 }

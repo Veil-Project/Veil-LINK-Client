@@ -4,7 +4,7 @@ import path from 'path'
 export default class AppWindow {
   url: string
   width = 1000
-  height = 720
+  height = 760
   window: Electron.BrowserWindow | null = null
 
   constructor(url: string) {
@@ -22,7 +22,7 @@ export default class AppWindow {
       titleBarStyle: 'hiddenInset',
       backgroundColor: '#1b1e21',
       webPreferences: {
-        // contextIsolation: true,
+        contextIsolation: false,
         webSecurity: false,
         scrollBounce: true,
         preload: path.join(__dirname, 'preload.js'),

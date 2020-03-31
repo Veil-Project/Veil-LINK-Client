@@ -1,20 +1,23 @@
-import { Derive, AsyncAction } from 'store'
+import { Derive, AsyncAction, Action } from 'store'
 
 type State = {
   chain: string | null
   initialBlockDownload: boolean
   verificationProgress: number
+  tip: Date | null
   connected: Derive<State, boolean>
 }
 
 type Actions = {
   load: AsyncAction<void, Error>
+  setTip: Action<string>
 }
 
 export const state: State = {
   chain: null,
   initialBlockDownload: false,
   verificationProgress: 0,
+  tip: null,
   connected: state => state.chain !== null,
 }
 
@@ -35,5 +38,8 @@ export const actions: Actions = {
     } catch (e) {
       return e
     }
+  },
+  setTip({ state }, date) {
+    state.blockchain.tip = new Date(date)
   },
 }

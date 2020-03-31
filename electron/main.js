@@ -55,14 +55,14 @@ var startUrl = process.env.ELECTRON_START_URL ||
 var mainWindow = new AppWindow_1.default(startUrl);
 // Set up veild daemon
 var daemon = new Daemon_1.default();
-daemon.on('status', function (status) {
-    mainWindow.emit('daemon-status', status);
+daemon.on('transaction', function (txid, event) {
+    mainWindow.emit('daemon-transaction', txid, event);
 });
-daemon.on('message', function (message) {
-    mainWindow.emit('daemon-message', message);
+daemon.on('download-progress', function (state) {
+    mainWindow.emit('daemon-download-progress', state);
 });
-daemon.on('progress', function (progress) {
-    mainWindow.emit('daemon-progress', progress);
+daemon.on('warmup', function (status) {
+    mainWindow.emit('daemon-warmup', status);
 });
 daemon.on('stdout', function (message) {
     mainWindow.emit('daemon-stdout', message);
@@ -70,15 +70,18 @@ daemon.on('stdout', function (message) {
 daemon.on('stderr', function (message) {
     mainWindow.emit('daemon-stderr', message);
 });
-daemon.on('error', function () {
-    // mainWindow.emit('daemon-status', 'error')
+daemon.on('blockchain-tip', function (date) {
+    mainWindow.emit('daemon-blockchain-tip', date);
+});
+daemon.on('error', function (message) {
+    mainWindow.emit('daemon-error', message);
 });
 daemon.on('exit', function () {
-    // mainWindow.emit('daemon-status', 'stopped')
+    mainWindow.emit('daemon-exit');
 });
 // App listeners
 electron_1.app.on('before-quit', function (e) {
-    if (!daemon.isStopped()) {
+    if (daemon.running) {
         e.preventDefault();
         mainWindow.emit('app-quitting');
         var stopAndQuit = function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -117,10 +120,37 @@ electron_updater_1.autoUpdater.on('update-downloaded', function () {
     mainWindow.emit('update-downloaded');
 });
 // API for renderer process
-electron_1.ipcMain.handle('start-daemon', function (_, seed) { return __awaiter(void 0, void 0, void 0, function () {
+electron_1.ipcMain.handle('show-open-dialog', function (_, options) {
+    if (mainWindow.window === null)
+        return;
+    return electron_1.dialog.showOpenDialogSync(mainWindow.window, options);
+});
+electron_1.ipcMain.handle('open-external-link', function (_, url) {
+    electron_1.shell.openExternal(url);
+});
+electron_1.ipcMain.handle('relaunch', function () {
+    electron_1.app.relaunch();
+    electron_1.app.quit();
+});
+// Daemon API for renderer
+electron_1.ipcMain.handle('set-daemon-path', function (_, path) {
+    daemon.path = path;
+});
+electron_1.ipcMain.handle('get-daemon-info', function (_) {
+    return daemon.getInfo();
+});
+electron_1.ipcMain.handle('download-daemon', function (_, url) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, daemon.start(seed)];
+            case 0: return [4 /*yield*/, daemon.download(url)];
+            case 1: return [2 /*return*/, _a.sent()];
+        }
+    });
+}); });
+electron_1.ipcMain.handle('start-daemon', function (_, options) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, daemon.start(options)];
             case 1: return [2 /*return*/, _a.sent()];
         }
     });
@@ -129,9 +159,7 @@ electron_1.ipcMain.handle('stop-daemon', function (_) { return __awaiter(void 0,
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, daemon.stop()];
-            case 1:
-                _a.sent();
-                return [2 /*return*/];
+            case 1: return [2 /*return*/, _a.sent()];
         }
     });
 }); });

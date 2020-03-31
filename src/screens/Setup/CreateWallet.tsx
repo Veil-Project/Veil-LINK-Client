@@ -6,6 +6,7 @@ import { useStore } from 'store'
 import Button from 'components/UI/Button'
 import Spinner from 'components/UI/Spinner'
 import SeedWord from 'components/Seed/SeedWord'
+import DaemonWarmup from 'components/DaemonWarmup'
 
 interface Props {
   switchMode: Function
@@ -13,6 +14,11 @@ interface Props {
 
 const ViewSeed = ({ seed, onContinue, onCancel }: any) => {
   const [isVisible, setIsVisible] = useState(false)
+
+  const handleCopyToClipboard = () => {
+    window.clipboard.writeText(seed.join('\n'))
+    toast('Copied to clipboard!', { type: 'info' })
+  }
 
   return (
     <div className="flex-1 flex flex-col">
@@ -40,9 +46,7 @@ const ViewSeed = ({ seed, onContinue, onCancel }: any) => {
       <div className="mx-auto max-w-md p-8 pt-0 text-center">
         {isVisible ? (
           <>
-            <Button onClick={() => toast('Copied to clipboard!')}>
-              Copy to clipboard
-            </Button>
+            <Button onClick={handleCopyToClipboard}>Copy to clipboard</Button>
             <div className="mt-2 text-sm text-gray-300">
               Remember to keep the seed private. Anyone who knows the seed has
               full access to your funds.
@@ -152,7 +156,7 @@ const ConfirmSeed = ({ seed, onSubmit, onCancel }: any) => {
 const CreateWallet = ({ switchMode }: Props) => {
   const [step, setStep] = useState('view')
   const [seed, setSeed] = useState([...new Array(24)])
-  const { effects } = useStore()
+  const { actions } = useStore()
 
   useEffect(() => {
     const generateSeed = async () => {
@@ -165,7 +169,8 @@ const CreateWallet = ({ switchMode }: Props) => {
   const doCreateWallet = async () => {
     try {
       setStep('create')
-      await effects.daemon.startFromSeed(seed.join(' '))
+      await actions.daemon.start(seed.join(' '))
+      await actions.app.transition()
     } catch (e) {
       console.error(e)
       alert('Unable to create wallet')
@@ -195,7 +200,7 @@ const CreateWallet = ({ switchMode }: Props) => {
         />
       )
     case 'create':
-      return <Spinner />
+      return <DaemonWarmup />
     default:
       return <div />
   }

@@ -8,16 +8,16 @@ import { config } from './store'
 
 import Root from './screens/Root'
 import './styles.css'
-import Layout from 'components/Layout'
+import RootLayout from 'layouts/Root'
 
 const overmind = createOvermind(config)
 
 const render = () => {
   ReactDOM.render(
     <Provider value={overmind}>
-      <Layout>
+      <RootLayout>
         <Root />
-      </Layout>
+      </RootLayout>
     </Provider>,
     document.getElementById('root')
   )

@@ -13,7 +13,7 @@ const Balance = ({ veilBalance, fiatBalance, currency }: BalanceProps) => (
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })}
-      <span className="ml-2 font-bold text-sm bg-blue-300 rounded-sm text-blue-600 leading-tight tracking-wide py-1 px-2 flex items-center">
+      <span className="ml-2 font-bold text-sm bg-teal-500 rounded-sm text-blue-600 leading-tight tracking-wide py-1 px-2 flex items-center">
         VEIL
       </span>
     </div>
