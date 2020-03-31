@@ -7,7 +7,7 @@ const DaemonWarmup = () => {
   const { message, progress } = state.daemon.warmup
 
   return (
-    <Loading message={message || 'Starting Veil Core...'} progress={progress} />
+    <Loading message={message || 'Starting veild...'} progress={progress} />
   )
 }
 

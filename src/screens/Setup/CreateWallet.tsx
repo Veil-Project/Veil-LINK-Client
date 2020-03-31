@@ -23,8 +23,8 @@ const ViewSeed = ({ seed, onContinue, onCancel }: any) => {
   return (
     <div className="flex-1 flex flex-col">
       <header className="pt-8 text-center max-w-md mx-auto">
-        <h1 className="text-2xl font-bold">Save your wallet seed</h1>
-        <p className="mt-1 text-gray-300">
+        <h1 className="text-3xl font-bold">Save your wallet seed</h1>
+        <p className="text-lg mt-1 text-gray-300">
           Your seed is all that is needed to restore your wallet. It's very
           important that you it write down and keep it secret.
         </p>

@@ -205,7 +205,7 @@ const Login = ({ setMode }: { setMode: Function }) => {
             onClick={() => setMode('install')}
             className="underline hover:text-white hover:no-underline"
           >
-            Use managed Veil Core
+            Use managed veild
           </button>
         </div>
       </footer>

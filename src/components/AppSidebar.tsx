@@ -3,6 +3,7 @@ import { useStore } from 'store'
 import { StakingStatus } from 'store/slices/staking'
 import { MdMenu } from 'react-icons/md'
 import { motion } from 'framer-motion'
+import formatDate from 'utils/formatDate'
 
 import Balance from './Balance'
 import AppMenu from './AppMenu'
@@ -11,6 +12,7 @@ import Button from './UI/Button'
 import StatusBar from './UI/StatusBar'
 import PasswordPrompt from './PasswordPrompt'
 import { toast } from 'react-toastify'
+import formatTime from 'utils/formatTime'
 
 interface SidebarBlockProps {
   title?: string
@@ -64,7 +66,6 @@ const AppSidebar = () => {
   const [requiresPassword, setRequiresPassword] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { state, actions } = useStore()
-
   const { blockchain, staking, balance } = state
 
   useEffect(() => {
@@ -179,13 +180,19 @@ const AppSidebar = () => {
         </SidebarBlock>
       </div>
       {blockchain.initialBlockDownload && (
-        <div className="py-4 px-6 bg-gray-800">
-          <StatusBar
-            progress={blockchain.verificationProgress * 100}
-            label={`Syncing ${(blockchain.verificationProgress * 100).toFixed(
-              2
-            )}%`}
-          />
+        <div className="py-4 px-6 bg-gray-600">
+          <StatusBar progress={blockchain.verificationProgress * 100} />
+          <div className="mt-2 flex justify-between text-sm text-gray-300">
+            <div>
+              Syncing {(blockchain.verificationProgress * 100).toFixed(2)}%
+            </div>
+            <div className="">
+              {blockchain.tip
+                ? formatDate(new Date(blockchain.tip), 'medium')
+                : 'Loading…'}{' '}
+              {blockchain.tip && formatTime(new Date(blockchain.tip), 'medium')}
+            </div>
+          </div>
         </div>
       )}
     </>

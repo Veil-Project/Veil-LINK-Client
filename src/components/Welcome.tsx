@@ -3,13 +3,15 @@ import { motion } from 'framer-motion'
 import VeilLogo from './Icon/VeilLogo'
 import Button from './UI/Button'
 import { version } from '../../package.json'
+import ExternalLink from './ExternalLink'
 
 interface Props {
   onStart?(): void
+  defaultRevealed?: boolean
 }
 
-const Welcome = ({ onStart }: Props) => {
-  const [isRevealed, setIsRevealed] = useState(false)
+const Welcome = ({ onStart, defaultRevealed = false }: Props) => {
+  const [isRevealed, setIsRevealed] = useState(defaultRevealed)
   const [isSubmitted, setIsSubmitted] = useState(false)
 
   useEffect(() => {
@@ -17,7 +19,7 @@ const Welcome = ({ onStart }: Props) => {
     return () => {
       clearTimeout(timeout)
     }
-  })
+  }, [])
 
   const handleClick = () => {
     setIsSubmitted(true)
@@ -33,7 +35,7 @@ const Welcome = ({ onStart }: Props) => {
           rotateY: 360,
         }}
         transition={{ duration: 0.5 }}
-        initial={{ scale: 0, y: 150, rotateY: 0 }}
+        initial={defaultRevealed ? false : { scale: 0, y: 150, rotateY: 0 }}
       >
         <VeilLogo className="mx-auto" />
       </motion.div>
@@ -44,35 +46,37 @@ const Welcome = ({ onStart }: Props) => {
         <p className="mt-2 mb-8 text-2xl leading-snug text-gray-300">
           A reimagined wallet experience for the pioneering privacy coin.
         </p>
-        <motion.div
-          className="overflow-hidden"
-          animate={{
-            height: isSubmitted ? 0 : '5rem',
-            opacity: isSubmitted ? 0 : 1,
-          }}
-          initial={false}
-        >
-          <Button primary size="xl" onClick={handleClick}>
-            Get Started
-          </Button>
-        </motion.div>
+        {onStart && (
+          <motion.div
+            className="overflow-hidden"
+            animate={{
+              height: isSubmitted ? 0 : '5rem',
+              opacity: isSubmitted ? 0 : 1,
+            }}
+            initial={false}
+          >
+            <Button primary size="xl" onClick={handleClick}>
+              Get Started
+            </Button>
+          </motion.div>
+        )}
 
         <ul className="text-center text-sm leading-none text-gray-400">
           <li>
-            <a
-              href=""
+            <ExternalLink
+              href="https://www.veil-project.com/blog"
               className="underline hover:text-white hover:no-underline"
             >
               Read the launch announcement
-            </a>
+            </ExternalLink>
           </li>
           <li className="mt-3">
-            <a
-              href=""
+            <ExternalLink
+              href="https://www.veil-project.com/"
               className="underline hover:text-white hover:no-underline"
             >
               Learn more about Veil
-            </a>
+            </ExternalLink>
           </li>
         </ul>
       </motion.div>

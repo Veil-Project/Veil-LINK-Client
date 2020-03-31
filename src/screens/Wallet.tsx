@@ -9,9 +9,11 @@ import Console from './Console'
 
 import ConvertLegacyCoins from './ConvertLegacyCoins'
 import { useStore } from 'store'
+import EncryptWallet from './EncryptWallet'
+import AppSidebar from 'components/AppSidebar'
 
 const Wallet = (props: RouteComponentProps) => {
-  const { actions } = useStore()
+  const { state, actions } = useStore()
 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>
@@ -25,9 +27,24 @@ const Wallet = (props: RouteComponentProps) => {
     }
   }, [])
 
+  if (!state.wallet.encrypted) {
+    return <EncryptWallet />
+  }
+
   return (
-    <>
-      <Home />
+    <div className="flex-1 w-full flex">
+      <div
+        className="flex-none bg-gray-700 flex flex-col relative"
+        style={{ width: 360 }}
+      >
+        <AppSidebar />
+      </div>
+      <div
+        className="flex-1 flex flex-col bg-gray-800 relative"
+        style={{ minWidth: 0 }}
+      >
+        <Home />
+      </div>
 
       <Router
         className="fixed inset-0 z-50 p-20 flex items-stretch justify-center"
@@ -39,7 +56,7 @@ const Wallet = (props: RouteComponentProps) => {
         <Console path="/console" />
         <ConvertLegacyCoins path="/convert" />
       </Router>
-    </>
+    </div>
   )
 }
 

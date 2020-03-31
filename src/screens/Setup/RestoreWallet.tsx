@@ -60,8 +60,8 @@ const RestoreWallet = ({ switchMode }: Props) => {
   return (
     <div className="flex-1 flex flex-col">
       <header className="pt-8 text-center max-w-md mx-auto">
-        <h1 className="text-2xl font-bold">Restore wallet from seed</h1>
-        <p className="mt-1 text-gray-300">
+        <h1 className="text-3xl font-bold">Restore wallet from seed</h1>
+        <p className="mt-1 text-lg text-gray-300">
           Enter your seed to restore your wallet
         </p>
       </header>

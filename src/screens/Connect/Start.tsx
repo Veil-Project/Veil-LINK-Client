@@ -16,11 +16,8 @@ const Start = ({ setMode }: { setMode: Function }) => {
     setIsStarting(true)
     actions.daemon.configure(options)
     await actions.daemon.start()
-    setIsStarting(false)
-
-    setTimeout(async () => {
-      await actions.app.transition()
-    }, 1000)
+    // TODO: improve transition
+    await actions.app.transition()
   }
 
   return (

@@ -2,7 +2,6 @@ import React, { MouseEvent, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useStore } from 'store'
 import formatPath from 'utils/formatPath'
-import { DownloadProgress } from 'store/slices/daemon'
 
 import Button from 'components/UI/Button'
 
@@ -34,12 +33,21 @@ const DaemonDetails = ({ version, path, checksum }: DaemonDetailsProps) => (
   </>
 )
 
-const DownloadStatus = ({ percent, size, speed }: DownloadProgress) => {
+interface DownloadStatusProps {
+  percent?: number | null
+  speed?: number | null
+  size?: {
+    total: number | null
+    transferred: number | null
+  }
+}
+
+const DownloadStatus = ({ percent, size, speed }: DownloadStatusProps) => {
   return (
     <>
-      <Spinner percentage={percent ? percent * 100 : 0} />
+      <Spinner percentage={percent ? percent * 100 : null} />
       <div className="mt-4 text-sm text-gray-300 text-center">
-        {size.total && size.transferred ? (
+        {size && size.total && size.transferred ? (
           <span>
             {formatBytes(size.transferred)} of {formatBytes(size.total)} (
             {speed ? formatBytes(speed || 0) : '--'}
@@ -83,10 +91,10 @@ const Install = ({ setMode }: { setMode: Function }) => {
     <>
       <div className="my-auto">
         <header>
-          <h2 className="text-2xl font-bold">Install Veil Core</h2>
+          <h2 className="text-2xl font-bold">Install Veil helper</h2>
           <p className="mt-1 text-lg text-gray-300">
-            Todo text here Veil is creating an encrypted equivalent of the cash
-            economy.
+            Download the blockchain helper, or locate an existing veild, if
+            you’re already running your own.
           </p>
         </header>
 
@@ -117,7 +125,7 @@ const Install = ({ setMode }: { setMode: Function }) => {
                 </Button>
               </div>
             </>
-          ) : download.inProgress && download.status ? (
+          ) : download.inProgress ? (
             <DownloadStatus {...download.status} />
           ) : (
             <>

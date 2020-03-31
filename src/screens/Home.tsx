@@ -12,6 +12,7 @@ import { Transaction } from 'store/models/transaction'
 import TransactionSummary from '../components/Transaction/Summary'
 import ReceivingAddress from 'components/ReceivingAddress'
 import VeilLogo from 'components/Icon/VeilLogo'
+import ExternalLink from 'components/ExternalLink'
 
 const ModalTransitionRouter = (props: { children: any }) => (
   <Location>
@@ -84,20 +85,32 @@ const Transactions = () => {
       </div>
     </>
   ) : (
-    <div className="max-w-md m-auto text-center">
-      <VeilLogo className="mx-auto mb-8 h-16" />
-      <h1 className="text-xl font-bold">
+    <div className="max-w-lg m-auto text-center">
+      <VeilLogo className="mx-auto mb-8" />
+      <h1 className="text-2xl font-bold">
         Time to transfer some Veil to your wallet.
       </h1>
       <p className="text-gray-300 text-lg">
         You can now send Veil to your receiving address.
       </p>
-      <div className="rounded-lg bg-gray-700 text-left flex items-center justify-center p-6 my-8">
+      <div className="max-w-sm mx-auto rounded bg-gray-700 text-left flex items-center justify-center p-6 my-8">
         <ReceivingAddress size="lg" />
       </div>
-      <Button primary to="/">
-        Learn more about Veil
-      </Button>
+      <ul className="text-center text-sm leading-none text-gray-400">
+        <li>
+          <a href="" className="underline hover:text-white hover:no-underline">
+            Read the launch announcement
+          </a>
+        </li>
+        <li className="mt-3">
+          <ExternalLink
+            href="https://www.veil-project.com"
+            className="underline hover:text-white hover:no-underline"
+          >
+            Learn more about Veil
+          </ExternalLink>
+        </li>
+      </ul>
     </div>
   )
 }

@@ -4,7 +4,7 @@ type State = {
   chain: string | null
   initialBlockDownload: boolean
   verificationProgress: number
-  tip: Date | null
+  tip: string | null
   connected: Derive<State, boolean>
 }
 
@@ -40,6 +40,6 @@ export const actions: Actions = {
     }
   },
   setTip({ state }, date) {
-    state.blockchain.tip = new Date(date)
+    state.blockchain.tip = date
   },
 }

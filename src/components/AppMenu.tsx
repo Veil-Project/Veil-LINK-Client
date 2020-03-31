@@ -79,7 +79,7 @@ const AppMenu = ({ onEnableStaking }: AppMenuProps) => {
       <div className="border-t border-gray-500 py-3 pl-4 text-xs text-gray-400">
         Veil X: {version}
         <br />
-        Veil Core: {state.daemon.version}
+        veild: {state.daemon.version}
       </div>
     </div>
   )

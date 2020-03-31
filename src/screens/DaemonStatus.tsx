@@ -36,7 +36,8 @@ const DaemonStatus = ({ showStartButton }: DaemonStatusProps) => {
       message = 'Veil server stopped.'
       break
     case 'already-started':
-      message = 'Veil Core is already running. Please stop it and try again.'
+      message =
+        'It looks like another instance of Veil is already running. Please stop it and try again.'
       break
     default:
       message = 'Default'
