@@ -10,7 +10,7 @@ export const onInitialize: AsyncAction = async ({ effects, actions }) => {
     },
     onTransaction(_: any, txid: string, _event: string) {
       actions.transactions.update(txid)
-      actions.balance.fetchBalance()
+      actions.balance.fetch()
     },
     onStdout(_: any, message: string) {
       actions.daemon.logStdout(message)

@@ -85,6 +85,7 @@ export const actions: Actions = {
   async update({ state, actions }) {
     await actions.blockchain.load()
     await actions.wallet.load()
+    await actions.balance.fetch()
     if (state.app.connectionMethod === 'rpc') {
       await actions.transactions.fetch()
     }

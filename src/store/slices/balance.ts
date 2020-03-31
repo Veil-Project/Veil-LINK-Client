@@ -24,7 +24,7 @@ type State = {
 }
 
 type Actions = {
-  fetchBalance: AsyncAction
+  fetch: AsyncAction
   fetchMarketPrice: AsyncAction
 }
 
@@ -64,7 +64,7 @@ export const state: State = {
 }
 
 export const actions: Actions = {
-  async fetchBalance({ state, effects, actions }) {
+  async fetch({ state, effects, actions }) {
     try {
       state.balance.error = null
       state.balance.spendable = await effects.rpc.getSpendableBalance()

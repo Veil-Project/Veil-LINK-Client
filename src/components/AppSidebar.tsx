@@ -75,7 +75,7 @@ const AppSidebar = () => {
   })
 
   useEffect(() => {
-    actions.balance.fetchBalance()
+    actions.balance.fetch()
     actions.balance.fetchMarketPrice()
   }, [actions.balance])
 
