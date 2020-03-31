@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, KeyboardEvent } from 'react'
 import Portal from './Portal'
 import Button from './UI/Button'
+import useHotkeys from '@reecelucas/react-use-hotkeys'
 
 const PasswordPrompt = ({ title, onCancel, onSubmit, disabled }: any) => {
   const [password, setPassword] = useState('')
@@ -9,6 +10,10 @@ const PasswordPrompt = ({ title, onCancel, onSubmit, disabled }: any) => {
   useEffect(() => {
     passwordField?.current?.focus()
   }, [passwordField])
+
+  useHotkeys('Enter', () => {
+    password && onSubmit(password)
+  })
 
   return (
     <Portal>
