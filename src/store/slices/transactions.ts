@@ -31,7 +31,6 @@ export const state: State = {
 export const actions: Actions = {
   async fetch({ state, effects, actions }) {
     try {
-      console.log(state.transactions.safeBlockhash)
       const transactions: WalletTransaction[] = await effects.rpc.listTransactions(
         state.transactions.safeBlockhash
       )
