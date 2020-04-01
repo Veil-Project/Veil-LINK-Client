@@ -64,7 +64,7 @@ export const state: State = {
   options: {
     network: null,
     datadir: null,
-    port: '8332',
+    port: '58812',
   },
   download: {
     inProgress: false,

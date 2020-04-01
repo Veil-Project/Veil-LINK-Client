@@ -13,7 +13,7 @@ const ConnectToRpc = () => {
   const [connection, setConnection] = useState({
     protocol: 'http',
     host: 'localhost',
-    port: '8332',
+    port: '58812',
   })
   const { effects, actions } = useStore()
 

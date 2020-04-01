@@ -46,7 +46,7 @@ export default {
     client = new RpcClient({
       host: 'localhost',
       protocol: 'http',
-      port: '8332',
+      port: '58812',
       ...options,
     })
   },
