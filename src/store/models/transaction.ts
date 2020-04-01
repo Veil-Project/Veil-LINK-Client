@@ -71,6 +71,14 @@ export class Transaction {
     //   }))
   }
 
+  get requiresReveal() {
+    return (
+      this.category === 'receive' &&
+      this.type === 'ringct' &&
+      this.receivedAmount <= 0.00000001
+    )
+  }
+
   get type() {
     return this.myOutputs[0]?.type || this.myInputs[0]?.type
   }
@@ -135,13 +143,21 @@ export class Transaction {
   }
 
   get sentAmount() {
+    const sendDetails = this.walletTx.details.filter(
+      detail => detail.category === 'send'
+    )
+
+    if (sendDetails.length) {
+      return sum(sendDetails.map(detail => detail.amount))
+    }
+
     return this.changeAmount !== 0
-      ? this.receivedAmount + this.changeAmount + this.fee
-      : sum(
+      ? this.receivedAmount * -1
+      : -sum(
           this.myInputs.map((vin: any) =>
             Number(vin.amount || vin.denom || vin.output_record?.amount || 0)
           )
-        ) - this.changeAmount
+        ) + this.changeAmount
 
     const sends = this.walletTx.details
       .filter(detail => detail.category === 'send')
@@ -186,7 +202,7 @@ export class Transaction {
 
   get totalAmount() {
     return this.sentAmount !== 0
-      ? (this.sentAmount - this.receivedAmount - this.changeAmount) * -1
+      ? this.sentAmount + this.receivedAmount - this.fee
       : this.receivedAmount
   }
 
