@@ -15,25 +15,31 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
           </dt>
           <dl className="flex-1 pl-3">{transaction.totalAmount} Veil</dl>
         </div>
-        <div className="border-t border-gray-600 py-2 pb-3 flex">
-          <dt className="flex-none w-48 pr-2 text-right font-semibold text-teal-500">
-            Sent:
-          </dt>
-          <dl className="flex-1 pl-3">{transaction.sentAmount} Veil</dl>
-        </div>
-        <div className="border-t border-gray-600 py-2 pb-3 flex">
-          <dt className="flex-none w-48 pr-2 text-right font-semibold text-teal-500">
-            Received:
-          </dt>
-          <dl className="flex-1 pl-3">{transaction.receivedAmount} Veil</dl>
-        </div>
-        <div className="border-t border-gray-600 py-2 pb-3 flex">
-          <dt className="flex-none w-48 pr-2 text-right font-semibold text-teal-500">
-            Recipient:
-          </dt>
-          <dl className="flex-1 pl-3">{transaction.address}</dl>
-        </div>
-        {transaction.category === 'send' && (
+        {transaction.sentAmount !== 0 && (
+          <div className="border-t border-gray-600 py-2 pb-3 flex">
+            <dt className="flex-none w-48 pr-2 text-right font-semibold text-teal-500">
+              Sent:
+            </dt>
+            <dl className="flex-1 pl-3">{transaction.sentAmount} Veil</dl>
+          </div>
+        )}
+        {transaction.receivedAmount !== 0 && (
+          <div className="border-t border-gray-600 py-2 pb-3 flex">
+            <dt className="flex-none w-48 pr-2 text-right font-semibold text-teal-500">
+              Received:
+            </dt>
+            <dl className="flex-1 pl-3">{transaction.receivedAmount} Veil</dl>
+          </div>
+        )}
+        {transaction.changeAmount !== 0 && (
+          <div className="border-t border-gray-600 py-2 pb-3 flex">
+            <dt className="flex-none w-48 pr-2 text-right font-semibold text-teal-500">
+              Change:
+            </dt>
+            <dl className="flex-1 pl-3">{transaction.changeAmount} Veil</dl>
+          </div>
+        )}
+        {transaction.fee !== 0 && (
           <div className="border-t border-gray-600 py-2 pb-3 flex">
             <dt className="flex-none w-48 pr-2 text-right font-semibold text-teal-500">
               Fee:
@@ -41,6 +47,12 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
             <dl className="flex-1 pl-3">{transaction.fee} Veil</dl>
           </div>
         )}
+        <div className="border-t border-gray-600 py-2 pb-3 flex">
+          <dt className="flex-none w-48 pr-2 text-right font-semibold text-teal-500">
+            Recipient:
+          </dt>
+          <dl className="flex-1 pl-3">{transaction.address}</dl>
+        </div>
         <div className="border-t border-gray-600 py-2 pb-3 flex">
           <dt className="flex-none w-48 pr-2 text-right font-semibold text-teal-500">
             Status:

@@ -105,7 +105,7 @@ export class Transaction {
   }
 
   get myInputs() {
-    return this.allInputs.filter((vin: any) => vin.from_me)
+    return this.allInputs.filter((vin: any) => vin.from_me || vin.is_mine_ki)
   }
 
   get allOutputs() {
@@ -135,13 +135,13 @@ export class Transaction {
   }
 
   get sentAmount() {
-    return sum(
-      this.myInputs
-        .filter(vin => !vin.is_change)
-        .map((vin: any) =>
-          Number(vin.amount || vin.denom || vin.output_record?.amount || 0)
-        )
-    )
+    return this.changeAmount !== 0
+      ? this.receivedAmount + this.changeAmount + this.fee
+      : sum(
+          this.myInputs.map((vin: any) =>
+            Number(vin.amount || vin.denom || vin.output_record?.amount || 0)
+          )
+        ) - this.changeAmount
 
     const sends = this.walletTx.details
       .filter(detail => detail.category === 'send')
@@ -153,30 +153,41 @@ export class Transaction {
     return sum(sends) + zerocoinSpends
   }
 
-  get change() {
+  get changeAmount() {
     return sum(
-      this.myInputs
-        .filter(vin => vin.is_change)
-        .map((vin: any) =>
-          Number(vin.amount || vin.denom || vin.output_record?.amount || 0)
+      this.myOutputs
+        .filter(vout => vout.output_record?.is_change)
+        .map((vout: any) =>
+          Number(vout.amount || vout.output_record?.amount || 0)
         )
     )
   }
 
   get receivedAmount() {
     return sum(
-      this.myOutputs.map((vout: any) =>
-        Number(vout.amount || vout.output_record?.amount || 0)
-      )
+      this.myOutputs
+        .filter(vout => !vout.output_record?.is_change)
+        .map((vout: any) =>
+          Number(vout.amount || vout.output_record?.amount || 0)
+        )
     )
   }
 
   get fee() {
-    return this.category === 'send' ? this.walletTx.details[0]?.fee || 0 : 0
+    if (this.changeAmount > 0) {
+      const feeRecord = this.walletTx.debug.vout.filter(
+        vout => vout.type === 'data'
+      )[0]
+      return parseFloat(feeRecord?.ct_fee) || 0
+    } else {
+      return 0
+    }
   }
 
   get totalAmount() {
-    return this.receivedAmount - this.sentAmount
+    return this.sentAmount !== 0
+      ? (this.sentAmount - this.receivedAmount - this.changeAmount) * -1
+      : this.receivedAmount
   }
 
   get confirmations() {
