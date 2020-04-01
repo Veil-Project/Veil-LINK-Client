@@ -24,7 +24,7 @@ interface AppMenuProps {
 
 const AppMenu = ({ onEnableStaking }: AppMenuProps) => {
   const { state, actions, effects } = useStore()
-  const { staking, daemon } = state
+  const { staking } = state
 
   const handleDisableStaking = (e: MouseEvent<HTMLDivElement>) => {
     e.nativeEvent.stopImmediatePropagation()
@@ -68,14 +68,17 @@ const AppMenu = ({ onEnableStaking }: AppMenuProps) => {
           <div className="w-4 h-4 bg-white rounded-full pointer-events-none" />
         </div>
       </div>
-      <div className="border-t border-gray-500 p-2">
-        <button
-          className="block w-full px-2 h-8 rounded flex items-center justify-start font-medium hover:text-white hover:bg-gray-500"
-          onClick={handleRestartDaemon}
-        >
-          Restart Veil server
-        </button>
-      </div>
+
+      {state.app.connectionMethod === 'daemon' && (
+        <div className="border-t border-gray-500 p-2">
+          <button
+            className="block w-full px-2 h-8 rounded flex items-center justify-start font-medium hover:text-white hover:bg-gray-500"
+            onClick={handleRestartDaemon}
+          >
+            Restart Veil server
+          </button>
+        </div>
+      )}
       <div className="border-t border-gray-500 py-3 pl-4 text-xs text-gray-400">
         Veil X: {version}
         <br />

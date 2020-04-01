@@ -3,6 +3,8 @@ import { spawn, execFileSync } from 'child_process'
 import { EventEmitter } from 'events'
 import crypto from 'crypto'
 import fs from 'fs'
+import tar from 'tar'
+import path from 'path'
 import download from './download'
 
 const VEILD_USER = crypto.randomBytes(256 / 8).toString('hex')
@@ -20,7 +22,6 @@ export type DaemonStatus =
   | 'crashed'
 
 export interface DaemonOptions {
-  port?: string
   datadir?: string
   network?: 'main' | 'test' | 'regtest' | 'dev'
   seed?: string
@@ -165,20 +166,39 @@ export default class Daemon extends EventEmitter {
   // todo: prevent dupe downloads
   download(url: string) {
     return new Promise((resolve, reject) => {
-      download(url, VEILD_DEFAULT_PATH)
+      const downloadPath = path.join(app.getPath('temp'), path.basename(url))
+      const destinationPath = path.join(app.getPath('userData'))
+      download(url, downloadPath)
         .on('progress', (state: any) => {
           this.emit('download-progress', state)
         })
         .on('error', reject)
-        .on('end', () => {
-          fs.chmodSync(VEILD_DEFAULT_PATH, 0o755)
-          this.path = VEILD_DEFAULT_PATH
-          resolve()
+        .on('end', async () => {
+          try {
+            await tar.extract({
+              file: downloadPath,
+              cwd: destinationPath,
+              filter: path => path.endsWith('veild'),
+            })
+            this.path = path.join(
+              destinationPath,
+              path
+                .basename(url, 'tar.gz')
+                .split('-')
+                .slice(0, 2)
+                .join('-'),
+              'bin',
+              'veild'
+            )
+            resolve(this.path)
+          } catch (e) {
+            reject(e)
+          }
         })
     })
   }
 
-  start({ network, datadir, port, seed }: DaemonOptions) {
+  start({ network, datadir, seed }: DaemonOptions) {
     if (!this.path || !this.installed) {
       return Promise.reject()
     }
@@ -196,7 +216,7 @@ export default class Daemon extends EventEmitter {
           [
             `--rpcuser=${this.credentials.user}`,
             `--rpcpassword=${this.credentials.pass}`,
-            `--rpcport=${port}`,
+            `--rpcport=58812`,
             '--printtoconsole',
             network === 'test' ? '--testnet' : '',
             datadir ? `--datadir=${datadir}` : '',

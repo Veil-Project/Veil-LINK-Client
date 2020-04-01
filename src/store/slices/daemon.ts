@@ -2,13 +2,12 @@ import { Action, AsyncAction, Derive } from 'store'
 import { DaemonStatus } from '../../../electron/Daemon'
 
 const VEILD_DOWNLOAD_URL =
-  'https://cdn-std.droplr.net/files/acc_937201/T3gdhp?download'
+  'https://github.com/Veil-Project/veil/releases/download/v1.0.4.8/veil-1.0.4-osx64.tar.gz'
 const VEILD_CHECKSUM = '741efac28070072ed8a2788934a70eee'
 
 export interface DaemonOptions {
   network?: 'main' | 'test' | 'regtest' | 'dev' | null
   datadir?: string | null
-  port?: string
   seed?: string
 }
 
@@ -64,7 +63,6 @@ export const state: State = {
   options: {
     network: null,
     datadir: null,
-    port: '58812',
   },
   download: {
     inProgress: false,
@@ -96,6 +94,11 @@ type Actions = {
 
 export const actions: Actions = {
   async load({ state, effects }) {
+    const savedPath = localStorage.getItem('daemonPath')
+    if (savedPath) {
+      await effects.daemon.setPath(savedPath)
+    }
+
     const {
       path,
       status,
@@ -122,6 +125,7 @@ export const actions: Actions = {
 
   async setPath({ state, effects, actions }, path) {
     state.daemon.path = path
+    localStorage.setItem('daemonPath', path)
     await effects.daemon.setPath(state.daemon.path)
     await actions.daemon.load()
   },
@@ -131,14 +135,14 @@ export const actions: Actions = {
       state.daemon.download.error = null
       state.daemon.download.completedAt = null
       state.daemon.download.inProgress = true
-      state.daemon.path = await effects.daemon.download(
+      const path = await effects.daemon.download(
         VEILD_DOWNLOAD_URL,
         (_: any, progress: DownloadProgress) => {
           state.daemon.download.status = progress
         }
       )
       state.daemon.download.completedAt = new Date().getTime()
-      await actions.daemon.load()
+      await actions.daemon.setPath(path)
     } catch (e) {
       state.daemon.download.error = e
     } finally {
