@@ -13,6 +13,7 @@ import TransactionSummary from '../components/Transaction/Summary'
 import ReceivingAddress from 'components/ReceivingAddress'
 import VeilLogo from 'components/Icon/VeilLogo'
 import ExternalLink from 'components/ExternalLink'
+import Loading from './Loading'
 
 const ModalTransitionRouter = (props: { children: any }) => (
   <Location>
@@ -49,9 +50,17 @@ const SearchField = ({ placeholder, value, onChange }: SearchFieldProps) => (
 )
 
 const Transactions = () => {
+  const [isLoading, setIsLoading] = useState(true)
   const [query, setQuery] = useState('')
-  const { state } = useStore()
+  const { state, actions } = useStore()
   const transactions = state.transactions.forDisplay
+
+  useEffect(() => {
+    ;(async () => {
+      await actions.transactions.fetch()
+      setIsLoading(false)
+    })()
+  }, [])
 
   const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value)
@@ -59,7 +68,9 @@ const Transactions = () => {
 
   // const filteredTransactions = transactions.filter(t => t.amount.toString().includes(query))
 
-  return transactions.length > 0 ? (
+  return isLoading ? (
+    <Loading />
+  ) : transactions.length > 0 ? (
     <>
       <div
         className={`sticky top-0 h-16 p-4 bg-gray-700 shadow-md draggable flex items-center justify-between`}
