@@ -129,8 +129,8 @@ export default {
     return await callAsync('sendtoaddress', address, amount)
   },
 
-  async sendStealthToStealth(address: string, amount: number) {
-    return await callAsync('sendstealthtostealth', address, amount)
+  async sendRingCtToRingCt(address: string, amount: number) {
+    return await callAsync('sendringcttoringct', address, amount)
   },
 
   async sendCommand(command: string) {

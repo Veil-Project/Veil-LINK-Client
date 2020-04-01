@@ -53,7 +53,7 @@ const Send = (props: RouteComponentProps) => {
 
     try {
       await effects.rpc.unlockWallet(password)
-      await effects.rpc.sendStealthToStealth(address, amount)
+      await effects.rpc.sendRingCtToRingCt(address, amount)
       toast('Transaction sent!', { type: 'success' })
       navigate('/')
     } catch (e) {
