@@ -74,7 +74,7 @@ export class Transaction {
   get requiresReveal() {
     return (
       this.category === 'receive' &&
-      this.type === 'ringct' &&
+      (this.type === 'ringct' || this.type === 'ct') &&
       this.receivedAmount <= 0.00000001
     )
   }
