@@ -6,7 +6,11 @@ interface LayoutProps {
 }
 
 const RootLayout = ({ children }: LayoutProps) => (
-  <ToastProvider placement="bottom-right" transitionDuration={100}>
+  <ToastProvider
+    placement="bottom-right"
+    transitionDuration={100}
+    autoDismiss={true}
+  >
     <div className="h-screen max-w-screen overflow-hidden flex text-white antialiased bg-gray-800">
       {children}
     </div>
