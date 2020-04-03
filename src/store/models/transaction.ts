@@ -21,7 +21,7 @@ type WalletTransactionOutput = {
   amount?: number
 }
 
-type WalletTransactionDetail = {
+export type WalletTransactionDetail = {
   category: 'receive' | 'send'
   address: string
   amount: number
@@ -38,8 +38,6 @@ export type WalletTransaction = {
   blockhash?: string
   blockindex?: number
   blocktime?: number
-  address: string
-  amount: number
   fee?: number
   details: WalletTransactionDetail[]
   debug: {
@@ -71,9 +69,12 @@ export class Transaction {
     //   }))
   }
 
+  get isLoaded() {
+    return this.walletTx.debug.vout.length > 0
+  }
+
   get requiresReveal() {
     return (
-      this.category === 'receive' &&
       (this.type === 'ringct' || this.type === 'ct') &&
       this.receivedAmount <= 0.00000001
     )
@@ -85,8 +86,8 @@ export class Transaction {
       : this.myInputs[0]?.type
   }
 
-  get category(): string {
-    return this.totalAmount > 0 ? 'receive' : 'send'
+  get category(): string | null {
+    return this.isLoaded ? (this.totalAmount > 0 ? 'receive' : 'send') : null
   }
 
   get confirmed() {
@@ -137,11 +138,6 @@ export class Transaction {
       this.allOutputs.slice(1).every((vout: any) => vout.is_mine) &&
       this.allInputs.every((vin: any) => vin.from_me)
     )
-  }
-
-  get isVisible() {
-    return true
-    // return !this.isConversion && this.totalAmount !== 0
   }
 
   get sentAmount() {

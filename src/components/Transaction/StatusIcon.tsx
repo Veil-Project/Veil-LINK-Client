@@ -2,7 +2,7 @@ import React, { memo } from 'react'
 import { FiArrowDown, FiArrowUp, FiStar } from 'react-icons/fi'
 
 interface StatusIconProps {
-  category: string
+  category: string | null
 }
 
 const StatusIcon = memo(({ category }: StatusIconProps) => {

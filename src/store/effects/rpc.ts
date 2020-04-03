@@ -51,12 +51,12 @@ export default {
     })
   },
 
-  async listTransactions(blockhash?: string) {
-    const { transactions } = await callAsync('listSinceBlock', blockhash) //, '*', count, offset)
-    const txids: string[] = Array.from(
-      new Set(transactions.map((tx: any) => tx.txid))
-    )
-    return await Promise.all(txids.map(txid => this.getTransaction(txid)))
+  async listSinceBlock(blockhash?: string) {
+    return await callAsync('listsinceblock', blockhash) //, '*', count, offset)
+  },
+
+  async listTransactions(count: number = 999999999, offset?: number) {
+    return await callAsync('listtransactions', '*', count, offset)
   },
 
   async getTransaction(txid: string) {

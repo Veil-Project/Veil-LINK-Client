@@ -1,4 +1,4 @@
-import React, { useState, memo, MouseEvent } from 'react'
+import React, { useState, memo, MouseEvent, useEffect, useRef } from 'react'
 import cx from 'classnames'
 import { Transaction } from 'store/models/transaction'
 import StatusIcon from './StatusIcon'
@@ -10,6 +10,9 @@ import Button from 'components/UI/Button'
 import PasswordPrompt from 'components/PasswordPrompt'
 import { useStore } from 'store'
 import { toast } from 'react-toastify'
+// @ts-ignore
+import { useIsVisible } from 'react-is-visible'
+import Loading from 'screens/Loading'
 
 // TODO: Move to transaction utils
 const transactionDescription = (transaction: Transaction): string => {
@@ -50,6 +53,14 @@ const TransactionSummary = memo(
     const [isOpen, setIsOpen] = useState(false)
     const { actions, effects } = useStore()
     const { time, type, category } = transaction
+    const ref = useRef(null)
+    const isVisible = useIsVisible(ref)
+
+    useEffect(() => {
+      if (isVisible && !transaction.isLoaded) {
+        actions.transactions.update(transaction.txid)
+      }
+    }, [isVisible, transaction.isLoaded])
 
     const classes = cx('w-full px-2 mb-2px rounded text-sm hover:bg-gray-700', {
       'text-gray-400 hover:text-white': !isOpen,
@@ -76,7 +87,7 @@ const TransactionSummary = memo(
     }
 
     return (
-      <div className={classes}>
+      <div className={classes} ref={ref}>
         {requiresPassword && (
           <PasswordPrompt
             title="Reveal transaction amount"
@@ -84,6 +95,7 @@ const TransactionSummary = memo(
             onSubmit={(password: string) => handleUpdateTransaction(password)}
           />
         )}
+
         <div
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center cursor-pointer"
@@ -101,26 +113,40 @@ const TransactionSummary = memo(
             className="max-w-md flex-shrink truncate"
             style={{ minWidth: 0, maxWidth: '220px' }}
           >
-            {transactionDescription(transaction)}
+            {transaction.isLoaded ? (
+              transactionDescription(transaction)
+            ) : (
+              <div className="w-64 h-4 bg-gray-700" />
+            )}
           </div>
-          {!isOpen && (
-            <div
-              className={`ml-auto pl-3 text-right font-bold ${transactionColor(
-                category
-              )} whitespace-no-wrap numeric-tabular-nums`}
-            >
-              {transaction.requiresReveal ? (
+          <div
+            className={`ml-auto pl-3 text-right font-bold ${
+              category ? transactionColor(category) : ''
+            } whitespace-no-wrap numeric-tabular-nums`}
+          >
+            {transaction.isLoaded ? (
+              !isOpen &&
+              (transaction.requiresReveal ? (
                 <Button size="sm" onClick={handleReveal}>
                   Reveal
                 </Button>
               ) : (
                 formatAmount(transaction.totalAmount)
-              )}
-            </div>
-          )}
+              ))
+            ) : (
+              <div className="w-16 h-4 bg-gray-700" />
+            )}
+          </div>
         </div>
 
-        {isOpen && <Details transaction={transaction} />}
+        {isOpen &&
+          (transaction.isLoaded ? (
+            <Details transaction={transaction} />
+          ) : (
+            <div className="p-24">
+              <Loading />
+            </div>
+          ))}
       </div>
     )
   }
