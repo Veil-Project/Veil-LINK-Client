@@ -1,11 +1,20 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Transaction } from 'store/models/transaction'
 import formatDate from 'utils/formatDate'
 import formatTime from 'utils/formatTime'
 import ExternalLink from 'components/ExternalLink'
 import JsonViewer from 'components/JsonViewer'
+import { useStore } from 'store'
 
 const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
+  const { actions } = useStore()
+
+  useEffect(() => {
+    ;(async () => {
+      await actions.transactions.update(transaction.txid)
+    })()
+  })
+
   return (
     <div className="px-4 pt-1 pb-6 text-white">
       <dl>
@@ -78,7 +87,7 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
         </div>
       </dl>
       <div className="mt-4 text-gray-300">
-        ID: {transaction.walletTx.txid}
+        ID: {transaction.txid}
         <br />
         <ExternalLink
           href={transaction.explorerUrl}
