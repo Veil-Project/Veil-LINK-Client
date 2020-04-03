@@ -259,6 +259,7 @@ RpcClient.callspec = {
   move: 'str str float int str',
   recoveraddresses: 'int',
   rescanblockchain: '',
+  rescanringctwallet: '',
   restoreaddresses: 'int',
   prioritiseTransaction: 'str float int',
   spendzerocoin: 'int bool bool int str',
