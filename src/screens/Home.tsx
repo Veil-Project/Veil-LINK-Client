@@ -1,7 +1,9 @@
-import React, { ChangeEvent, useEffect, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState, useRef } from 'react'
 import { Router, Location, RouteComponentProps } from '@reach/router'
 import { TransitionGroup, CSSTransition } from 'react-transition-group'
 import { FiSearch } from 'react-icons/fi'
+// @ts-ignore
+import ViewPortList from 'react-viewport-list'
 import './Home.css'
 
 import { useStore } from 'store'
@@ -55,6 +57,8 @@ const Transactions = () => {
   const { state, actions } = useStore()
   const transactions = state.transactions.forDisplay
 
+  const viewPortRef = useRef(null)
+
   useEffect(() => {
     ;(async () => {
       await actions.transactions.fetch()
@@ -68,9 +72,11 @@ const Transactions = () => {
 
   // const filteredTransactions = transactions.filter(t => t.amount.toString().includes(query))
 
-  return isLoading ? (
-    <Loading />
-  ) : transactions.length > 0 ? (
+  if (isLoading) {
+    return <Loading />
+  }
+
+  return transactions.length > 0 ? (
     <>
       <div
         className={`sticky top-0 h-16 p-4 bg-gray-700 shadow-md draggable flex items-center justify-between`}
@@ -89,10 +95,23 @@ const Transactions = () => {
           </div>
         )}
       </div>
-      <div className="flex-1 p-2 overflow-y-auto w-full overflow-x-hidden">
-        {transactions.map((tx: Transaction) => (
-          <TransactionSummary key={tx.txid} transaction={tx} />
-        ))}
+      <div
+        ref={viewPortRef}
+        className="flex-1 p-2 overflow-y-auto w-full overflow-x-hidden"
+      >
+        <ViewPortList
+          viewPortRef={viewPortRef}
+          listLength={transactions.length}
+          itemMinHeight={50}
+          margin={2}
+          overscan={5000}
+        >
+          {({ innerRef, index, style }: any) => (
+            <div ref={innerRef} style={style} key={transactions[index].txid}>
+              <TransactionSummary transaction={transactions[index]} />
+            </div>
+          )}
+        </ViewPortList>
       </div>
     </>
   ) : (
