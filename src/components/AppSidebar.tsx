@@ -12,7 +12,7 @@ import ReceivingAddress from './ReceivingAddress'
 import Button from './UI/Button'
 import StatusBar from './UI/StatusBar'
 import PasswordPrompt from './PasswordPrompt'
-import { toast } from 'react-toastify'
+import { useToasts } from 'react-toast-notifications'
 import formatTime from 'utils/formatTime'
 
 interface SidebarBlockProps {
@@ -64,16 +64,23 @@ const Staking = ({
 }
 
 const AppSidebar = () => {
+  const { addToast } = useToasts()
   const [requiresPassword, setRequiresPassword] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { state, actions } = useStore()
   const { blockchain, staking, balance } = state
 
   useEffect(() => {
+    if (staking.error) {
+      addToast(staking.error, { appearance: 'error' })
+    }
+  }, [staking.error])
+
+  useEffect(() => {
     const closeDialog = () => isMenuOpen && setIsMenuOpen(false)
     document.addEventListener('click', closeDialog)
     return () => document.removeEventListener('click', closeDialog)
-  })
+  }, [])
 
   useEffect(() => {
     actions.balance.fetch()
@@ -83,7 +90,7 @@ const AppSidebar = () => {
   const handleEnableStaking = async (password: string) => {
     const error = await actions.staking.enable(password)
     if (error) {
-      toast(error.message, { type: 'error' })
+      addToast(error.message, { appearance: 'error' })
     } else {
       setRequiresPassword(false)
     }

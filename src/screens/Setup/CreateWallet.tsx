@@ -1,5 +1,5 @@
 import React, { useEffect, useState, ChangeEvent } from 'react'
-import { toast } from 'react-toastify'
+import { useToasts } from 'react-toast-notifications'
 import * as Bip39 from 'bip39'
 import { useStore } from 'store'
 
@@ -13,11 +13,12 @@ interface Props {
 }
 
 const ViewSeed = ({ seed, onContinue, onCancel }: any) => {
+  const { addToast } = useToasts()
   const [isVisible, setIsVisible] = useState(false)
 
   const handleCopyToClipboard = () => {
     window.clipboard.writeText(seed.join('\n'))
-    toast('Copied to clipboard!', { type: 'info' })
+    addToast('Copied to clipboard!', { appearance: 'info' })
   }
 
   return (

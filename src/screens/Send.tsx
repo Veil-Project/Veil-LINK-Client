@@ -4,7 +4,7 @@ import Button from '../components/UI/Button'
 import Sheet from '../components/UI/Sheet'
 import { navigate, RouteComponentProps } from '@reach/router'
 import classnames from 'classnames'
-import { toast } from 'react-toastify'
+import { useToasts } from 'react-toast-notifications'
 import { useStore } from 'store'
 import PasswordPrompt from 'components/PasswordPrompt'
 
@@ -25,6 +25,7 @@ const AddressValidity = ({ valid }: AddressValidityProps) => {
 }
 
 const Send = (props: RouteComponentProps) => {
+  const { addToast } = useToasts()
   const [requiresPassword, setRequiresPassword] = useState(false)
   const [isAddressValid, setIsAddressValid] = useState(false)
   const { register, watch, handleSubmit, getValues, setValue } = useForm()
@@ -54,10 +55,10 @@ const Send = (props: RouteComponentProps) => {
     try {
       await effects.rpc.unlockWallet(password)
       await effects.rpc.sendRingCtToRingCt(address, amount)
-      toast('Transaction sent!', { type: 'success' })
+      addToast('Transaction sent!', { appearance: 'success' })
       navigate('/')
     } catch (e) {
-      toast(e.message, { type: 'error' })
+      addToast(e.message, { appearance: 'error' })
     } finally {
       effects.rpc.lockWallet()
     }

@@ -9,7 +9,7 @@ import formatAmount from 'utils/formatAmount'
 import Button from 'components/UI/Button'
 import PasswordPrompt from 'components/PasswordPrompt'
 import { useStore } from 'store'
-import { toast } from 'react-toastify'
+import { useToasts } from 'react-toast-notifications'
 // @ts-ignore
 import { useIsVisible } from 'react-is-visible'
 import Loading from 'screens/Loading'
@@ -49,6 +49,7 @@ const transactionColor = (category: string): string => {
 
 const TransactionSummary = memo(
   ({ transaction }: { transaction: Transaction }) => {
+    const { addToast } = useToasts()
     const [requiresPassword, setRequiresPassword] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
     const { actions, effects } = useStore()
@@ -79,7 +80,7 @@ const TransactionSummary = memo(
         await effects.rpc.unlockWallet(password)
         await actions.transactions.update(transaction.txid)
       } catch (e) {
-        toast(e.message, { type: 'error' })
+        addToast(e.message, { appearance: 'error' })
       } finally {
         await effects.rpc.lockWallet()
         setRequiresPassword(false)

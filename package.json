@@ -110,6 +110,7 @@
   "dependencies": {
     "@reach/router": "^1.2.1",
     "@reecelucas/react-use-hotkeys": "^1.1.2",
+    "@types/react-toast-notifications": "^2.4.0",
     "@types/request": "^2.48.4",
     "@types/tar": "^4.0.3",
     "bip39": "^3.0.2",
@@ -127,7 +128,7 @@
     "react-icons": "^3.8.0",
     "react-is-visible": "^1.0.6",
     "react-json-view": "^1.19.1",
-    "react-toastify": "^5.4.1",
+    "react-toast-notifications": "^2.4.0",
     "react-transition-group": "^4.3.0",
     "request": "^2.88.2",
     "request-progress": "^3.0.0",

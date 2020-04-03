@@ -1,5 +1,4 @@
 import { Action, AsyncAction } from 'store'
-import { toast } from 'react-toastify'
 import RPC_ERRORS from 'constants/rpcErrors'
 
 type AppStatus =
@@ -113,8 +112,6 @@ export const actions: Actions = {
           break
       }
     }
-
-    toast(message, { type: 'error' })
 
     switch (code) {
       case RPC_ERRORS.RPC_IN_WARMUP:

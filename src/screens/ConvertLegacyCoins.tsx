@@ -2,11 +2,12 @@ import React from 'react'
 import { RouteComponentProps, navigate } from '@reach/router'
 import Button from 'components/UI/Button'
 import Modal from 'components/UI/Modal'
-import { toast } from 'react-toastify'
+import { useToasts } from 'react-toast-notifications'
 import { useStore } from 'store'
 import JsonViewer from 'components/JsonViewer'
 
 const ConvertLegacyCoins = (props: RouteComponentProps) => {
+  const { addToast } = useToasts()
   const { state, effects } = useStore()
   const breakdown = state.balance
 
@@ -26,7 +27,7 @@ const ConvertLegacyCoins = (props: RouteComponentProps) => {
       await effects.rpc.unlockWallet(password)
       alert('TODO: convert coins')
     } catch (e) {
-      toast(e.message, { type: 'error' })
+      addToast(e.message, { appearance: 'error' })
       console.error(e)
     } finally {
       effects.rpc.lockWallet()

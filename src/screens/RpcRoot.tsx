@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { useStore } from 'store'
-import { toast } from 'react-toastify'
+import { useToasts } from 'react-toast-notifications'
 import Loading from './Loading'
 import RPC_ERRORS from 'constants/rpcErrors'
 import WalletRoot from './Wallet'
 
 const RpcRoot = () => {
+  const { addToast } = useToasts()
   const [warmupMessage, setWarmupMessage] = useState<string | null>()
   const { state, actions } = useStore()
   const { connected } = state.blockchain
@@ -31,7 +32,7 @@ const RpcRoot = () => {
         break
       case undefined:
         setWarmupMessage(null)
-        toast(message, { type: 'error' })
+        addToast(message, { appearance: 'error' })
         break
     }
   }

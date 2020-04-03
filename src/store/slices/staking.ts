@@ -1,5 +1,4 @@
 import { AsyncAction, Action } from 'store'
-import { toast } from 'react-toastify'
 
 export type StakingStatus = 'disabled' | 'enabled'
 
@@ -8,6 +7,7 @@ type State = {
     current: StakingStatus
     requested: StakingStatus | null
   }
+  error: string | null
 }
 
 interface ResetOptions {
@@ -27,6 +27,7 @@ export const state: State = {
     current: 'disabled',
     requested: null,
   },
+  error: null,
 }
 
 let stakingTimeout: ReturnType<typeof setTimeout>
@@ -38,7 +39,7 @@ export const actions: Actions = {
       state.staking.status.current !== targetState
     ) {
       state.staking.status.requested = state.staking.status.current
-      toast(errorMessage, { type: 'error' })
+      state.staking.error = errorMessage
     }
   },
 
@@ -54,6 +55,7 @@ export const actions: Actions = {
 
   async enable({ state, effects, actions }, password) {
     clearTimeout(stakingTimeout)
+    state.staking.error = null
     state.staking.status.requested = 'enabled'
 
     try {
@@ -77,6 +79,7 @@ export const actions: Actions = {
 
   async disable({ state, effects, actions }) {
     clearTimeout(stakingTimeout)
+    state.staking.error = null
     state.staking.status.requested = 'disabled'
 
     try {

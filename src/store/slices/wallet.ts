@@ -1,5 +1,4 @@
 import { Derive, AsyncAction } from 'store'
-import { toast } from 'react-toastify'
 
 type State = {
   name: string | null

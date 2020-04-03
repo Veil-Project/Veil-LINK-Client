@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
+import { useToasts } from 'react-toast-notifications'
 import { useStore } from 'store'
 import QRCode from 'qrcode.react'
 import Button from 'components/UI/Button'
@@ -13,6 +13,7 @@ const ReceivingAddress = ({ size }: ReceivingAddressProps) => {
   const [requiresPassword, setRequiresPassword] = useState(false)
   const [isRegenerating, setIsRegenerating] = useState(false)
   const { state, actions } = useStore()
+  const { addToast } = useToasts()
   const { currentReceivingAddress } = state.wallet
 
   useEffect(() => {
@@ -23,7 +24,7 @@ const ReceivingAddress = ({ size }: ReceivingAddressProps) => {
     setIsRegenerating(true)
     const error = await actions.wallet.generateReceivingAddress(password)
     if (error) {
-      toast(error.message, { type: 'error' })
+      addToast(error.message, { appearance: 'error' })
     } else {
       setRequiresPassword(false)
     }
@@ -33,7 +34,7 @@ const ReceivingAddress = ({ size }: ReceivingAddressProps) => {
   const handleCopyAddress = () => {
     if (!currentReceivingAddress) return
     window.clipboard.writeText(currentReceivingAddress)
-    toast('Copied to clipboard!', { type: 'info' })
+    addToast('Copied to clipboard!', { appearance: 'info' })
   }
 
   return (

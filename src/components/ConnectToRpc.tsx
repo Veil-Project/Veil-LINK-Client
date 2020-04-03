@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { useStore } from 'store'
-import { toast } from 'react-toastify'
+import { useToasts } from 'react-toast-notifications'
 import Loading from 'screens/Loading'
 import RPC_ERRORS from 'constants/rpcErrors'
 import ConnectionForm from './ConnectionForm'
 import LoginForm from './LoginForm'
 
 const ConnectToRpc = () => {
+  const { addToast } = useToasts()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [warmupMessage, setWarmupMessage] = useState()
   const [isEditingConnection, setIsEditingConnection] = useState(false)
@@ -27,7 +28,7 @@ const ConnectToRpc = () => {
         break
       case undefined:
         setWarmupMessage(null)
-        toast(message, { type: 'error' })
+        addToast(message, { appearance: 'error' })
         break
     }
   }
