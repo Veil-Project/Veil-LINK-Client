@@ -14,6 +14,7 @@ import StatusBar from './UI/StatusBar'
 import PasswordPrompt from './PasswordPrompt'
 import { useToasts } from 'react-toast-notifications'
 import formatTime from 'utils/formatTime'
+import { Link } from '@reach/router'
 
 interface SidebarBlockProps {
   title?: string
@@ -145,9 +146,11 @@ const AppSidebar = () => {
             </div>
           </div>
           <div className="h-32 px-6 flex items-center justify-center text-center">
-            {balance.spendable !== null && (
+            {balance.spendableBalance !== null && (
               <Balance
-                veilBalance={balance.spendable}
+                veilBalance={balance.spendableBalance}
+                legacyBalance={balance.legacyBalance}
+                pendingBalance={balance.pendingBalance}
                 fiatBalance={balance.marketValue}
                 currency="USD"
               />
@@ -157,22 +160,54 @@ const AppSidebar = () => {
       </motion.div>
 
       <div className="flex-1 bg-gray-700 overflow-y-auto">
-        {balance.legacyBalance > 0 && (
-          <>
-            <SidebarBlock>
-              <div className="flex-none bg-gray-600 rounded p-6">
-                <p className="mb-2 text-sm">
-                  You have {balance.legacyBalance.toLocaleString()} legacy
-                  coins.
-                </p>
-                <Button primary to="/convert">
-                  Review &amp; Convert…
-                </Button>
+        <div className="flex-none bg-gray-600 rounded py-5 px-6 leading-none text-sm">
+          {balance.unconfirmedBalance !== null &&
+            balance.unconfirmedBalance > 0 && (
+              <div className="border-b border-gray-500 pb-1 flex justify-between leading-snug font-medium">
+                <span className="">Unconfirmed</span>
+                <span className="text-teal-500">
+                  {balance.unconfirmedBalance.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}{' '}
+                  Veil
+                </span>
               </div>
-            </SidebarBlock>
-            <hr className="border-gray-800" />
-          </>
-        )}
+            )}
+          {balance.immatureBalance !== null && balance.immatureBalance > 0 && (
+            <div className="border-b border-gray-500 py-1 flex justify-between leading-snug font-medium">
+              <span className="">Immature</span>
+              <span className="text-teal-500">
+                {balance.immatureBalance.toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}{' '}
+                Veil
+              </span>
+            </div>
+          )}
+          {balance.legacyBalance !== null && balance.legacyBalance > 0 && (
+            <div className="border-b border-gray-500 py-1 flex justify-between leading-snug font-medium">
+              <span className="">Legacy</span>
+              <span className="text-teal-500">
+                {balance.legacyBalance.toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}{' '}
+                Veil
+              </span>
+            </div>
+          )}
+          <div className="mt-2">
+            <Link
+              to="/convert"
+              className="underline text-sm text-gray-300 hover:text-white hover:no-underline"
+            >
+              Convert legacy balance…
+            </Link>
+          </div>
+        </div>
+
         <SidebarBlock title="Staking">
           <div className="h-32 rounded flex items-center justify-center border border-gray-600 border-dashed text-sm text-gray-500">
             <Staking

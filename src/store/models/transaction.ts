@@ -83,7 +83,7 @@ export class Transaction {
   get type() {
     return this.category === 'receive'
       ? this.myOutputs[0]?.type
-      : this.myInputs[0]?.type
+      : this.allInputs[0]?.type
   }
 
   get category(): string | null {

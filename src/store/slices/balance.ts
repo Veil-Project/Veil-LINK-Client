@@ -2,7 +2,10 @@ import { Derive, AsyncAction } from 'store'
 import { sum, pick } from 'lodash'
 
 type State = {
-  spendable: number | null
+  spendableBalance: Derive<State, number>
+  unconfirmedBalance: Derive<State, number>
+  immatureBalance: Derive<State, number>
+  pendingBalance: Derive<State, number>
   legacyBalance: Derive<State, number>
   marketValue: Derive<State, number>
   breakdown: {
@@ -29,8 +32,32 @@ type Actions = {
 }
 
 export const state: State = {
-  spendable: null,
-  marketPrice: null,
+  spendableBalance: state => state.breakdown.ringctSpendable,
+  unconfirmedBalance: state =>
+    sum(
+      Object.values(
+        pick(
+          state.breakdown,
+          'basecoinUnconfirmed',
+          'ctUnconfirmed',
+          'ringctUnconfirmed',
+          'zerocoinUnconfirmed'
+        )
+      )
+    ),
+  immatureBalance: state =>
+    sum(
+      Object.values(
+        pick(
+          state.breakdown,
+          'basecoinImmature',
+          'ctImmature',
+          'ringctImmature',
+          'zerocoinImmature'
+        )
+      )
+    ),
+  pendingBalance: state => state.unconfirmedBalance + state.immatureBalance,
   legacyBalance: state =>
     sum(
       Object.values(
@@ -42,9 +69,10 @@ export const state: State = {
         )
       )
     ),
+  marketPrice: null,
   marketValue: state =>
-    state.spendable && state.marketPrice
-      ? state.spendable * state.marketPrice
+    state.spendableBalance && state.marketPrice
+      ? state.spendableBalance * state.marketPrice
       : 0,
   breakdown: {
     basecoinSpendable: 0,
@@ -67,7 +95,6 @@ export const actions: Actions = {
   async fetch({ state, effects, actions }) {
     try {
       state.balance.error = null
-      state.balance.spendable = await effects.rpc.getSpendableBalance()
       state.balance.breakdown = await effects.rpc.getBalances()
     } catch (e) {
       state.balance.error = e

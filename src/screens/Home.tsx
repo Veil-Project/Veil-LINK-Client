@@ -87,13 +87,14 @@ const Transactions = () => {
           value={query}
           onChange={handleQueryChange}
         />
-        {state.balance.spendable !== null && state.balance.spendable > 0 && (
-          <div>
-            <Button to="/send" primary>
-              Send
-            </Button>
-          </div>
-        )}
+        {state.balance.spendableBalance !== null &&
+          state.balance.spendableBalance > 0 && (
+            <div>
+              <Button to="/send" primary>
+                Send
+              </Button>
+            </div>
+          )}
       </div>
       <div
         ref={viewPortRef}

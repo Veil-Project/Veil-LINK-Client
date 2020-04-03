@@ -1,5 +1,6 @@
 import React, { useState, memo, MouseEvent, useEffect, useRef } from 'react'
 import cx from 'classnames'
+import { motion } from 'framer-motion'
 import { Transaction } from 'store/models/transaction'
 import StatusIcon from './StatusIcon'
 import Details from './Details'
@@ -63,11 +64,6 @@ const TransactionSummary = memo(
       }
     }, [isVisible, transaction.isLoaded])
 
-    const classes = cx('w-full px-2 mb-2px rounded text-sm hover:bg-gray-700', {
-      'text-gray-400 hover:text-white': !isOpen,
-      'bg-gray-700': isOpen,
-    })
-
     const handleReveal = (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault()
       e.stopPropagation()
@@ -87,8 +83,16 @@ const TransactionSummary = memo(
       }
     }
 
+    const classes = cx(
+      'w-full px-2 mb-2px rounded text-sm hover:bg-gray-700 overflow-hidden',
+      {
+        'text-gray-400 hover:text-white': !isOpen,
+        'bg-gray-700': isOpen,
+      }
+    )
+
     return (
-      <div className={classes} ref={ref}>
+      <motion.div className={classes} ref={ref}>
         {requiresPassword && (
           <PasswordPrompt
             title="Reveal transaction amount"
@@ -117,7 +121,10 @@ const TransactionSummary = memo(
             {transaction.isLoaded ? (
               transactionDescription(transaction)
             ) : (
-              <div className="w-64 h-4 bg-gray-700" />
+              <div
+                className="w-64 h-4"
+                style={{ backgroundColor: 'rgba(255,255,255,.066)' }}
+              />
             )}
           </div>
           <div
@@ -135,7 +142,10 @@ const TransactionSummary = memo(
                 formatAmount(transaction.totalAmount)
               ))
             ) : (
-              <div className="w-16 h-4 bg-gray-700" />
+              <div
+                className="w-16 h-4"
+                style={{ backgroundColor: 'rgba(255,255,255,.066)' }}
+              />
             )}
           </div>
         </div>
@@ -148,7 +158,7 @@ const TransactionSummary = memo(
               <Loading />
             </div>
           ))}
-      </div>
+      </motion.div>
     )
   }
 )

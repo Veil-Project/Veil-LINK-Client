@@ -2,13 +2,21 @@ import React from 'react'
 
 interface BalanceProps {
   veilBalance: number
+  pendingBalance: number
+  legacyBalance: number
   fiatBalance: number | null
   currency: string
 }
 
-const Balance = ({ veilBalance, fiatBalance, currency }: BalanceProps) => (
+const Balance = ({
+  veilBalance,
+  pendingBalance,
+  legacyBalance,
+  fiatBalance,
+  currency,
+}: BalanceProps) => (
   <div>
-    <div className="leading-none text-3xl font-extrabold flex items-center justify-center">
+    <div className="mt-2 leading-none text-3xl font-extrabold flex items-center justify-center">
       {veilBalance.toLocaleString('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,

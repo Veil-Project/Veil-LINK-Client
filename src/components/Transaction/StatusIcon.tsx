@@ -21,7 +21,10 @@ const StatusIcon = memo(({ category }: StatusIconProps) => {
       icon = null
   }
   return (
-    <div className="rounded w-8 h-8 bg-gray-700 my-2 mr-3 flex items-center justify-center">
+    <div
+      className="rounded w-8 h-8 my-2 mr-3 flex items-center justify-center"
+      style={{ backgroundColor: 'rgba(255,255,255,.066)' }}
+    >
       {icon}
     </div>
   )

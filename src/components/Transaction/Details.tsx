@@ -5,8 +5,10 @@ import formatTime from 'utils/formatTime'
 import ExternalLink from 'components/ExternalLink'
 import JsonViewer from 'components/JsonViewer'
 import { useStore } from 'store'
+import { useToasts } from 'react-toast-notifications'
 
 const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
+  const { addToast } = useToasts()
   const { actions } = useStore()
 
   useEffect(() => {
@@ -14,6 +16,11 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
       await actions.transactions.update(transaction.txid)
     })()
   })
+
+  const copyTxid = () => {
+    window.clipboard.writeText(transaction.txid)
+    addToast('Copied to clipboard!', { appearance: 'info' })
+  }
 
   return (
     <div className="px-4 pt-1 pb-6 text-white">
@@ -86,15 +93,23 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
           </dl>
         </div>
       </dl>
-      <div className="mt-4 text-gray-300">
-        ID: {transaction.txid}
-        <br />
-        <ExternalLink
-          href={transaction.explorerUrl}
-          className="underline hover:text-white hover:no-underline"
+      <div className="mt-4 text-gray-300 flex justify-between">
+        <div>
+          ID:{' '}
+          <ExternalLink
+            href={transaction.explorerUrl}
+            title="Open in Block Explorer"
+            className="underline hover:text-white hover:no-underline"
+          >
+            {transaction.txid}
+          </ExternalLink>
+        </div>
+        <button
+          className="bg-gray-600 rounded-sm px-2 py-2px ml-2 text-xs hover:text-white font-semibold"
+          onClick={copyTxid}
         >
-          Open in block explorer
-        </ExternalLink>
+          Copy
+        </button>
       </div>
       <JsonViewer src={transaction} />
     </div>
