@@ -19,7 +19,7 @@ const Wallet = (props: RouteComponentProps) => {
     let timeout: ReturnType<typeof setTimeout>
     const updateAppData = async () => {
       await actions.app.update()
-      timeout = setTimeout(updateAppData, 10 * 1000)
+      timeout = setTimeout(updateAppData, 5 * 1000)
     }
     updateAppData()
     return () => {
