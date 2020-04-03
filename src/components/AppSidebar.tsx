@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useStore } from 'store'
 import { StakingStatus } from 'store/slices/staking'
 import { MdMenu } from 'react-icons/md'
+import { FaLock, FaLockOpen } from 'react-icons/fa'
 import { motion } from 'framer-motion'
 import formatDate from 'utils/formatDate'
 
@@ -107,6 +108,13 @@ const AppSidebar = () => {
               )}
             </div>
             <div className="flex-1 flex justify-end">
+              <div className="mr-2">
+                {state.wallet.locked ? (
+                  <FaLock title="Locked" className="opacity-50" />
+                ) : (
+                  <FaLockOpen title="Unlocked" className="text-teal-500" />
+                )}
+              </div>
               <button
                 className={`p-1 -m-1 rounded pointer outline-none ${
                   isMenuOpen ? 'bg-blue-700' : 'hover:bg-blue-600'
@@ -188,9 +196,10 @@ const AppSidebar = () => {
             </div>
             <div className="">
               {blockchain.tip
-                ? formatDate(new Date(blockchain.tip), 'medium')
+                ? formatDate(new Date(blockchain.tip.date), 'medium')
                 : 'Loading…'}{' '}
-              {blockchain.tip && formatTime(new Date(blockchain.tip), 'medium')}
+              {blockchain.tip &&
+                formatTime(new Date(blockchain.tip.date), 'medium')}
             </div>
           </div>
         </div>
