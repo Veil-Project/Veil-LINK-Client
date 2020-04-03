@@ -67,7 +67,7 @@ export const actions: Actions = {
           errorMessage:
             'Unable to enable staking. Make sure you have enough balance to stake.',
         })
-      }, 10 * 1000)
+      }, 15 * 1000)
       return null
     } catch (e) {
       state.staking.status.requested = state.staking.status.current
@@ -89,7 +89,7 @@ export const actions: Actions = {
           targetState: 'disabled',
           errorMessage: 'Unable to disable staking.',
         })
-      }, 10 * 1000)
+      }, 15 * 1000)
       return null
     } catch (e) {
       state.staking.status.requested = state.staking.status.current
