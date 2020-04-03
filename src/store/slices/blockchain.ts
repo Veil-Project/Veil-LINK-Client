@@ -1,16 +1,21 @@
 import { Derive, AsyncAction, Action } from 'store'
 
+type BlockchainTip = {
+  date: string
+  height: number
+}
+
 type State = {
   chain: string | null
   initialBlockDownload: boolean
   verificationProgress: number
-  tip: string | null
+  tip: BlockchainTip | null
   connected: Derive<State, boolean>
 }
 
 type Actions = {
   load: AsyncAction<void, Error>
-  setTip: Action<string>
+  setTip: Action<BlockchainTip>
 }
 
 export const state: State = {
@@ -39,7 +44,7 @@ export const actions: Actions = {
       return e
     }
   },
-  setTip({ state }, date) {
-    state.blockchain.tip = date
+  setTip({ state }, tip) {
+    state.blockchain.tip = tip
   },
 }

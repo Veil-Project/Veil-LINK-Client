@@ -70,7 +70,12 @@ export default class Daemon extends EventEmitter {
         break
       case /updatetip/i.test(message):
         const dateMatch = message.match(/date='(.*)'/i)
-        if (dateMatch) this.emit('blockchain-tip', dateMatch[1])
+        const heightMatch = message.match(/height='(.*)'/i)
+        if (dateMatch && heightMatch)
+          this.emit('blockchain-tip', {
+            date: dateMatch[1],
+            height: heightMatch[1],
+          })
         break
       case /shutdown/i.test(message):
         // this.status = 'stopping'

@@ -18,8 +18,8 @@ export const onInitialize: AsyncAction = async ({ effects, actions }) => {
     onStderr(_: any, error: string) {
       actions.daemon.logStderr(error)
     },
-    onBlockchainTip(_: any, date: string) {
-      actions.blockchain.setTip(date)
+    onBlockchainTip(_: any, tip: any) {
+      actions.blockchain.setTip(tip)
     },
     onError(_: any, message: string) {
       actions.daemon.handleError(message)
