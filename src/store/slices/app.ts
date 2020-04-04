@@ -84,6 +84,7 @@ export const actions: Actions = {
   async update({ state, actions }) {
     await actions.blockchain.load()
     await actions.wallet.load()
+    await actions.balance.fetch()
   },
 
   async reset({ effects, actions }) {
