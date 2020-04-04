@@ -33,8 +33,6 @@ const StartForm = ({ onSubmit }: Props) => {
         >
           <option value="mainnet">mainnet</option>
           <option value="testnet">testnet</option>
-          <option value="regtest">regtest</option>
-          <option value="devnet">devnet</option>
         </select>
       </label>
       <label
