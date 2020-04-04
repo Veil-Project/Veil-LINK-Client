@@ -34,41 +34,20 @@ type Actions = {
 export const state: State = {
   spendableBalance: state => state.breakdown.ringctSpendable,
   unconfirmedBalance: state =>
-    sum(
-      Object.values(
-        pick(
-          state.breakdown,
-          'basecoinUnconfirmed',
-          'ctUnconfirmed',
-          'ringctUnconfirmed',
-          'zerocoinUnconfirmed'
-        )
-      )
-    ),
+    state.breakdown.basecoinUnconfirmed +
+    state.breakdown.ctUnconfirmed +
+    state.breakdown.ringctUnconfirmed +
+    state.breakdown.zerocoinUnconfirmed,
   immatureBalance: state =>
-    sum(
-      Object.values(
-        pick(
-          state.breakdown,
-          'basecoinImmature',
-          'ctImmature',
-          'ringctImmature',
-          'zerocoinImmature'
-        )
-      )
-    ),
+    state.breakdown.basecoinImmature +
+    state.breakdown.ctImmature +
+    state.breakdown.ringctImmature +
+    state.breakdown.zerocoinImmature,
   pendingBalance: state => state.unconfirmedBalance + state.immatureBalance,
   legacyBalance: state =>
-    sum(
-      Object.values(
-        pick(
-          state.breakdown,
-          'basecoinSpendable',
-          'ctSpendable',
-          'zerocoinSpendable'
-        )
-      )
-    ),
+    state.breakdown.basecoinSpendable +
+    state.breakdown.ctSpendable +
+    state.breakdown.zerocoinSpendable,
   marketPrice: null,
   marketValue: state =>
     state.spendableBalance && state.marketPrice
