@@ -133,7 +133,8 @@
     "react-viewport-list": "^1.3.3",
     "request": "^2.88.2",
     "request-progress": "^3.0.0",
-    "tar": "^6.0.1"
+    "tar": "^6.0.1",
+    "update-electron-app": "^1.5.0"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^1.3.0",

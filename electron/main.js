@@ -45,6 +45,10 @@ var url_1 = __importDefault(require("url"));
 var path_1 = __importDefault(require("path"));
 var Daemon_1 = __importDefault(require("./Daemon"));
 var AppWindow_1 = __importDefault(require("./AppWindow"));
+// Initialize auto-updater
+require('update-electron-app')({
+    repo: 'Veil-Project/Veil-Link-client',
+});
 // Set up main window
 var startUrl = process.env.ELECTRON_START_URL ||
     url_1.default.format({
@@ -111,13 +115,6 @@ electron_1.app.on('activate', function (e) {
     if (!mainWindow.isOpen()) {
         mainWindow.open();
     }
-});
-// Auto-update listeners
-electron_updater_1.autoUpdater.on('update-available', function () {
-    mainWindow.emit('update-available');
-});
-electron_updater_1.autoUpdater.on('update-downloaded', function () {
-    mainWindow.emit('update-downloaded');
 });
 // API for renderer process
 electron_1.ipcMain.handle('show-open-dialog', function (_, options) {
