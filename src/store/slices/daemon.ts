@@ -190,11 +190,11 @@ export const actions: Actions = {
   },
 
   logStdout({ state }, message) {
-    state.daemon.stdout.push(message)
+    // state.daemon.stdout.push(message)
   },
 
   logStderr({ state }, message) {
-    state.daemon.stderr.push(message)
+    // state.daemon.stderr.push(message)
   },
 
   handleError({ state }, error) {
