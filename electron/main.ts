@@ -84,11 +84,6 @@ app.on('activate', e => {
   }
 })
 
-// Set up auto-updater
-app.on('ready', () => {
-  autoUpdater.checkForUpdatesAndNotify()
-})
-
 // API for renderer process
 ipcMain.handle('show-open-dialog', (_, options: any) => {
   if (mainWindow.window === null) return
