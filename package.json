@@ -5,7 +5,7 @@
   "homepage": "./",
   "repository": {
     "type": "git",
-    "url": "git@github.com:Veil-Project/Veil-X.git"
+    "url": "git@github.com:Veil-Project/Veil-Link-Client.git"
   },
   "author": {
     "name": "The Veil Team",
@@ -13,7 +13,7 @@
     "url": "https://veil-project.com"
   },
   "bugs": {
-    "url": "https://github.com/Veil-Project/Veil-X/issues"
+    "url": "https://github.com/Veil-Project/Veil-Link-Client/issues"
   },
   "private": true,
   "main": "electron/main.js",
@@ -48,8 +48,8 @@
     ],
     "publish": {
       "provider": "github",
-      "repo": "veil-x",
-      "owner": "veil-project"
+      "repo": "Veil-Link-Client",
+      "owner": "Veil-Project"
     },
     "mac": {
       "target": [
@@ -133,8 +133,7 @@
     "react-viewport-list": "^1.3.3",
     "request": "^2.88.2",
     "request-progress": "^3.0.0",
-    "tar": "^6.0.1",
-    "update-electron-app": "^1.5.0"
+    "tar": "^6.0.1"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^1.3.0",

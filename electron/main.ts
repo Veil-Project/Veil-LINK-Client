@@ -5,11 +5,6 @@ import path from 'path'
 import Daemon, { DaemonOptions } from './Daemon'
 import AppWindow from './AppWindow'
 
-// Initialize auto-updater
-require('update-electron-app')({
-  repo: 'Veil-Project/Veil-Link-client',
-})
-
 // Set up main window
 const startUrl =
   process.env.ELECTRON_START_URL ||
@@ -87,6 +82,11 @@ app.on('activate', e => {
   if (!mainWindow.isOpen()) {
     mainWindow.open()
   }
+})
+
+// Set up auto-updater
+app.on('ready', () => {
+  autoUpdater.checkForUpdatesAndNotify()
 })
 
 // API for renderer process
