@@ -3,7 +3,6 @@ import { Transaction } from 'store/models/transaction'
 import formatDate from 'utils/formatDate'
 import formatTime from 'utils/formatTime'
 import ExternalLink from 'components/ExternalLink'
-import JsonViewer from 'components/JsonViewer'
 import { useStore } from 'store'
 import { useToasts } from 'react-toast-notifications'
 
@@ -15,7 +14,7 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
     ;(async () => {
       await actions.transactions.update(transaction.txid)
     })()
-  })
+  }, [actions.transactions, transaction.txid])
 
   const copyTxid = () => {
     window.clipboard.writeText(transaction.txid)
@@ -111,7 +110,6 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
           Copy
         </button>
       </div>
-      <JsonViewer src={transaction} />
     </div>
   )
 }
