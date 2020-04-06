@@ -29,6 +29,7 @@ export const state: State = {
   error: null,
 }
 
+let postponedCycles = 0
 export const actions: Actions = {
   async load({ state, effects, actions }) {
     try {
@@ -42,7 +43,20 @@ export const actions: Actions = {
       state.wallet.name = name
       state.wallet.version = version
       state.wallet.unlockedUntil = unlockedUntil
-      actions.staking.update(stakingActive ? 'enabled' : 'disabled')
+
+      // debounce disable events to prevent flicker
+      if (!stakingActive || unlockedUntil === 0) {
+        console.log(postponedCycles)
+        if (unlockedUntil === 0 || postponedCycles >= 2) {
+          actions.staking.update({ status: 'disabled', force: true })
+          postponedCycles = 0
+        } else {
+          postponedCycles += 1
+        }
+      } else {
+        actions.staking.update({ status: 'enabled', force: true })
+        postponedCycles = 0
+      }
 
       return null
     } catch (e) {

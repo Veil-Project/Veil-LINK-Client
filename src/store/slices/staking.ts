@@ -19,7 +19,7 @@ interface ResetOptions {
 
 type Actions = {
   reset: AsyncAction<ResetOptions>
-  update: Action<StakingStatus>
+  update: Action<{ status: StakingStatus; force?: boolean }>
   enable: AsyncAction<string, Error>
   disable: AsyncAction<void, Error>
 }
@@ -48,12 +48,13 @@ export const actions: Actions = {
     }
   },
 
-  update({ state }, newStatus) {
+  update({ state }, { status, force = false }) {
     if (
+      force ||
       !state.staking.status.requested ||
-      state.staking.status.requested === newStatus
+      state.staking.status.requested === status
     ) {
-      state.staking.status.current = newStatus
+      state.staking.status.current = status
       state.staking.status.requested = null
     }
   },
