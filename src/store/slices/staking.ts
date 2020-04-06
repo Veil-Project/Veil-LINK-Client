@@ -1,4 +1,4 @@
-import { AsyncAction, Action } from 'store'
+import { AsyncAction, Action, Derive } from 'store'
 
 export type StakingStatus = 'disabled' | 'enabled'
 
@@ -7,6 +7,8 @@ type State = {
     current: StakingStatus
     requested: StakingStatus | null
   }
+  isEnabled: Derive<State, boolean>
+  isAvailable: Derive<State, boolean>
   error: string | null
 }
 
@@ -27,6 +29,9 @@ export const state: State = {
     current: 'disabled',
     requested: null,
   },
+  isEnabled: state => state.status.current === 'enabled',
+  isAvailable: (state, globalState) =>
+    globalState.balance.breakdown.zerocoinSpendable > 0,
   error: null,
 }
 
