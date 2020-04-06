@@ -84,20 +84,15 @@ const Transactions = () => {
         <div className="relative">
           <select
             onChange={e => setFilterCategory(e.target.value)}
+            value={filterCategory}
             className={`appearance-none h-9 bg-gray-600 rounded font-semibold text-sm py-0 pl-3 pb-1 pr-10 flex items-center outline-none ${
               filterCategory === '' ? 'text-gray-300' : 'text-white'
             }`}
           >
             <option value="">Filter by type…</option>
-            <option value="send" selected={filterCategory === 'send'}>
-              Sent
-            </option>
-            <option value="receive" selected={filterCategory === 'receive'}>
-              Received
-            </option>
-            <option value="stake" selected={filterCategory === 'stake'}>
-              Rewards
-            </option>
+            <option value="send">Sent</option>
+            <option value="receive">Received</option>
+            <option value="stake">Rewards</option>
           </select>
           <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-10 flex items-center justify-center text-teal-500">
             <FaChevronDown size={10} />
