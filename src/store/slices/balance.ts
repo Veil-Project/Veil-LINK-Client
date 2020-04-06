@@ -8,6 +8,7 @@ type State = {
   pendingBalance: Derive<State, number>
   legacyBalance: Derive<State, number>
   marketValue: Derive<State, number>
+  canSend: Derive<State, boolean>
   breakdown: {
     basecoinSpendable: number
     basecoinUnconfirmed: number
@@ -53,6 +54,8 @@ export const state: State = {
     state.spendableBalance && state.marketPrice
       ? state.spendableBalance * state.marketPrice
       : 0,
+  canSend: state =>
+    state.spendableBalance !== null || state.spendableBalance > 0,
   breakdown: {
     basecoinSpendable: 0,
     basecoinUnconfirmed: 0,

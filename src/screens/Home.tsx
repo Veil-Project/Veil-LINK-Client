@@ -101,10 +101,8 @@ const Transactions = () => {
         <Button
           to="/send"
           primary
-          disabled={
-            state.balance.spendableBalance === null ||
-            state.balance.spendableBalance === 0
-          }
+          title={state.balance.canSend ? '' : 'No spendable balance'}
+          disabled={!state.balance.canSend}
         >
           Send
         </Button>

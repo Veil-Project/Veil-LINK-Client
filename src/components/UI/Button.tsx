@@ -24,7 +24,7 @@ const Button = ({
   secondary = false,
   size = 'md',
   ...props
-}: ButtonProps) => {
+}: ButtonProps | any) => {
   const btnClass = classnames(
     className,
     'text-white font-semibold rounded pb-px inline-flex items-center justify-center',
