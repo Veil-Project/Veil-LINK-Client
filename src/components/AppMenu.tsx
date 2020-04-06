@@ -18,55 +18,18 @@ const MenuLink = ({ label, to }: MenuLinkProps) => (
   </Link>
 )
 
-interface AppMenuProps {
-  onEnableStaking(): void
-}
-
-const AppMenu = ({ onEnableStaking }: AppMenuProps) => {
-  const { state, actions, effects } = useStore()
-  const { staking } = state
-
-  const handleDisableStaking = (e: MouseEvent<HTMLDivElement>) => {
-    e.nativeEvent.stopImmediatePropagation()
-    actions.staking.disable()
-  }
-
-  const handleEnableStaking = (e: MouseEvent<HTMLDivElement>) => {
-    e.nativeEvent.stopImmediatePropagation()
-    onEnableStaking()
-  }
-
-  const stakingEnabled =
-    staking.status.current === 'enabled' ||
-    staking.status.requested === 'enabled'
+const AppMenu = () => {
+  const { state, effects } = useStore()
 
   const handleRestartDaemon = async () => {
     await effects.daemon.stop()
   }
-
-  const stakingToggleClass = cx('rounded-full p-2px flex w-8', {
-    'bg-blue-500 justify-end':
-      (staking.status.current === 'enabled' && !staking.status.requested) ||
-      staking.status.requested === 'enabled',
-    'bg-gray-700 justify-start':
-      (staking.status.current === 'disabled' && !staking.status.requested) ||
-      staking.status.requested === 'disabled',
-  })
 
   return (
     <div className="w-48 bg-gray-600 border border-gray-800 text-sm text-gray-300 font-medium rounded shadow-lg">
       <div className="flex flex-col p-2">
         <MenuLink label="Settings" to="/settings" />
         <MenuLink label="Console" to="/console" />
-      </div>
-      <div className="border-t border-gray-500 flex items-center justify-between p-4">
-        <div>Staking</div>
-        <div
-          onClick={stakingEnabled ? handleDisableStaking : handleEnableStaking}
-          className={stakingToggleClass}
-        >
-          <div className="w-4 h-4 bg-white rounded-full pointer-events-none" />
-        </div>
       </div>
 
       {state.app.connectionMethod === 'daemon' && (

@@ -1,40 +1,39 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useStore } from 'store'
 
-interface BalanceProps {
-  veilBalance: number
-  pendingBalance: number
-  legacyBalance: number
-  fiatBalance: number | null
-  currency: string
-}
+const Balance = () => {
+  const { state, actions } = useStore()
+  const { spendableBalance, marketValue } = state.balance
 
-const Balance = ({
-  veilBalance,
-  pendingBalance,
-  legacyBalance,
-  fiatBalance,
-  currency,
-}: BalanceProps) => (
-  <div>
-    <div className="mt-2 leading-none text-3xl font-extrabold flex items-center justify-center">
-      {veilBalance.toLocaleString('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })}
-      <span className="ml-2 font-bold text-sm bg-teal-500 rounded-sm text-blue-600 leading-tight tracking-wide py-1 px-2 flex items-center">
-        VEIL
-      </span>
-    </div>
-    {fiatBalance !== null && fiatBalance > 0 && (
-      <div className="font-bold text-teal-500 mt-2">
-        {fiatBalance.toLocaleString('en-US', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })}{' '}
-        {currency.toUpperCase()}
+  useEffect(() => {
+    actions.balance.fetch()
+    actions.balance.fetchMarketPrice()
+  }, [actions.balance])
+
+  return (
+    <div>
+      <div className="mt-2 leading-none text-3xl font-extrabold flex items-center justify-center">
+        {spendableBalance.toLocaleString('en-US', {
+          minimumFractionDigits: spendableBalance > 1000000 ? 0 : 2,
+          maximumFractionDigits: spendableBalance > 1000000 ? 0 : 2,
+        })}
+        <span
+          className="ml-2 font-bold text-xs bg-teal-500 rounded-sm text-blue-600 leading-tight tracking-wide py-1 flex items-center"
+          style={{ paddingLeft: 5, paddingRight: 5 }}
+        >
+          VEIL
+        </span>
       </div>
-    )}
-  </div>
-)
-
+      {marketValue !== null && marketValue > 0 && (
+        <div className="font-bold text-teal-500 mt-2">
+          {marketValue.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}{' '}
+          USD
+        </div>
+      )}
+    </div>
+  )
+}
 export default Balance

@@ -35,7 +35,7 @@ const Wallet = (props: RouteComponentProps) => {
     <div className="flex-1 w-full flex">
       <div
         className="flex-none bg-gray-700 flex flex-col relative"
-        style={{ width: 340 }}
+        style={{ width: 310 }}
       >
         <AppSidebar />
       </div>

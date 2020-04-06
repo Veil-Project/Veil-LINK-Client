@@ -6,97 +6,54 @@ import Button from 'components/UI/Button'
 import PasswordPrompt from 'components/PasswordPrompt'
 
 interface ReceivingAddressProps {
+  address: string | null
   size?: 'lg'
 }
 
-const ReceivingAddress = ({ size }: ReceivingAddressProps) => {
-  const [requiresPassword, setRequiresPassword] = useState(false)
-  const [isRegenerating, setIsRegenerating] = useState(false)
-  const { state, actions } = useStore()
-  const { addToast } = useToasts()
-  const { currentReceivingAddress } = state.wallet
-
-  useEffect(() => {
-    actions.wallet.fetchReceivingAddress()
-  }, [actions.wallet])
-
-  const handleRegenerateAddress = async (password: string) => {
-    setIsRegenerating(true)
-    const error = await actions.wallet.generateReceivingAddress(password)
-    if (error) {
-      addToast(error.message, { appearance: 'error' })
-    } else {
-      setRequiresPassword(false)
-    }
-    setIsRegenerating(false)
-  }
-
-  const handleCopyAddress = () => {
-    if (!currentReceivingAddress) return
-    window.clipboard.writeText(currentReceivingAddress)
-    addToast('Copied to clipboard!', { appearance: 'info' })
-  }
-
-  return (
-    <>
-      {requiresPassword && (
-        <PasswordPrompt
-          title="Generate receiving address"
-          onCancel={() => setRequiresPassword(false)}
-          onSubmit={(password: string) => handleRegenerateAddress(password)}
-          disabled={isRegenerating}
-        />
-      )}
-      {currentReceivingAddress ? (
-        <div>
-          <div className="flex items-start justify-between">
-            <div
-              className={`${
-                size === 'lg' ? 'w-3/5 text-base' : 'w-1/2 text-xs'
-              } text-gray-300 font-mono break-all`}
-            >
-              {currentReceivingAddress}
-            </div>
-            <div
-              className={`${
-                size === 'lg' ? '' : '-mt-10'
-              } border-4 border-white`}
-            >
-              <QRCode
-                value={currentReceivingAddress}
-                size={size === 'lg' ? 110 : 132}
-              />
-            </div>
-          </div>
-          <div className="mt-4 flex">
-            <div className="mr-1 flex-1 flex">
-              <Button
-                size="sm"
-                className="w-full"
-                onClick={handleCopyAddress}
-                disabled={isRegenerating}
-              >
-                Copy
-              </Button>
-            </div>
-            <div className="ml-1 flex-1 flex">
-              <Button
-                size="sm"
-                className="w-full"
-                onClick={() => setRequiresPassword(true)}
-                disabled={isRegenerating}
-              >
-                Regenerate
-              </Button>
-            </div>
+const ReceivingAddress = ({ address, size }: ReceivingAddressProps) =>
+  address ? (
+    <div>
+      <div className="flex items-start justify-between">
+        <div className="flex-none relative">
+          <div className="border-4 border-white">
+            <QRCode value={address} size={size === 'lg' ? 132 : 98} />
           </div>
         </div>
-      ) : (
-        <Button size="sm" onClick={() => setRequiresPassword(true)}>
-          Generate address
-        </Button>
-      )}
-    </>
+        <div
+          className={`${
+            size === 'lg' ? 'w-3/5 text-base' : 'flex-1 text-xs'
+          } font-mono break-all ml-4 -my-1`}
+          style={{ lineHeight: 1.6 }}
+        >
+          {address}
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div>
+      <div className="flex justify-between">
+        <div
+          className="bg-gray-600"
+          style={{
+            width: size === 'lg' ? '132px' : '106px',
+            height: size === 'lg' ? '132px' : '106px',
+          }}
+        />
+        <div
+          className={`${
+            size === 'lg'
+              ? 'w-3/5 text-base'
+              : 'flex-1 flex flex-col justify-between items-start text-xs'
+          } ml-4`}
+        >
+          <div className="h-3 bg-gray-600 w-full" />
+          <div className="h-3 bg-gray-600 w-full" />
+          <div className="h-3 bg-gray-600 w-full" />
+          <div className="h-3 bg-gray-600 w-full" />
+          <div className="h-3 bg-gray-600 w-full" />
+          <div className="h-3 bg-gray-600 w-4/5" />
+        </div>
+      </div>
+    </div>
   )
-}
 export default ReceivingAddress
