@@ -1,19 +1,50 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { RouteComponentProps } from '@reach/router'
 import { useStore } from 'store'
+import { useToasts } from 'react-toast-notifications'
 import Button from 'components/UI/Button'
+import PasswordPrompt from 'components/PasswordPrompt'
 
 const Advanced = (props: RouteComponentProps) => {
-  const { actions } = useStore()
+  const [requiresPassword, setRequiresPassword] = useState(false)
+  const { actions, effects } = useStore()
+  const { addToast } = useToasts()
+
   const handleReset = () => {
     actions.app.reset()
   }
 
+  const startRescan = async (password: string) => {
+    try {
+      await effects.rpc.unlockWallet(password)
+      await effects.rpc.rescanRingCtWallet()
+      addToast('Rescan started', { appearance: 'success' })
+    } catch (e) {
+      addToast(e.message, { appearance: 'error' })
+    } finally {
+      await effects.rpc.lockWallet()
+      setRequiresPassword(false)
+    }
+  }
+
   return (
     <div>
-      <Button primary onClick={handleReset}>
-        Reset settings
-      </Button>
+      <div className="grid gap-4">
+        <Button primary onClick={() => setRequiresPassword(true)}>
+          Rescan RingCT wallet
+        </Button>
+        <Button primary onClick={handleReset}>
+          Reset settings
+        </Button>
+      </div>
+
+      {requiresPassword && (
+        <PasswordPrompt
+          title={`Rescan RingCT wallet`}
+          onCancel={() => setRequiresPassword(false)}
+          onSubmit={startRescan}
+        />
+      )}
     </div>
   )
 }
