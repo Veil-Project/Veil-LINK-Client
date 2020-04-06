@@ -53,8 +53,6 @@
     },
     "mac": {
       "target": [
-        "dmg",
-        "pkg",
         "zip"
       ],
       "darkModeSupport": true,
