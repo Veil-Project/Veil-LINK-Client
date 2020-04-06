@@ -16,6 +16,7 @@ import ReceivingAddress from 'components/ReceivingAddress'
 import VeilLogo from 'components/Icon/VeilLogo'
 import ExternalLink from 'components/ExternalLink'
 import Loading from './Loading'
+import { FaChevronDown } from 'react-icons/fa'
 
 const ModalTransitionRouter = (props: { children: any }) => (
   <Location>
@@ -53,7 +54,7 @@ const SearchField = ({ placeholder, value, onChange }: SearchFieldProps) => (
 
 const Transactions = () => {
   const [isLoading, setIsLoading] = useState(true)
-  const [query, setQuery] = useState('')
+  const [filterCategory, setFilterCategory] = useState('')
   const { state, actions } = useStore()
   const transactions = state.transactions.forDisplay
 
@@ -66,27 +67,42 @@ const Transactions = () => {
     })()
   }, [])
 
-  const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value)
-  }
-
-  // const filteredTransactions = transactions.filter(t => t.amount.toString().includes(query))
-
   if (isLoading) {
     return <Loading />
   }
+
+  const filteredTransactions =
+    filterCategory !== ''
+      ? transactions.filter(tx => tx.category === filterCategory)
+      : transactions
 
   return transactions.length > 0 ? (
     <>
       <div
         className={`sticky top-0 h-16 p-4 bg-gray-700 shadow-md draggable flex items-center justify-between`}
-        style={{ transition: 'box-shadow .2s ease-out' }}
       >
-        <SearchField
-          placeholder="Find transaction"
-          value={query}
-          onChange={handleQueryChange}
-        />
+        <div className="relative">
+          <select
+            onChange={e => setFilterCategory(e.target.value)}
+            className={`appearance-none h-9 bg-gray-600 rounded font-semibold text-sm py-0 pl-3 pb-1 pr-10 flex items-center outline-none ${
+              filterCategory === '' ? 'text-gray-300' : 'text-white'
+            }`}
+          >
+            <option value="">Filter by type…</option>
+            <option value="send" selected={filterCategory === 'send'}>
+              Sent
+            </option>
+            <option value="receive" selected={filterCategory === 'receive'}>
+              Received
+            </option>
+            <option value="stake" selected={filterCategory === 'stake'}>
+              Rewards
+            </option>
+          </select>
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-10 flex items-center justify-center text-teal-500">
+            <FaChevronDown size={10} />
+          </div>
+        </div>
         {state.balance.spendableBalance !== null &&
           state.balance.spendableBalance > 0 && (
             <div>
@@ -102,14 +118,18 @@ const Transactions = () => {
       >
         <ViewPortList
           viewPortRef={viewPortRef}
-          listLength={transactions.length}
+          listLength={filteredTransactions.length}
           itemMinHeight={50}
           margin={2}
           overscan={5000}
         >
           {({ innerRef, index, style }: any) => (
-            <div ref={innerRef} style={style} key={transactions[index].txid}>
-              <TransactionSummary transaction={transactions[index]} />
+            <div
+              ref={innerRef}
+              style={style}
+              key={filteredTransactions[index].txid}
+            >
+              <TransactionSummary transaction={filteredTransactions[index]} />
             </div>
           )}
         </ViewPortList>

@@ -14,8 +14,8 @@ const StatusIcon = memo(({ category }: StatusIconProps) => {
     case 'send':
       icon = <FiArrowUp className="text-white" size="18" />
       break
-    case 'reward':
-      icon = <FiStar className="text-yellow-500" size="18" />
+    case 'stake':
+      icon = <FiStar className="text-yellow-500" size="14" fill="#ecc94c" />
       break
     default:
       icon = null

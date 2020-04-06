@@ -18,7 +18,7 @@ type WalletTransactionOutput = {
   is_mine: boolean
   has_tx_rec: boolean
   output_record: any
-  amount?: number
+  amount?: string
 }
 
 export type WalletTransactionDetail = {
@@ -87,7 +87,23 @@ export class Transaction {
   }
 
   get category(): string | null {
-    return this.isLoaded ? (this.totalAmount > 0 ? 'receive' : 'send') : null
+    if (!this.isLoaded) return null
+    if (this.isStakingReward) return 'stake'
+
+    return this.totalAmount > 0 ? 'receive' : 'send'
+  }
+
+  get isStakingReward() {
+    const vin = this.myInputs[0]
+    const vout = this.myOutputs[0]
+    return (
+      vin &&
+      vin.type === 'zerocoinspend' &&
+      vout &&
+      vout.type === 'zerocoinmint' &&
+      vout.amount &&
+      vin.denom === parseInt(vout.amount)
+    )
   }
 
   get confirmed() {

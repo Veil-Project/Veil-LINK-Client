@@ -27,6 +27,8 @@ const transactionDescription = (transaction: Transaction): string => {
     case 'send':
       verb = 'sent'
       break
+    case 'stake':
+      return 'staking reward'
     default:
       verb = category
   }
@@ -41,7 +43,7 @@ const transactionColor = (category: string): string => {
       return 'text-teal-500'
     case 'send':
       return 'text-white'
-    case 'reward':
+    case 'stake':
       return 'text-yellow-500'
     default:
       return 'text-white'
