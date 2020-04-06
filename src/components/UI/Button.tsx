@@ -9,6 +9,7 @@ interface ButtonProps {
   className?: string
   disabledClassName?: string
   primary?: boolean
+  secondary?: boolean
   size?: 'sm' | 'md' | 'lg' | 'xl'
   disabled?: boolean
 }
@@ -20,6 +21,7 @@ const Button = ({
   disabledClassName,
   disabled = false,
   primary = false,
+  secondary = false,
   size = 'md',
   ...props
 }: ButtonProps) => {
@@ -32,8 +34,9 @@ const Button = ({
       'h-10 px-5': size === 'lg',
       'h-12 px-6': size === 'xl',
       'bg-blue-500': !disabled && primary,
-      'bg-gray-600': !disabled && !primary,
-      'bg-gray-600 opacity-50 cursor-default text-gray-400': disabled,
+      'bg-gray-500': !disabled && secondary,
+      'bg-gray-600': !disabled && !secondary && !primary,
+      'bg-gray-600 cursor-default text-gray-400': disabled,
     }
   )
 
