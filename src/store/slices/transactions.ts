@@ -26,7 +26,7 @@ export const state: State = {
 export const actions: Actions = {
   async fetch({ state, effects }) {
     try {
-      const transactions = await effects.rpc.listTransactions()
+      const { transactions, lastblock } = await effects.rpc.listSinceBlock()
       forEach(groupBy(transactions, 'txid'), (txs, txid) => {
         const { time, confirmations } = txs[0]
         state.transactions.index[txid] = new Transaction({
@@ -42,6 +42,7 @@ export const actions: Actions = {
       })
       return null
     } catch (e) {
+      console.error(e)
       return e
     }
   },

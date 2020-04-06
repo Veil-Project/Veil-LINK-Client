@@ -1,18 +1,27 @@
 import { sum } from 'lodash'
 
+type WalletTxType =
+  | 'basecoin'
+  | 'ringct'
+  | 'ct'
+  | 'zerocoin'
+  | 'zerocoinspend'
+  | 'zerocoinmint'
+  | 'data'
+
 type WalletTransactionInput = {
   from_me: boolean
   is_change: boolean
   prevout_hash: string
   prevout_n: number
-  type: string
+  type: WalletTxType
   has_tx_rec: boolean
   output_record: any
   denom?: number
 }
 
 type WalletTransactionOutput = {
-  type: string
+  type: WalletTxType
   ct_fee: string
   data: string
   is_mine: boolean
@@ -49,6 +58,16 @@ export type WalletTransaction = {
 export interface Transaction {
   txid: string
   walletTx: WalletTransaction
+  type: WalletTxType
+  category: 'send' | 'receive' | 'stake' | null
+  isStakingReward: boolean
+  address: string | null
+  time: number
+  sentAmount: number
+  receivedAmount: number
+  changeAmount: number
+  fee: number
+  totalAmount: number
   inputs: {
     txid: string
     index: number
@@ -59,6 +78,17 @@ export class Transaction {
   constructor(walletTx: WalletTransaction) {
     this.txid = walletTx.txid
     this.walletTx = walletTx
+
+    this.type = this.resolveType()
+    this.isStakingReward = this.resolveIsStakingReward()
+    this.address = this.resolveAddress()
+    this.time = this.resolveTime()
+    this.changeAmount = this.resolveChangeAmount()
+    this.receivedAmount = this.resolveReceivedAmount()
+    this.sentAmount = this.resolveSentAmount()
+    this.fee = this.resolveFee()
+    this.totalAmount = this.resolveTotalAmount()
+    this.category = this.resolveCategory()
 
     // Resolve actual inputs
     // this.inputs = walletTx.details
@@ -80,28 +110,28 @@ export class Transaction {
     )
   }
 
-  get type() {
+  resolveType() {
     return this.category === 'receive'
       ? this.myOutputs[0]?.type
       : this.allInputs[0]?.type
   }
 
-  get category(): string | null {
+  resolveCategory() {
     if (!this.isLoaded) return null
     if (this.isStakingReward) return 'stake'
 
     return this.totalAmount > 0 ? 'receive' : 'send'
   }
 
-  get isStakingReward() {
+  resolveIsStakingReward() {
     const vin = this.myInputs[0]
     const vout = this.myOutputs[0]
     return (
-      vin &&
+      !!vin &&
       vin.type === 'zerocoinspend' &&
-      vout &&
+      !!vout &&
       vout.type === 'zerocoinmint' &&
-      vout.amount &&
+      !!vout.amount &&
       vin.denom === parseInt(vout.amount)
     )
   }
@@ -114,7 +144,7 @@ export class Transaction {
     return
   }
 
-  get address() {
+  resolveAddress() {
     return (
       this.myDetails[0]?.address ||
       (this.myOutputs[0]?.output_record?.stealth_address
@@ -123,7 +153,7 @@ export class Transaction {
     )
   }
 
-  get time() {
+  resolveTime() {
     return this.walletTx.time * 1000
   }
 
@@ -141,7 +171,7 @@ export class Transaction {
 
   get myDetails() {
     return this.walletTx.details.filter(
-      detail => this.walletTx.debug.vout[detail.vout].is_mine
+      detail => this.walletTx.debug.vout[detail.vout]?.is_mine
     )
   }
 
@@ -156,7 +186,7 @@ export class Transaction {
     )
   }
 
-  get sentAmount() {
+  resolveSentAmount() {
     const sendDetails = this.walletTx.details.filter(
       detail => detail.category === 'send'
     )
@@ -172,18 +202,9 @@ export class Transaction {
             Number(vin.amount || vin.denom || vin.output_record?.amount || 0)
           )
         ) + this.changeAmount
-
-    const sends = this.walletTx.details
-      .filter(detail => detail.category === 'send')
-      .map(detail => Number(detail.amount))
-    const zerocoinSpends =
-      this.type === 'zerocoinmint'
-        ? sum(this.walletTx.debug.vin.map(vin => vin.denom || 0))
-        : 0
-    return sum(sends) + zerocoinSpends
   }
 
-  get changeAmount() {
+  resolveChangeAmount() {
     return sum(
       this.myOutputs
         .filter(vout => vout.output_record?.is_change)
@@ -193,7 +214,7 @@ export class Transaction {
     )
   }
 
-  get receivedAmount() {
+  resolveReceivedAmount() {
     return sum(
       this.myOutputs
         .filter(vout => !vout.output_record?.is_change)
@@ -203,7 +224,7 @@ export class Transaction {
     )
   }
 
-  get fee() {
+  resolveFee() {
     if (this.changeAmount > 0) {
       const feeRecord = this.walletTx.debug.vout.filter(
         vout => vout.type === 'data'
@@ -214,7 +235,7 @@ export class Transaction {
     }
   }
 
-  get totalAmount() {
+  resolveTotalAmount() {
     return this.sentAmount !== 0
       ? this.sentAmount + this.receivedAmount - this.fee
       : this.receivedAmount
