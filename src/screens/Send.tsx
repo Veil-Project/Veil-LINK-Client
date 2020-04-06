@@ -44,23 +44,32 @@ const Send = (props: RouteComponentProps) => {
   }
 
   const onSubmit = async (data: any) => {
-    setRequiresPassword(true)
+    sendTransaction()
   }
 
-  const sendTransaction = async (password: string) => {
-    if (!password) return
-
+  const sendTransaction = async (password?: string) => {
     const { address, amount } = getValues()
 
+    const stakingWasActive = state.staking.isEnabled
+
     try {
-      await effects.rpc.unlockWallet(password)
+      if (password) await effects.rpc.unlockWallet(password)
       await effects.rpc.sendRingCtToRingCt(address, amount)
       addToast('Transaction sent!', { appearance: 'success' })
       navigate('/')
     } catch (e) {
-      addToast(e.message, { appearance: 'error' })
+      if (e.code === -13) {
+        setRequiresPassword(true)
+      } else {
+        addToast(e.message, { appearance: 'error' })
+      }
     } finally {
-      effects.rpc.lockWallet()
+      if (password) {
+        effects.rpc.lockWallet()
+        if (stakingWasActive) {
+          effects.rpc.unlockWalletForStaking(password)
+        }
+      }
     }
   }
 
