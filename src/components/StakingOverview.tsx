@@ -12,7 +12,10 @@ const StakingOverview = ({ data, isDimmed }: Props) => {
   return (
     <div className="flex items-end justify-between relative">
       {data.map((amount: number, i: number) => (
-        <div className="relative z-10 text-center text-xs font-semibold">
+        <div
+          key={i}
+          className="relative z-10 text-center text-xs font-semibold"
+        >
           <div
             className={`w-8 rounded-sm transition-all ${
               isDimmed ? 'bg-gray-600' : 'bg-teal-500'
