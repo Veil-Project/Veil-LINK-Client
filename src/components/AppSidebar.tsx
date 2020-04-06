@@ -296,7 +296,7 @@ const StakingButton = ({
           onClick={onEnable}
           disabled={requestedStatus === 'enabled'}
         >
-          Enable staking
+          {requestedStatus === 'enabled' ? 'Please wait…' : 'Enable staking'}
         </Button>
       ) : (
         <div className="h-9 text-center text-sm font-semibold flex items-center justify-center rounded bg-gray-600 text-gray-300 pb-px">
