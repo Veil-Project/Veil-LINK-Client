@@ -1,6 +1,6 @@
 {
   "name": "veil-x",
-  "version": "1.0.0-beta.4",
+  "version": "1.0.0-beta.5",
   "license": "MIT",
   "homepage": "./",
   "repository": {
@@ -21,7 +21,7 @@
     "dev": "nf start",
     "build": "yarn app:build && yarn electron:compile",
     "package": "rimraf release && yarn build && electron-builder build -c.extraMetadata.main=electron/main.js --publish never",
-    "package-all": "rimraf release && yarn build && electron-builder build -mwl",
+    "package-all": "rimraf release && yarn build && electron-builder build -mwl -c.extraMetadata.main=electron/main.js --publish never",
     "app:dev": "BROWSER=false react-scripts start",
     "app:build": "react-scripts build",
     "electron:compile": "tsc --project electron/tsconfig.json",

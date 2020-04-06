@@ -112,10 +112,6 @@ electron_1.app.on('activate', function (e) {
         mainWindow.open();
     }
 });
-// Set up auto-updater
-electron_1.app.on('ready', function () {
-    electron_updater_1.autoUpdater.checkForUpdatesAndNotify();
-});
 // API for renderer process
 electron_1.ipcMain.handle('show-open-dialog', function (_, options) {
     if (mainWindow.window === null)
