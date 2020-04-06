@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect, useState, useRef } from 'react'
 import { Router, Location, RouteComponentProps } from '@reach/router'
 import { TransitionGroup, CSSTransition } from 'react-transition-group'
-import { FiSearch } from 'react-icons/fi'
+import { FiSearch, FiCheck } from 'react-icons/fi'
 // @ts-ignore
 import ViewPortList from 'react-viewport-list'
 import './Home.css'
@@ -16,7 +16,7 @@ import ReceivingAddress from 'components/ReceivingAddress'
 import VeilLogo from 'components/Icon/VeilLogo'
 import ExternalLink from 'components/ExternalLink'
 import Loading from './Loading'
-import { FaChevronDown } from 'react-icons/fa'
+import { FaChevronDown, FaCheck } from 'react-icons/fa'
 
 const ModalTransitionRouter = (props: { children: any }) => (
   <Location>
@@ -103,14 +103,16 @@ const Transactions = () => {
             <FaChevronDown size={10} />
           </div>
         </div>
-        {state.balance.spendableBalance !== null &&
-          state.balance.spendableBalance > 0 && (
-            <div>
-              <Button to="/send" primary>
-                Send
-              </Button>
-            </div>
-          )}
+        <Button
+          to="/send"
+          primary
+          disabled={
+            state.balance.spendableBalance === null ||
+            state.balance.spendableBalance === 0
+          }
+        >
+          Send
+        </Button>
       </div>
       <div
         ref={viewPortRef}
@@ -138,14 +140,37 @@ const Transactions = () => {
   ) : (
     <div className="max-w-lg m-auto text-center">
       <VeilLogo className="mx-auto mb-8" />
-      <h1 className="text-2xl font-bold">
-        Time to transfer some Veil to your wallet.
+      <h1 className="text-3xl font-bold leading-tight">
+        You're ready to get started.
       </h1>
-      <p className="text-gray-300 text-lg">
+      <p className="text-gray-300 text-xl">
         You can now send Veil to your receiving address.
       </p>
-      <div className="max-w-sm mx-auto rounded bg-gray-700 text-left flex items-center justify-center p-6 my-8">
-        <ReceivingAddress size="lg" />
+      <div className="max-w-xs mx-auto rounded bg-gray-700 text-left font-medium flex flex-col p-4 my-8">
+        <div className="flex items-center mb-2">
+          {state.wallet.currentReceivingAddress ? (
+            <div className="w-8 h-8 text-sm leading-none rounded-full bg-green-500 text-white flex items-center justify-center mr-2 font-semibold">
+              <FaCheck />
+            </div>
+          ) : (
+            <div className="w-8 h-8 text-sm leading-none rounded-full bg-gray-500 flex items-center justify-center mr-2 font-semibold">
+              1
+            </div>
+          )}
+          Generate a receiving address
+        </div>
+        <div className="flex items-center mb-2">
+          <div className="w-8 h-8 text-sm leading-none rounded-full bg-gray-500 flex items-center justify-center mr-2 font-semibold">
+            2
+          </div>
+          Transfer Veil to your wallet
+        </div>
+        <div className="flex items-center">
+          <div className="w-8 h-8 text-sm leading-none rounded-full bg-gray-500 flex items-center justify-center mr-2 font-semibold">
+            3
+          </div>
+          Enjoy using Veil!
+        </div>
       </div>
       <ul className="text-center text-sm leading-none text-gray-400">
         <li>

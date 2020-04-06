@@ -1,5 +1,10 @@
 import RpcClient from 'lib/veild-rpc.js'
 
+export type RpcError = {
+  message: string
+  code: number
+}
+
 interface RpcClientOptions {
   user: string
   pass: string

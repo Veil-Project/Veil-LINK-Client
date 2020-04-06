@@ -1,4 +1,5 @@
 import { Derive, AsyncAction } from 'store'
+import { RpcError } from 'store/effects/rpc'
 
 type State = {
   name: string | null
@@ -14,7 +15,7 @@ type State = {
 type Actions = {
   load: AsyncAction<void, Error>
   fetchReceivingAddress: AsyncAction
-  generateReceivingAddress: AsyncAction<string, Error>
+  generateReceivingAddress: AsyncAction
 }
 
 export const state: State = {
@@ -66,17 +67,13 @@ export const actions: Actions = {
     }
   },
 
-  async generateReceivingAddress({ state, effects }, password) {
+  async generateReceivingAddress({ state, effects }) {
     try {
-      await effects.rpc.unlockWallet(password)
       const address = await effects.rpc.getNewAddress()
       window.localStorage.setItem('currentStealthAddress', address)
       state.wallet.currentReceivingAddress = address
-      return null
     } catch (e) {
-      return e
-    } finally {
-      effects.rpc.lockWallet()
+      throw e
     }
   },
 }

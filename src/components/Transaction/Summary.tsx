@@ -55,7 +55,7 @@ const TransactionSummary = memo(
     const { addToast } = useToasts()
     const [requiresPassword, setRequiresPassword] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
-    const { actions, effects } = useStore()
+    const { state, actions, effects } = useStore()
     const { time, type, category } = transaction
     const ref = useRef(null)
     const isVisible = useIsVisible(ref)
@@ -70,18 +70,34 @@ const TransactionSummary = memo(
       e.preventDefault()
       e.stopPropagation()
       e.nativeEvent.stopPropagation()
-      setRequiresPassword(true)
+      handleUpdateTransaction()
     }
 
-    const handleUpdateTransaction = async (password: string) => {
+    const handleUpdateTransaction = async (password?: string) => {
+      if (state.wallet.locked && !password) {
+        setRequiresPassword(true)
+        return
+      }
+
+      const stakingWasActive = state.staking.isEnabled
+
       try {
-        await effects.rpc.unlockWallet(password)
+        if (password) await effects.rpc.unlockWallet(password)
         await actions.transactions.update(transaction.txid)
-      } catch (e) {
-        addToast(e.message, { appearance: 'error' })
-      } finally {
-        await effects.rpc.lockWallet()
         setRequiresPassword(false)
+      } catch (e) {
+        if (e.code === -13) {
+          setRequiresPassword(true)
+        } else {
+          addToast(e.message, { appearance: 'error' })
+        }
+      } finally {
+        if (password) {
+          await effects.rpc.lockWallet()
+          if (stakingWasActive) {
+            await effects.rpc.unlockWalletForStaking(password)
+          }
+        }
       }
     }
 
