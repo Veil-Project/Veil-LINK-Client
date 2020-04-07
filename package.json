@@ -56,7 +56,7 @@
         "zip"
       ],
       "darkModeSupport": true,
-      "icon": "public/logo512.png",
+      "icon": "public/icon.png",
       "type": "distribution"
     },
     "dmg": {
@@ -76,22 +76,17 @@
     "pkg": {},
     "win": {
       "target": [
-        "nsis",
-        "portable",
-        "zip"
+        "nsis"
       ],
-      "icon": "public/icon/icon.ico"
+      "icon": "public/icon.ico"
     },
     "nsis": {
-      "installerIcon": "public/icon/icon.ico",
+      "installerIcon": "public/icon.ico",
       "warningsAsErrors": false
     },
     "linux": {
       "target": [
-        "AppImage",
-        "deb",
-        "rpm",
-        "snap"
+        "AppImage"
       ],
       "icon": "public/icon"
     },
@@ -146,14 +141,14 @@
     "@types/react-transition-group": "^4.2.3",
     "@types/webpack-env": "^1.14.1",
     "autoprefixer": "^9.7.3",
-    "electron": "^7.1.1",
-    "electron-builder": "^22.1.0",
+    "electron": "^7.2.1",
+    "electron-builder": "^22.5.0",
     "foreman": "^3.0.1",
     "husky": "^3.1.0",
     "lint-staged": "^9.5.0",
     "postcss-cli": "^6.1.3",
     "prettier": "^1.19.1",
-    "react-scripts": "3.3.0",
+    "react-scripts": "3.4.1",
     "rimraf": "^3.0.0",
     "tailwindcss": "^1.2.0",
     "tailwindcss-animations": "^2.0.0",
