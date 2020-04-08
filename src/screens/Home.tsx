@@ -114,9 +114,9 @@ const Transactions = () => {
         <ViewPortList
           viewPortRef={viewPortRef}
           listLength={filteredTransactions.length}
-          itemMinHeight={50}
+          itemMinHeight={48}
           margin={2}
-          overscan={5000}
+          overscan={10000}
         >
           {({ innerRef, index, style }: any) => (
             <div
