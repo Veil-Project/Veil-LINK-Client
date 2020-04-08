@@ -46,7 +46,6 @@ export const actions: Actions = {
 
       // debounce disable events to prevent flicker
       if (!stakingActive || unlockedUntil === 0) {
-        console.log(postponedCycles)
         if (unlockedUntil === 0 || postponedCycles >= 2) {
           actions.staking.update({ status: 'disabled', force: true })
           postponedCycles = 0
