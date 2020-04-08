@@ -1,7 +1,8 @@
 import React, { ChangeEvent, useEffect, useState, useRef } from 'react'
-import { Router, Location, RouteComponentProps } from '@reach/router'
+import { Router, Location, RouteComponentProps, navigate } from '@reach/router'
 import { TransitionGroup, CSSTransition } from 'react-transition-group'
-import { FiSearch, FiCheck } from 'react-icons/fi'
+import { FiSearch } from 'react-icons/fi'
+import useHotkeys from '@reecelucas/react-use-hotkeys'
 // @ts-ignore
 import ViewPortList from 'react-viewport-list'
 import './Home.css'
@@ -10,9 +11,7 @@ import { useStore } from 'store'
 
 import Send from './Send'
 import Button from '../components/UI/Button'
-import { Transaction } from 'store/models/transaction'
 import TransactionSummary from '../components/Transaction/Summary'
-import ReceivingAddress from 'components/ReceivingAddress'
 import VeilLogo from 'components/Icon/VeilLogo'
 import ExternalLink from 'components/ExternalLink'
 import Loading from './Loading'
@@ -185,6 +184,14 @@ const Transactions = () => {
 }
 
 const Home = () => {
+  useHotkeys('Meta+,', () => {
+    navigate('/settings')
+  })
+
+  useHotkeys('c', () => {
+    navigate('/console')
+  })
+
   return (
     <div className="h-screen flex flex-col relative">
       <Transactions />

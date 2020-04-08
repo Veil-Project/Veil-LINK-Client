@@ -1,7 +1,6 @@
 import React, {
   ChangeEvent,
   MouseEvent,
-  KeyboardEvent,
   useRef,
   useEffect,
   useState,
@@ -12,7 +11,6 @@ import useHotkeys from '@reecelucas/react-use-hotkeys'
 import Modal from 'components/UI/Modal'
 import JsonViewer from 'components/JsonViewer'
 import { useStore } from 'store'
-import PasswordPrompt from 'components/PasswordPrompt'
 import RPC_ERRORS from 'constants/rpcErrors'
 
 interface Command {
