@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
+window.platform = process.platform;
 window.ipcRenderer = electron_1.ipcRenderer;
 window.remote = electron_1.remote;
 window.clipboard = electron_1.clipboard;

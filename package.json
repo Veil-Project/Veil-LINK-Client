@@ -112,6 +112,7 @@
     "extract-zip": "^2.0.0",
     "framer-motion": "^1.10.2",
     "lodash": "^4.17.15",
+    "moment": "^2.24.0",
     "overmind": "^22.0.4",
     "overmind-react": "^23.0.4",
     "qrcode.react": "^1.0.0",

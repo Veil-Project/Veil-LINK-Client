@@ -1,6 +1,7 @@
 declare interface Window {
-  getConfig: any
+  platform: string
   ipcRenderer: any
   remote: any
   clipboard: any
+  getConfig: any
 }

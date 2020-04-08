@@ -1,24 +1,30 @@
-import React, { MouseEvent } from 'react'
+import React from 'react'
 import { useStore } from 'store'
 import { Link } from '@reach/router'
-import cx from 'classnames'
+import { motion } from 'framer-motion'
 import { version } from '../../package.json'
 
 interface MenuLinkProps {
+  onClick(): void
   label: string
   to: string
 }
 
-const MenuLink = ({ label, to }: MenuLinkProps) => (
+const MenuLink = ({ onClick, label, to }: MenuLinkProps) => (
   <Link
     to={to}
     className="px-2 h-8 rounded flex items-center justify-start hover:text-white hover:bg-gray-500"
+    onClick={onClick}
   >
     {label}
   </Link>
 )
 
-const AppMenu = () => {
+interface MenuProps {
+  onClickOption(): void
+}
+
+const AppMenu = ({ onClickOption }: MenuProps) => {
   const { state, effects } = useStore()
 
   const handleRestartDaemon = async () => {
@@ -26,10 +32,19 @@ const AppMenu = () => {
   }
 
   return (
-    <div className="w-48 bg-gray-600 border border-gray-800 text-sm text-gray-300 font-medium rounded shadow-lg">
+    <motion.div
+      style={{
+        transformOrigin:
+          window.platform === 'darwin' ? 'top right' : 'top left',
+      }}
+      initial={{ scale: 0.5, opacity: 1 }}
+      animate={{ scale: 1, opacity: 1 }}
+      onClick={e => e.nativeEvent.stopImmediatePropagation()}
+      className="w-48 bg-gray-600 border border-gray-800 text-sm text-gray-300 font-medium rounded shadow-lg"
+    >
       <div className="flex flex-col p-2">
-        <MenuLink label="Settings" to="/settings" />
-        <MenuLink label="Console" to="/console" />
+        <MenuLink onClick={onClickOption} label="Settings" to="/settings" />
+        <MenuLink onClick={onClickOption} label="Console" to="/console" />
       </div>
 
       {state.app.connectionMethod === 'daemon' && (
@@ -47,7 +62,7 @@ const AppMenu = () => {
         <br />
         veild: {state.daemon.version}
       </div>
-    </div>
+    </motion.div>
   )
 }
 
