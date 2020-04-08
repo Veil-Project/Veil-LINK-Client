@@ -73,7 +73,7 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
             Status:
           </dt>
           <dl className="flex-1 pl-3">
-            {transaction.confirmed ? 'Confirmed' : 'Unconfirmed'}
+            {transaction.isConfirmed ? 'Confirmed' : 'Unconfirmed'}
           </dl>
         </div>
         <div className="border-t border-gray-600 py-2 pb-3 flex">
