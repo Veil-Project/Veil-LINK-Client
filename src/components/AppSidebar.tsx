@@ -98,7 +98,7 @@ const AppSidebar = () => {
       </div>
 
       <div className="flex-1 overflow-y-auto flex flex-col">
-        <UnspendableBalanceBlock />
+        {state.balance.unspendableBalance > 0 && <UnspendableBalanceBlock />}
         <StakingBlock />
         <ReceivingAddressBlock />
       </div>

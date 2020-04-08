@@ -5,7 +5,7 @@ type State = {
   spendableBalance: Derive<State, number>
   unconfirmedBalance: Derive<State, number>
   immatureBalance: Derive<State, number>
-  pendingBalance: Derive<State, number>
+  unspendableBalance: Derive<State, number>
   legacyBalance: Derive<State, number>
   marketValue: Derive<State, number>
   canSend: Derive<State, boolean>
@@ -34,6 +34,8 @@ type Actions = {
 
 export const state: State = {
   spendableBalance: state => state.breakdown.ringctSpendable,
+  unspendableBalance: state =>
+    state.unconfirmedBalance + state.immatureBalance + state.legacyBalance,
   unconfirmedBalance: state =>
     state.breakdown.basecoinUnconfirmed +
     state.breakdown.ctUnconfirmed +
@@ -44,7 +46,6 @@ export const state: State = {
     state.breakdown.ctImmature +
     state.breakdown.ringctImmature +
     state.breakdown.zerocoinImmature,
-  pendingBalance: state => state.unconfirmedBalance + state.immatureBalance,
   legacyBalance: state =>
     state.breakdown.basecoinSpendable +
     state.breakdown.ctSpendable +
