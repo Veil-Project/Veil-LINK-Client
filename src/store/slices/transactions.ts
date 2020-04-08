@@ -49,6 +49,6 @@ export const actions: Actions = {
 
   async update({ state, effects }, txid) {
     const tx = await effects.rpc.getTransaction(txid)
-    state.transactions.index[txid] = new Transaction(tx)
+    state.transactions.index[txid].updateFromWalletTx(tx)
   },
 }
