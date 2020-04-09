@@ -109,6 +109,11 @@ const Console = (props: RouteComponentProps) => {
     const command = commandHistory[currentIndex].input
     if (!command || command === '') return
 
+    if (command === 'exit') {
+      navigate('/')
+      return
+    }
+
     setIsLoading(true)
 
     const newHistory = [...commandHistory]
