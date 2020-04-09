@@ -262,7 +262,7 @@ RpcClient.callspec = {
   rescanringctwallet: '',
   restoreaddresses: 'int',
   prioritiseTransaction: 'str float int',
-  spendzerocoin: 'int bool bool int str',
+  spendzerocoin: 'int bool bool int str int',
   spendzerocoinmints: 'str',
   showspendcaching: 'bool',
   searchdeterministiczerocoin: 'int int int',
