@@ -1,6 +1,6 @@
 {
   "name": "veil-x",
-  "version": "1.0.0-beta.7",
+  "version": "1.0.0-beta.8",
   "license": "MIT",
   "homepage": "./",
   "repository": {
@@ -108,6 +108,8 @@
     "@types/tar": "^4.0.3",
     "bip39": "^3.0.2",
     "classnames": "^2.2.6",
+    "dexie": "^2.0.4",
+    "dexie-observable": "^1.0.0-beta.6",
     "electron-updater": "^4.2.0",
     "extract-zip": "^2.0.0",
     "framer-motion": "^1.10.2",

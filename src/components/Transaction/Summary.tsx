@@ -1,7 +1,6 @@
 import React, { useState, memo, MouseEvent, useEffect, useRef } from 'react'
 import cx from 'classnames'
 import { motion } from 'framer-motion'
-import { Transaction } from 'store/models/transaction'
 import StatusIcon from './StatusIcon'
 import Details from './Details'
 import formatDate from 'utils/formatDate'
@@ -16,7 +15,7 @@ import { useIsVisible } from 'react-is-visible'
 import Loading from 'screens/Loading'
 
 // TODO: Move to transaction utils
-const transactionDescription = (transaction: Transaction): string => {
+const transactionDescription = (transaction: any): string => {
   const { type, category, address } = transaction
 
   let verb
@@ -50,135 +49,164 @@ const transactionColor = (category: string): string => {
   }
 }
 
-const TransactionSummary = memo(
-  ({ transaction }: { transaction: Transaction }) => {
-    const { addToast } = useToasts()
-    const [requiresPassword, setRequiresPassword] = useState(false)
-    const [isOpen, setIsOpen] = useState(false)
-    const { state, actions, effects } = useStore()
-    const { time, type, category } = transaction
-    const ref = useRef(null)
-    const isVisible = useIsVisible(ref)
+const TransactionSummary = ({ txid }: { txid: string }) => {
+  const [transaction, setTransaction] = useState<any>(null)
+  const [requiresPassword, setRequiresPassword] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const { addToast } = useToasts()
+  const { state, actions, effects } = useStore()
+  const ref = useRef(null)
+  const isVisible = useIsVisible(ref)
+  const isLoaded = !!transaction
 
-    useEffect(() => {
-      if (isVisible && !transaction.isLoaded) {
-        actions.transactions.update(transaction.txid)
-      }
-    }, [isVisible, transaction.isLoaded])
-
-    const handleReveal = (e: MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault()
-      e.stopPropagation()
-      e.nativeEvent.stopPropagation()
-      handleUpdateTransaction()
-    }
-
-    const handleUpdateTransaction = async (password?: string) => {
-      if (state.wallet.locked && !password) {
-        setRequiresPassword(true)
-        return
-      }
-
-      const stakingWasActive = state.staking.isEnabled
-
-      try {
-        if (password) await effects.rpc.unlockWallet(password)
-        await actions.transactions.update(transaction.txid)
-        setRequiresPassword(false)
-      } catch (e) {
-        if (e.code === -13) {
-          setRequiresPassword(true)
-        } else {
-          addToast(e.message, { appearance: 'error' })
-        }
-      } finally {
-        if (password) {
-          await effects.rpc.lockWallet()
-          if (stakingWasActive) {
-            await effects.rpc.unlockWalletForStaking(password)
-          }
-        }
-      }
-    }
-
-    const classes = cx(
-      'w-full px-2 mb-2px rounded text-sm hover:bg-gray-700 overflow-hidden',
-      {
-        'text-gray-400 hover:text-white': !isOpen,
-        'bg-gray-700': isOpen,
-      }
-    )
-
-    return (
-      <motion.div className={classes} ref={ref}>
-        {requiresPassword && (
-          <PasswordPrompt
-            title="Reveal transaction amount"
-            onCancel={() => setRequiresPassword(false)}
-            onSubmit={(password: string) => handleUpdateTransaction(password)}
-          />
-        )}
-
-        <div
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center cursor-pointer"
-        >
-          <div className="flex-none">
-            <StatusIcon category={category} />
-          </div>
-          <div className="flex-none w-24 text-white font-bold whitespace-no-wrap">
-            {formatDate(new Date(time), 'medium')}
-          </div>
-          <div className="flex-none w-20 whitespace-no-wrap numeric-tabular-nums">
-            {formatTime(new Date(time), 'short')}
-          </div>
-          <div
-            className="max-w-md flex-shrink truncate"
-            style={{ minWidth: 0, maxWidth: '220px' }}
-          >
-            {transaction.isLoaded ? (
-              transactionDescription(transaction)
-            ) : (
-              <div
-                className="w-64 h-4"
-                style={{ backgroundColor: 'rgba(255,255,255,.066)' }}
-              />
-            )}
-          </div>
-          <div
-            className={`ml-auto pl-3 text-right font-bold ${
-              category ? transactionColor(category) : ''
-            } whitespace-no-wrap numeric-tabular-nums`}
-          >
-            {transaction.isLoaded ? (
-              !isOpen &&
-              (transaction.requiresReveal ? (
-                <Button size="sm" onClick={handleReveal}>
-                  Reveal
-                </Button>
-              ) : (
-                formatAmount(transaction.totalAmount)
-              ))
-            ) : (
-              <div
-                className="w-16 h-4"
-                style={{ backgroundColor: 'rgba(255,255,255,.066)' }}
-              />
-            )}
-          </div>
-        </div>
-
-        {isOpen &&
-          (transaction.isLoaded ? (
-            <Details transaction={transaction} />
-          ) : (
-            <div className="p-24">
-              <Loading />
-            </div>
-          ))}
-      </motion.div>
-    )
+  const updateFromCache = async () => {
+    const tx = await effects.db.fetchTransaction(txid)
+    setTransaction(tx)
   }
-)
 
-export default TransactionSummary
+  const updateFromWallet = async () => {
+    await actions.transactions.update(txid)
+    await updateFromCache()
+  }
+
+  useEffect(() => {
+    if (isVisible && !isLoaded) {
+      updateFromCache()
+    }
+  }, [isVisible, isLoaded])
+
+  useEffect(() => {
+    if (isOpen) {
+      updateFromWallet()
+    }
+  }, [isOpen])
+
+  const handleReveal = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.nativeEvent.stopPropagation()
+    handleUpdateTransaction()
+  }
+
+  const handleUpdateTransaction = async (password?: string) => {
+    if (state.wallet.locked && !password) {
+      setRequiresPassword(true)
+      return
+    }
+
+    const stakingWasActive = state.staking.isEnabled
+
+    try {
+      if (password) await effects.rpc.unlockWallet(password)
+      await actions.transactions.update(transaction.txid)
+      setRequiresPassword(false)
+    } catch (e) {
+      if (e.code === -13) {
+        setRequiresPassword(true)
+      } else {
+        addToast(e.message, { appearance: 'error' })
+      }
+    } finally {
+      if (password) {
+        await effects.rpc.lockWallet()
+        if (stakingWasActive) {
+          await effects.rpc.unlockWalletForStaking(password)
+        }
+      }
+    }
+  }
+
+  const classes = cx(
+    'w-full px-2 mb-2px rounded text-sm hover:bg-gray-700 overflow-hidden',
+    {
+      'text-gray-400 hover:text-white': !isOpen,
+      'bg-gray-700': isOpen,
+    }
+  )
+
+  return (
+    <motion.div className={classes} ref={ref}>
+      {requiresPassword && (
+        <PasswordPrompt
+          title="Reveal transaction amount"
+          onCancel={() => setRequiresPassword(false)}
+          onSubmit={(password: string) => handleUpdateTransaction(password)}
+        />
+      )}
+
+      <div
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center cursor-pointer"
+      >
+        <div className="flex-none">
+          <StatusIcon category={transaction?.category} />
+        </div>
+        <div className="flex-none w-24 text-white font-bold whitespace-no-wrap">
+          {transaction ? (
+            formatDate(new Date(transaction.time), 'medium')
+          ) : (
+            <div
+              className="w-16 h-4"
+              style={{ backgroundColor: 'rgba(255,255,255,.066)' }}
+            />
+          )}
+        </div>
+        <div className="flex-none w-20 whitespace-no-wrap numeric-tabular-nums">
+          {transaction ? (
+            formatTime(new Date(transaction.time), 'short')
+          ) : (
+            <div
+              className="w-16 h-4"
+              style={{ backgroundColor: 'rgba(255,255,255,.066)' }}
+            />
+          )}
+        </div>
+        <div
+          className="max-w-md flex-shrink truncate"
+          style={{ minWidth: 0, maxWidth: '220px' }}
+        >
+          {transaction ? (
+            transactionDescription(transaction)
+          ) : (
+            <div
+              className="w-64 h-4"
+              style={{ backgroundColor: 'rgba(255,255,255,.066)' }}
+            />
+          )}
+        </div>
+        <div
+          className={`ml-auto pl-3 text-right font-bold ${
+            transaction ? transactionColor(transaction.category) : ''
+          } whitespace-no-wrap numeric-tabular-nums`}
+        >
+          {transaction ? (
+            !isOpen &&
+            (transaction.requiresReveal ? (
+              <Button size="sm" onClick={handleReveal}>
+                Reveal
+              </Button>
+            ) : (
+              formatAmount(transaction.totalAmount)
+            ))
+          ) : (
+            <div
+              className="w-16 h-4"
+              style={{ backgroundColor: 'rgba(255,255,255,.066)' }}
+            />
+          )}
+        </div>
+      </div>
+
+      {isOpen &&
+        (transaction ? (
+          <Details transaction={transaction} />
+        ) : (
+          <div className="p-24">
+            <Loading />
+          </div>
+        ))}
+    </motion.div>
+  )
+}
+
+export default memo(TransactionSummary)

@@ -10,8 +10,12 @@ const Advanced = (props: RouteComponentProps) => {
   const { actions, effects } = useStore()
   const { addToast } = useToasts()
 
-  const handleReset = () => {
+  const resetSettings = () => {
     actions.app.reset()
+  }
+
+  const resetCache = () => {
+    actions.transactions.reset()
   }
 
   const startRescan = async (password: string) => {
@@ -33,7 +37,10 @@ const Advanced = (props: RouteComponentProps) => {
         <Button primary onClick={() => setRequiresPassword(true)}>
           Rescan RingCT wallet
         </Button>
-        <Button primary onClick={handleReset}>
+        <Button primary onClick={resetCache}>
+          Reset transaction cache
+        </Button>
+        <Button primary onClick={resetSettings}>
           Reset settings
         </Button>
       </div>

@@ -4501,6 +4501,16 @@ detective@^5.2.0:
     defined "^1.0.0"
     minimist "^1.1.1"
 
+dexie-observable@^1.0.0-beta.6:
+  version "1.0.0-beta.6"
+  resolved "https://registry.yarnpkg.com/dexie-observable/-/dexie-observable-1.0.0-beta.6.tgz#79fd90641c40e8afb5dd902a0c5ad54703b130e0"
+  integrity sha512-SpWcaAvuZCx02/QlSDBK1Y4NqLvjnqYaDqi0AVVRI2WwZJSxQv5bp/US4YngV5wbEQ98YlFz1BdR641NDaQYwg==
+
+dexie@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/dexie/-/dexie-2.0.4.tgz#6027a5e05879424e8f9979d8c14e7420f27e3a11"
+  integrity sha512-aQ/s1U2wHxwBKRrt2Z/mwFNHMQWhESerFsMYzE+5P5OsIe5o1kgpFMWkzKTtkvkyyEni6mWr/T4HUJuY9xIHLA==
+
 diff-sequences@^24.9.0:
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/diff-sequences/-/diff-sequences-24.9.0.tgz#5715d6244e2aa65f48bba0bc972db0b0b11e95b5"

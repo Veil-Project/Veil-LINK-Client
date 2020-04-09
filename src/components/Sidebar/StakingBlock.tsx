@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useStore } from 'store'
 import { StakingStatus } from 'store/slices/staking'
-import { groupBy, map, sum, fromPairs } from 'lodash'
-import moment from 'moment'
-import formatDate from 'utils/formatDate'
+import { map, sum } from 'lodash'
 
 import Button from 'components/UI/Button'
 import PasswordPrompt from 'components/PasswordPrompt'
@@ -45,16 +43,29 @@ const StakingButton = ({
 }
 
 const StakingBlock = () => {
+  const [data, setData] = useState<number[]>([])
   const [requiresPassword, setRequiresPassword] = useState(false)
   const { addToast } = useToasts()
-  const { state, actions } = useStore()
+  const { state, actions, effects } = useStore()
   const { staking } = state
 
   useEffect(() => {
     if (staking.error) {
       addToast(staking.error, { appearance: 'error' })
     }
-  }, [staking.error])
+  }, [staking.error, addToast])
+
+  useEffect(() => {
+    ;(async () => {
+      const txByDay = await Promise.all(
+        [7, 6, 5, 4, 3, 2, 1].map(daysAgo =>
+          effects.db.fetchStakesForDay(daysAgo)
+        )
+      )
+      const data = txByDay.map((day: any) => sum(map(day, 'totalAmount')))
+      setData(data)
+    })()
+  }, [effects.db, state.transactions.txids.length])
 
   const handleEnableStaking = async (password: string) => {
     const error = await actions.staking.enable(password)
@@ -64,26 +75,6 @@ const StakingBlock = () => {
       setRequiresPassword(false)
     }
   }
-
-  const data = [7, 6, 5, 4, 3, 2, 1].map(daysAgo =>
-    sum(
-      map(
-        state.transactions.all.filter(
-          tx =>
-            tx.category === 'stake' &&
-            moment()
-              .subtract(daysAgo, 'days')
-              .startOf('day')
-              .isSameOrBefore(tx.time) &&
-            moment()
-              .subtract(daysAgo, 'days')
-              .endOf('day')
-              .isSameOrAfter(tx.time)
-        ),
-        'totalAmount'
-      )
-    )
-  )
 
   return (
     <>

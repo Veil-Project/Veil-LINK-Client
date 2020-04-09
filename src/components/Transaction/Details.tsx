@@ -1,20 +1,11 @@
-import React, { useEffect } from 'react'
-import { Transaction } from 'store/models/transaction'
+import React from 'react'
 import formatDate from 'utils/formatDate'
 import formatTime from 'utils/formatTime'
 import ExternalLink from 'components/ExternalLink'
-import { useStore } from 'store'
 import { useToasts } from 'react-toast-notifications'
 
-const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
+const TransactionDetails = ({ transaction }: { transaction: any }) => {
   const { addToast } = useToasts()
-  const { actions } = useStore()
-
-  useEffect(() => {
-    ;(async () => {
-      await actions.transactions.update(transaction.txid)
-    })()
-  }, [actions.transactions, transaction.txid])
 
   const copyTxid = () => {
     window.clipboard.writeText(transaction.txid)
@@ -96,7 +87,7 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
         <div>
           ID:{' '}
           <ExternalLink
-            href={transaction.explorerUrl}
+            href={`https://explorer.veil-project.com/tx/${transaction.txid}`}
             title="Open in Block Explorer"
             className="underline hover:text-white hover:no-underline"
           >

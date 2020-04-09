@@ -10,13 +10,12 @@ export const onInitialize: AsyncAction = async ({ effects, actions }) => {
     },
     onTransaction(_: any, txid: string, _event: string) {
       actions.transactions.update(txid)
-      actions.balance.fetch()
     },
     onStdout(_: any, message: string) {
-      actions.daemon.logStdout(message)
+      // actions.daemon.logStdout(message)
     },
     onStderr(_: any, error: string) {
-      actions.daemon.logStderr(error)
+      // actions.daemon.logStderr(error)
     },
     onBlockchainTip(_: any, tip: any) {
       actions.blockchain.setTip(tip)
@@ -32,6 +31,22 @@ export const onInitialize: AsyncAction = async ({ effects, actions }) => {
   effects.electron.initialize({
     onQuit(_: any) {
       actions.app.handleShutdown()
+    },
+  })
+
+  effects.db.initialize({
+    onChanges(changes) {
+      const creates = changes.filter((change: any) => change.type === 1)
+      const updates = changes.filter((change: any) => change.type === 1)
+      const deletes = changes.filter((change: any) => change.type === 1)
+
+      if (creates.length > 0 || deletes.length > 0) {
+        actions.transactions.updateFromCache()
+      }
+
+      if (updates.length > 0) {
+        actions.balance.fetch()
+      }
     },
   })
 }

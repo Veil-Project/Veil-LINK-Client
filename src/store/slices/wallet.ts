@@ -1,14 +1,15 @@
 import { Derive, AsyncAction } from 'store'
-import { RpcError } from 'store/effects/rpc'
 
 type State = {
   name: string | null
   version: number | null
   unlockedUntil: number | null
   currentReceivingAddress: string | null
+  txCount: number | null
   loaded: Derive<State, boolean>
   locked: Derive<State, boolean>
   encrypted: Derive<State, boolean>
+  hasTransactions: Derive<State, boolean>
   error: any
 }
 
@@ -23,9 +24,11 @@ export const state: State = {
   version: null,
   unlockedUntil: null,
   currentReceivingAddress: null,
+  txCount: null,
   loaded: state => state.name !== null,
   locked: state => state.unlockedUntil === 0,
   encrypted: state => state.unlockedUntil !== undefined,
+  hasTransactions: state => state.txCount !== null && state.txCount > 0,
   error: null,
 }
 
@@ -38,11 +41,13 @@ export const actions: Actions = {
         walletversion: version,
         staking_active: stakingActive,
         unlocked_until: unlockedUntil,
+        txcount: txCount,
       } = await effects.rpc.getWalletInfo()
 
       state.wallet.name = name
       state.wallet.version = version
       state.wallet.unlockedUntil = unlockedUntil
+      state.wallet.txCount = txCount
 
       // debounce disable events to prevent flicker
       if (!stakingActive || unlockedUntil === 0) {
