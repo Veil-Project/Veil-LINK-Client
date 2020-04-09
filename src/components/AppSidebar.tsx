@@ -38,7 +38,7 @@ const MenuButton = () => {
       </button>
       {isMenuOpen && (
         <div
-          className={`absolute z-10 top-0 ${
+          className={`absolute z-10 top-100 mt-1 ${
             window.platform === 'darwin' ? 'right-0' : 'left-0'
           }`}
         >
