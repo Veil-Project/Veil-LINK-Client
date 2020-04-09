@@ -88,7 +88,7 @@ export const actions: Actions = {
   },
 
   async reset({ effects, actions }) {
-    actions.daemon.configure({ network: null, datadir: null })
+    actions.daemon.reset()
     await effects.electron.relaunch()
   },
 

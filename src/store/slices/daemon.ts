@@ -86,6 +86,7 @@ type Actions = {
   configure: AsyncAction<DaemonOptions>
   start: AsyncAction<string | void>
   restart: AsyncAction
+  reset: Action
   logStdout: Action<string>
   logStderr: Action<string>
   handleError: Action<string | null>
@@ -179,6 +180,10 @@ export const actions: Actions = {
     } catch (e) {
       state.daemon.error = e
     }
+  },
+
+  reset({ actions }) {
+    actions.daemon.configure({ network: null, datadir: null })
   },
 
   handleWarmup({ state }, { message, progress }) {
