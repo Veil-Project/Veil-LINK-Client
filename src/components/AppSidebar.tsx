@@ -50,11 +50,19 @@ const MenuButton = () => {
 }
 
 const AppSidebar = () => {
-  const { state, effects } = useStore()
+  const { state, effects, actions } = useStore()
   const { blockchain } = state
 
   const lockWallet = () => {
     effects.rpc.lockWallet()
+  }
+
+  const openWallet = async () => {
+    const wallet = await effects.electron.openFolder()
+    if (wallet) {
+      await actions.daemon.configure({ wallet: wallet[0] })
+      await effects.electron.relaunch()
+    }
   }
 
   return (
@@ -65,7 +73,11 @@ const AppSidebar = () => {
             {window.platform !== 'darwin' && <MenuButton />}
           </div>
           <div className="text-sm font-medium">
-            Veil Wallet{' '}
+            <button onClick={openWallet}>
+              {state.wallet.name
+                ? `${state.wallet.name} Wallet`
+                : 'Veil Wallet'}
+            </button>{' '}
             {blockchain.chain !== 'main' && (
               <span className="ml-1 text-xs font-bold uppercase inline-block leading-none p-1 bg-orange-500 rounded-sm">
                 {blockchain.chain}

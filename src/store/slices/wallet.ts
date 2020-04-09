@@ -44,7 +44,7 @@ export const actions: Actions = {
         txcount: txCount,
       } = await effects.rpc.getWalletInfo()
 
-      state.wallet.name = name
+      state.wallet.name = name.split('/')[name.split('/').length - 1]
       state.wallet.version = version
       state.wallet.unlockedUntil = unlockedUntil
       state.wallet.txCount = txCount

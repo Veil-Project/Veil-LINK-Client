@@ -25,6 +25,7 @@ export interface DaemonOptions {
   datadir?: string
   network?: 'main' | 'test' | 'regtest' | 'dev'
   seed?: string
+  wallet?: string
 }
 
 export interface DaemonCredentials {
@@ -203,7 +204,7 @@ export default class Daemon extends EventEmitter {
     })
   }
 
-  start({ network, datadir, seed }: DaemonOptions) {
+  start({ network, datadir, seed, wallet }: DaemonOptions) {
     if (!this.path || !this.installed) {
       return Promise.reject()
     }
@@ -226,6 +227,7 @@ export default class Daemon extends EventEmitter {
             network === 'test' ? '--testnet' : '',
             datadir ? `--datadir=${datadir}` : '',
             seed ? `--importseed=${seed}` : '',
+            wallet ? `--wallet=${wallet}` : '',
           ].filter(opt => opt !== '')
         )
 

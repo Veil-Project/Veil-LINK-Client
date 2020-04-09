@@ -9,6 +9,7 @@ export interface DaemonOptions {
   network?: 'main' | 'test' | 'regtest' | 'dev' | null
   datadir?: string | null
   seed?: string
+  wallet?: string
 }
 
 export interface WarmupStatus {
