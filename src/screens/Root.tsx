@@ -17,7 +17,7 @@ const Root = () => {
       await actions.daemon.load()
       await actions.app.transition()
     })()
-  }, [])
+  }, [actions.daemon, actions.app])
 
   switch (state.app.status) {
     case 'initial':

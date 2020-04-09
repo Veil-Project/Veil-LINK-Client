@@ -5,17 +5,20 @@ const Portal = ({ id, children }: any) => {
     document.getElementById(id) || document.createElement('div')
   )
   const [dynamic] = useState(!el.current.parentElement)
+
   useEffect(() => {
+    const currentEl = el.current
     if (dynamic) {
-      el.current.id = id
-      document.body.appendChild(el.current)
+      currentEl.id = id
+      document.body.appendChild(currentEl)
     }
     return () => {
-      if (dynamic && el.current.parentElement) {
-        el.current.parentElement.removeChild(el.current)
+      if (dynamic && currentEl.parentElement) {
+        currentEl.parentElement.removeChild(currentEl)
       }
     }
-  }, [id])
+  }, [id, dynamic])
+
   return createPortal(children, el.current)
 }
 export default memo(Portal)

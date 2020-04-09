@@ -1,9 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { useToasts } from 'react-toast-notifications'
-import { useStore } from 'store'
+import React from 'react'
 import QRCode from 'qrcode.react'
-import Button from 'components/UI/Button'
-import PasswordPrompt from 'components/PasswordPrompt'
 
 interface ReceivingAddressProps {
   address: string | null

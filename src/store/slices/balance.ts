@@ -1,5 +1,4 @@
 import { Derive, AsyncAction } from 'store'
-import { sum, pick } from 'lodash'
 
 type State = {
   spendableBalance: Derive<State, number>
@@ -56,7 +55,7 @@ export const state: State = {
       ? state.spendableBalance * state.marketPrice
       : 0,
   canSend: state =>
-    state.spendableBalance !== null || state.spendableBalance > 0,
+    state.spendableBalance !== null && state.spendableBalance > 0,
   breakdown: {
     basecoinSpendable: 0,
     basecoinUnconfirmed: 0,

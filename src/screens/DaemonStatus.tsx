@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import Button from 'components/UI/Button'
 import { useStore } from 'store'
-import Spinner from 'components/UI/Spinner'
 import { FiAlertCircle } from 'react-icons/fi'
 import DaemonWarmup from 'components/DaemonWarmup'
 import ConnectToRpc from 'components/ConnectToRpc'

@@ -13,7 +13,7 @@ const Startup = () => {
       await actions.daemon.start()
       setIsStarted(true)
     })()
-  }, [])
+  }, [actions.daemon])
 
   const doTransition = async () => {
     await actions.app.transition()

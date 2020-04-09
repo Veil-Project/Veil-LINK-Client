@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from 'components/UI/Button'
 import { useStore } from 'store'
-import formatPath from 'utils/formatPath'
 
 interface Props {
   onSubmit(options: any): void

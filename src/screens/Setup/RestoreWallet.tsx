@@ -15,7 +15,7 @@ const RestoreWallet = ({ switchMode }: Props) => {
   const [focusedSeedIndex, setFocusedSeedIndex] = useState(0)
   const [autocompleteMatches, setAutocompleteMatches] = useState([] as string[])
   const [isRestoring, setIsRestoring] = useState(false)
-  const { effects, actions } = useStore()
+  const { actions } = useStore()
 
   const handleChange = (index: number, value: string) => {
     setSeed([...seed.slice(0, index), value, ...seed.slice(index + 1)])

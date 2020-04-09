@@ -1,4 +1,4 @@
-import React, { useState, useEffect, MouseEvent } from 'react'
+import React, { useState } from 'react'
 import { useStore } from 'store'
 import { motion } from 'framer-motion'
 
@@ -7,7 +7,7 @@ import DaemonWarmup from 'components/DaemonWarmup'
 
 const Start = ({ setMode }: { setMode: Function }) => {
   const [isStarting, setIsStarting] = useState(false)
-  const { state, actions } = useStore()
+  const { actions } = useStore()
 
   const startDaemon = async (options: {
     network: 'main' | 'test' | 'regtest' | 'dev'

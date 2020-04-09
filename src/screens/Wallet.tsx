@@ -25,7 +25,7 @@ const Wallet = (props: RouteComponentProps) => {
     return () => {
       clearTimeout(timeout)
     }
-  }, [])
+  }, [actions.app])
 
   if (!state.wallet.encrypted) {
     return <EncryptWallet />

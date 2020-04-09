@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, KeyboardEvent } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Portal from './Portal'
 import Button from './UI/Button'
 import useHotkeys from '@reecelucas/react-use-hotkeys'
