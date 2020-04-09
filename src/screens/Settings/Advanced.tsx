@@ -12,6 +12,7 @@ const Advanced = (props: RouteComponentProps) => {
 
   const resetSettings = () => {
     actions.app.reset()
+    effects.electron.relaunch()
   }
 
   const resetCache = () => {

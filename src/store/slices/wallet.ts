@@ -1,4 +1,4 @@
-import { Derive, AsyncAction } from 'store'
+import { Derive, AsyncAction, Action } from 'store'
 
 type State = {
   name: string | null
@@ -16,6 +16,7 @@ type State = {
 type Actions = {
   load: AsyncAction<void, Error>
   fetchReceivingAddress: AsyncAction
+  resetReceivingAddress: Action
   generateReceivingAddress: AsyncAction
 }
 
@@ -68,21 +69,27 @@ export const actions: Actions = {
     }
   },
 
-  async fetchReceivingAddress({ state, effects }) {
+  async fetchReceivingAddress({ state, effects, actions }) {
     const address = window.localStorage.getItem('currentStealthAddress')
     if (!address) return
 
     try {
+      // Make sure the address belongs to the currently active wallet
       const { ismine } = await effects.rpc.getAddressInfo(address)
       if (!ismine) {
-        window.localStorage.removeItem('currentStealthAddress')
+        actions.wallet.resetReceivingAddress()
         return
+      } else {
+        state.wallet.currentReceivingAddress = address
       }
-
-      state.wallet.currentReceivingAddress = address
     } catch (e) {
-      window.localStorage.removeItem('currentStealthAddress')
+      actions.wallet.resetReceivingAddress()
     }
+  },
+
+  resetReceivingAddress({ state }) {
+    window.localStorage.removeItem('currentStealthAddress')
+    state.wallet.currentReceivingAddress = null
   },
 
   async generateReceivingAddress({ state, effects }) {

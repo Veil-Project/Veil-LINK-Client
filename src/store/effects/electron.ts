@@ -18,9 +18,10 @@ export default {
     })
   },
 
-  async openFolder() {
+  async openFolder(options: any = {}, properties: string[] = []) {
     return await window.ipcRenderer.invoke('show-open-dialog', {
-      properties: ['openDirectory'],
+      ...options,
+      properties: [...properties, 'openDirectory'],
     })
   },
 }

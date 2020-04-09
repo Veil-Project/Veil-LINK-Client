@@ -142,6 +142,10 @@ export default {
     return await callAsync('rescanringctwallet')
   },
 
+  async backupWallet(destination: string) {
+    return await callAsync('backupwallet', destination)
+  },
+
   async sendCommand(command: string) {
     const [cmd, ...args] = command
       .match(/"[^"]+"|'[^']+'|\S+/g)

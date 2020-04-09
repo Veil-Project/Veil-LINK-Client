@@ -183,7 +183,7 @@ export const actions: Actions = {
     }
   },
 
-  reset({ actions }) {
+  reset({ actions, state }) {
     actions.daemon.configure({ network: null, datadir: null })
   },
 

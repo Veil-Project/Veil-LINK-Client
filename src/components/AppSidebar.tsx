@@ -1,5 +1,7 @@
 import React, { useState, useEffect, MouseEvent } from 'react'
 import { useStore } from 'store'
+import { useToasts } from 'react-toast-notifications'
+import useHotkeys from '@reecelucas/react-use-hotkeys'
 import { MdMenu } from 'react-icons/md'
 import { FaLock, FaLockOpen } from 'react-icons/fa'
 import formatDate from 'utils/formatDate'
@@ -11,6 +13,11 @@ import formatTime from 'utils/formatTime'
 import UnspendableBalanceBlock from './Sidebar/UnspendableBalanceBlock'
 import StakingBlock from './Sidebar/StakingBlock'
 import ReceivingAddressBlock from './Sidebar/ReceivingAddressBlock'
+import DaemonWarmup from './DaemonWarmup'
+import Portal from './Portal'
+import Overlay from './Overlay'
+import { FiChevronDown } from 'react-icons/fi'
+import WalletMenu from './WalletMenu'
 
 const MenuButton = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -49,20 +56,107 @@ const MenuButton = () => {
   )
 }
 
-const AppSidebar = () => {
+const WalletMenuButton = () => {
+  const [isRestarting, setIsRestarting] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { state, effects, actions } = useStore()
+  const { addToast } = useToasts()
+
+  useEffect(() => {
+    const closeDialog = () => setIsMenuOpen(false)
+    document.addEventListener('click', closeDialog)
+    return () => document.removeEventListener('click', closeDialog)
+  }, [])
+
+  const toggleMenu = (e: MouseEvent<HTMLButtonElement>) => {
+    e.nativeEvent.stopImmediatePropagation()
+    setIsMenuOpen(!isMenuOpen)
+  }
+
+  const openWallet = async () => {
+    if (state.app.connectionMethod === 'rpc') return
+
+    setIsMenuOpen(false)
+    const wallet = await effects.electron.openFolder({
+      title: 'Open wallet',
+      message:
+        "Choose directory with a Veil wallet. If wallet doesn't exist a new one will be created.",
+    })
+    if (wallet) {
+      setIsRestarting(true)
+      await actions.daemon.configure({ wallet: wallet[0] })
+      await actions.app.reload()
+      setIsRestarting(false)
+    }
+  }
+
+  const backupWallet = async () => {
+    if (state.app.connectionMethod === 'rpc') return
+
+    setIsMenuOpen(false)
+    const destination = await effects.electron.openFolder(
+      {
+        title: 'Choose backup destination',
+        message: 'Choose backup destination',
+        buttonLabel: 'Backup here',
+      },
+      ['createDirectory']
+    )
+    if (destination) {
+      await effects.rpc.backupWallet(destination[0])
+      addToast('Wallet backed up successfully!', { appearance: 'success' })
+    }
+  }
+
+  useHotkeys('Meta+o', openWallet)
+  useHotkeys('Meta+o', backupWallet)
+
+  if (state.app.connectionMethod === 'rpc') {
+    return (
+      <span className="font-medium">
+        Wallet: {state.wallet.name ? `${state.wallet.name}` : 'Default'}
+      </span>
+    )
+  }
+
+  return (
+    <>
+      {isRestarting && (
+        <Portal>
+          <Overlay>
+            <div className="text-white p-6 rounded-lg bg-gray-700">
+              <DaemonWarmup />
+            </div>
+          </Overlay>
+        </Portal>
+      )}
+      <button
+        onClick={toggleMenu}
+        className={`flex items-center font-medium outline-none py-1 px-2 rounded ${
+          isMenuOpen ? 'bg-blue-700' : 'hover:bg-blue-600'
+        } active:bg-blue-700`}
+      >
+        Wallet: {state.wallet.name ? `${state.wallet.name}` : 'Default'}
+        <FiChevronDown className="text-teal-500 mt-px ml-2px" />
+      </button>
+      {isMenuOpen && (
+        <div
+          className="absolute z-10 top-100 mt-1"
+          style={{ left: '50%', transform: 'translateX(-50%)' }}
+        >
+          <WalletMenu onOpenWallet={openWallet} onBackupWallet={backupWallet} />
+        </div>
+      )}
+    </>
+  )
+}
+
+const AppSidebar = () => {
+  const { state, effects } = useStore()
   const { blockchain } = state
 
   const lockWallet = () => {
     effects.rpc.lockWallet()
-  }
-
-  const openWallet = async () => {
-    const wallet = await effects.electron.openFolder()
-    if (wallet) {
-      await actions.daemon.configure({ wallet: wallet[0] })
-      await effects.electron.relaunch()
-    }
   }
 
   return (
@@ -72,19 +166,15 @@ const AppSidebar = () => {
           <div className="flex-1 flex">
             {window.platform !== 'darwin' && <MenuButton />}
           </div>
-          <div className="text-sm font-medium">
-            <button onClick={openWallet}>
-              {state.wallet.name
-                ? `${state.wallet.name} Wallet`
-                : 'Veil Wallet'}
-            </button>{' '}
+          <div className="text-sm relative">
+            <WalletMenuButton />
+          </div>
+          <div className="flex-1 flex items-center justify-end">
             {blockchain.chain !== 'main' && (
-              <span className="ml-1 text-xs font-bold uppercase inline-block leading-none p-1 bg-orange-500 rounded-sm">
+              <span className="mr-1 text-xs font-semibold inline-block leading-none p-1 bg-orange-500 rounded-sm">
                 {blockchain.chain}
               </span>
             )}
-          </div>
-          <div className="flex-1 flex items-center justify-end">
             <div className="p-1 mb-2px">
               {state.wallet.locked ? (
                 <FaLock size={14} title="Locked" className="opacity-50" />

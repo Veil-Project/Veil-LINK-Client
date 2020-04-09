@@ -33,6 +33,7 @@ type Actions = {
   connectViaRpc: AsyncAction
   update: AsyncAction
   reset: AsyncAction
+  reload: AsyncAction
   handleShutdown: Action
   handleDaemonExit: Action
   handleRpcError: Action<RpcError>
@@ -81,15 +82,23 @@ export const actions: Actions = {
     await actions.app.transition()
   },
 
-  async update({ state, actions }) {
+  async update({ actions }) {
     await actions.blockchain.load()
     await actions.wallet.load()
     await actions.balance.fetch()
   },
 
-  async reset({ effects, actions }) {
+  async reset({ actions, effects }) {
     actions.daemon.reset()
-    await effects.electron.relaunch()
+    await effects.daemon.stop()
+    await actions.app.transition()
+  },
+
+  async reload({ actions }) {
+    await actions.daemon.restart()
+    await actions.app.update()
+    await actions.wallet.fetchReceivingAddress()
+    await actions.transactions.updateFromWallet()
   },
 
   handleShutdown({ state }) {
