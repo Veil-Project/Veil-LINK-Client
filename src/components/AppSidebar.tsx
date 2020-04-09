@@ -207,14 +207,17 @@ const AppSidebar = () => {
 
       {(blockchain.initialBlockDownload ||
         blockchain.verificationProgress < 0.98) && (
-        <div className="pt-4 pb-2px px-4 bg-gray-600">
-          <StatusBar progress={blockchain.verificationProgress * 100} />
-          <div className="h-8 flex justify-between items-center text-xs leading-none text-gray-300">
-            <div>
+        <div className="h-12 px-4 bg-gray-600 flex justify-center items-center text-sm leading-none relative">
+          <div
+            className={`absolute left-0 top-0 bottom-0 bg-gray-500 z-0`}
+            style={{ width: `${blockchain.verificationProgress * 100}%` }}
+          />
+          <div className="relative z-10 leading-snug">
+            <div className="font-medium">
               Syncing {(blockchain.verificationProgress * 100).toFixed(2)}%
             </div>
             {blockchain.tip && (
-              <div className="">
+              <div className="text-xs text-gray-300">
                 {formatDate(new Date(blockchain.tip.date), 'short')}{' '}
                 {formatTime(new Date(blockchain.tip.date), 'short')} / Height:{' '}
                 {blockchain.tip.height}
