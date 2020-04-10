@@ -108,7 +108,7 @@ const WalletMenuButton = () => {
   }
 
   useHotkeys('Meta+o', openWallet)
-  useHotkeys('Meta+o', backupWallet)
+  useHotkeys('Meta+b', backupWallet)
 
   if (state.app.connectionMethod === 'rpc') {
     return (
