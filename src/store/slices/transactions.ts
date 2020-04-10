@@ -1,6 +1,6 @@
 import { AsyncAction, Action } from 'store'
-import { uniq, map } from 'lodash'
 import transformWalletTx from 'utils/transformWalletTx'
+import transactionWorker from 'workers/transactions'
 
 export type WalletTxType =
   | 'basecoin'
@@ -71,7 +71,6 @@ type Actions = {
   setQuery: Action<string>
   updateFromCache: AsyncAction
   updateFromWallet: AsyncAction<boolean | void, Error>
-  transform: AsyncAction<string[], any[]>
   update: AsyncAction<string>
   reset: AsyncAction
 }
@@ -123,23 +122,19 @@ export const actions: Actions = {
   },
 
   async updateFromWallet({ actions, effects, state }, ignoreLastBlock = false) {
-    state.transactions.isUpdating = true
     try {
+      state.transactions.isUpdating = true
       await actions.transactions.verifyLocalDatabaseBelongsToWallet()
-      const blockhash = ignoreLastBlock
+
+      const { credentials } = await effects.daemon.getInfo()
+      const lastBlock = ignoreLastBlock
         ? ''
         : localStorage.getItem('lastblock') || ''
-      const { transactions, lastblock } = await effects.rpc.listSinceBlock(
-        blockhash
-      )
-      if (transactions.length > 0) {
-        const fullTransactions = await actions.transactions.transform(
-          uniq(map(transactions, 'txid'))
-        )
-        await effects.db.addTransactions(fullTransactions)
-      }
-      await actions.transactions.updateFromCache()
-      localStorage.setItem('lastblock', lastblock)
+      const newLastBlock = await transactionWorker.importWalletTransactions({
+        credentials,
+        lastBlock,
+      })
+      localStorage.setItem('lastblock', newLastBlock)
       return null
     } catch (e) {
       console.error(e)
@@ -149,16 +144,9 @@ export const actions: Actions = {
     }
   },
 
-  async transform({ effects }, txids) {
-    const fullTransactions = await Promise.all(
-      txids.map(txid => effects.rpc.getTransaction(txid))
-    )
-    return fullTransactions.map(tx => transformWalletTx(tx))
-  },
-
   async update({ effects }, txid) {
     const tx = await effects.rpc.getTransaction(txid)
-    await effects.db.addTransactions([transformWalletTx(tx)])
+    await effects.db.addTransaction(transformWalletTx(tx))
   },
 
   async reset({ effects, actions, state }) {

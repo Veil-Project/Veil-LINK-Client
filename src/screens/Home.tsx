@@ -67,6 +67,7 @@ const Transactions = () => {
   const { txids, category, query, isUpdating } = state.transactions
 
   const reloadTransactions = async () => {
+    await actions.transactions.updateFromCache()
     await actions.transactions.updateFromWallet()
     await actions.balance.fetch()
   }
@@ -123,13 +124,13 @@ const Transactions = () => {
       >
         <ViewPortList
           viewPortRef={viewPortRef}
-          listLength={txids.length}
+          listLength={txids.length || state.wallet.txCount}
           itemMinHeight={48}
           margin={2}
           overscan={20000}
         >
           {({ innerRef, index, style }: any) => (
-            <div ref={innerRef} style={style} key={txids[index]}>
+            <div ref={innerRef} style={style} key={txids[index] || index}>
               <TransactionSummary txid={txids[index]} />
             </div>
           )}
@@ -138,7 +139,7 @@ const Transactions = () => {
       <div className="flex justify-between items-center bg-gray-700 text-gray-400 leading-none h-12 px-4 text-sm border-l-2 border-gray-800">
         <div className="-ml-2px">
           {isUpdating
-            ? 'Loading transactions…'
+            ? 'Updating transactions…'
             : `${txids.length} transactions`}
         </div>
         <div>

@@ -49,7 +49,7 @@ const transactionColor = (category: string): string => {
   }
 }
 
-const TransactionSummary = ({ txid }: { txid: string }) => {
+const TransactionSummary = ({ txid }: { txid: string | null }) => {
   const [transaction, setTransaction] = useState<any>(null)
   const [requiresPassword, setRequiresPassword] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
@@ -60,11 +60,13 @@ const TransactionSummary = ({ txid }: { txid: string }) => {
   const isLoaded = !!transaction
 
   const updateFromCache = async () => {
+    if (!txid) return
     const tx = await effects.db.fetchTransaction(txid)
     setTransaction(tx)
   }
 
   const updateFromWallet = async () => {
+    if (!txid) return
     await actions.transactions.update(txid)
     await updateFromCache()
   }

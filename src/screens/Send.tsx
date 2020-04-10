@@ -28,6 +28,7 @@ const Send = (props: RouteComponentProps) => {
   const { addToast } = useToasts()
   const [requiresPassword, setRequiresPassword] = useState(false)
   const [isAddressValid, setIsAddressValid] = useState(false)
+  const [isSending, setIsSending] = useState(false)
   const { register, watch, handleSubmit, getValues, setValue } = useForm()
   const { state, effects } = useStore()
   const spendableBalance = state.balance.breakdown.ringctSpendable
@@ -49,6 +50,7 @@ const Send = (props: RouteComponentProps) => {
 
   const sendTransaction = async (password?: string) => {
     const { address, amount } = getValues()
+    setIsSending(true)
 
     const stakingWasActive = state.staking.isEnabled
 
@@ -70,6 +72,7 @@ const Send = (props: RouteComponentProps) => {
           effects.rpc.unlockWalletForStaking(password)
         }
       }
+      setIsSending(false)
     }
   }
 
@@ -146,6 +149,7 @@ const Send = (props: RouteComponentProps) => {
       {requiresPassword && (
         <PasswordPrompt
           title={`Send ${watchAmount} Veil`}
+          disabled={isSending}
           onCancel={() => setRequiresPassword(false)}
           onSubmit={sendTransaction}
         />
