@@ -8,8 +8,12 @@ const PasswordPrompt = ({ title, onCancel, onSubmit, disabled }: any) => {
 
   const passwordField = useRef<HTMLInputElement>(null)
   useEffect(() => {
-    passwordField?.current?.focus()
-  }, [passwordField])
+    const { current } = passwordField
+    if (current && !disabled) {
+      current.focus()
+      current.setSelectionRange(0, current.value.length)
+    }
+  }, [passwordField.current, disabled])
 
   useHotkeys('Enter', () => {
     password && onSubmit(password)
@@ -34,6 +38,7 @@ const PasswordPrompt = ({ title, onCancel, onSubmit, disabled }: any) => {
               placeholder="Password"
               value={password}
               ref={passwordField}
+              disabled={disabled}
               onChange={e => setPassword(e.target.value)}
             />
           </div>

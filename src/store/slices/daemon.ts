@@ -176,6 +176,7 @@ export const actions: Actions = {
   async restart({ effects, actions, state }) {
     try {
       state.daemon.error = null
+      state.daemon.warmup = { message: 'Restarting…', progress: null }
       await effects.daemon.stop()
       await actions.daemon.start()
     } catch (e) {
