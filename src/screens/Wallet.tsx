@@ -48,7 +48,7 @@ const Wallet = (props: RouteComponentProps) => {
 
       <Router
         className="fixed inset-0 z-50 p-20 flex items-stretch justify-center"
-        style={{ backgroundColor: 'rgba(0,0,0,.33)' }}
+        style={{ backgroundColor: '#00000066' }}
       >
         <About path="/about" />
         <Receive path="/receive" />

@@ -9,7 +9,10 @@ interface ModalProps {
 }
 
 const Modal = ({ children, onClose, canClose, hideClose }: ModalProps) => (
-  <div className="w-full max-w-2xl flex rounded-lg bg-gray-600 border border-gray-800 shadow-lg overflow-hidden relative">
+  <div
+    className="w-full max-w-2xl flex rounded-lg shadow-lg overflow-hidden relative"
+    style={{ backgroundColor: '#23282cee', backdropFilter: 'blur(8px)' }}
+  >
     {!hideClose && (
       <button
         onClick={onClose}

@@ -15,8 +15,8 @@ const ActiveLink = (props: any) => (
     {...props}
     getProps={({ isCurrent }) => ({
       className: isCurrent
-        ? 'px-4 h-10 rounded flex items-center justify-start bg-gray-600 text-sm text-white font-medium'
-        : 'px-4 h-10 rounded flex items-center justify-start text-gray-300 text-sm font-medium hover:text-white hover:bg-gray-600',
+        ? 'px-4 h-10 rounded flex items-center justify-start bg-gray-700 text-sm text-white font-medium'
+        : 'px-4 h-10 rounded flex items-center justify-start text-gray-300 text-sm font-medium hover:text-white hover:bg-gray-700',
     })}
   />
 )
@@ -43,7 +43,10 @@ const Settings = (props: RouteComponentProps) => (
           </Router>
         </div>
       </div>
-      <div className="flex-none flex justify-end px-6 py-4 bg-gray-600 border-t border-gray-700">
+      <div
+        className="flex-none flex justify-end px-6 py-4"
+        style={{ backgroundColor: 'rgba(255,255,255,.025)' }}
+      >
         <Button to="/" primary>
           Done
         </Button>
