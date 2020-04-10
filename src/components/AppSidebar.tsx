@@ -8,7 +8,6 @@ import formatDate from 'utils/formatDate'
 
 import Balance from './Balance'
 import AppMenu from './AppMenu'
-import StatusBar from './UI/StatusBar'
 import formatTime from 'utils/formatTime'
 import UnspendableBalanceBlock from './Sidebar/UnspendableBalanceBlock'
 import StakingBlock from './Sidebar/StakingBlock'

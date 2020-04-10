@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState, useRef } from 'react'
+import React, { ChangeEvent, useEffect, useRef } from 'react'
 import { Router, Location, navigate } from '@reach/router'
 import { TransitionGroup, CSSTransition } from 'react-transition-group'
 import { FiSearch, FiRefreshCw } from 'react-icons/fi'

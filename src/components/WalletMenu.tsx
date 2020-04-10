@@ -1,8 +1,5 @@
 import React from 'react'
-import { useStore } from 'store'
-import { Link } from '@reach/router'
 import { motion } from 'framer-motion'
-import { version } from '../../package.json'
 
 interface MenuLinkProps {
   onClick(): void

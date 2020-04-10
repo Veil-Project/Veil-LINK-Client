@@ -1,4 +1,4 @@
-import { AsyncAction, Derive, Action } from 'store'
+import { AsyncAction, Action } from 'store'
 import { uniq, map } from 'lodash'
 import transformWalletTx from 'utils/transformWalletTx'
 
