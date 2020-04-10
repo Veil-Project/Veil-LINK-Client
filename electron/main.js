@@ -118,6 +118,11 @@ electron_1.ipcMain.handle('show-open-dialog', function (_, options) {
         return;
     return electron_1.dialog.showOpenDialogSync(mainWindow.window, options);
 });
+electron_1.ipcMain.handle('show-save-dialog', function (_, options) {
+    if (mainWindow.window === null)
+        return;
+    return electron_1.dialog.showSaveDialogSync(mainWindow.window, options);
+});
 electron_1.ipcMain.handle('open-external-link', function (_, url) {
     electron_1.shell.openExternal(url);
 });

@@ -5,6 +5,7 @@ import useHotkeys from '@reecelucas/react-use-hotkeys'
 import { MdMenu } from 'react-icons/md'
 import { FaLock, FaLockOpen } from 'react-icons/fa'
 import formatDate from 'utils/formatDate'
+import moment from 'moment'
 
 import Balance from './Balance'
 import AppMenu from './AppMenu'
@@ -93,16 +94,17 @@ const WalletMenuButton = () => {
     if (state.app.connectionMethod === 'rpc') return
 
     setIsMenuOpen(false)
-    const destination = await effects.electron.openFolder(
+    const destination = await effects.electron.showSaveDialog(
       {
         title: 'Choose backup destination',
         message: 'Choose backup destination',
-        buttonLabel: 'Backup here',
+        buttonLabel: 'Save',
+        defaultPath: `wallet-${moment().format('YYYY-MM-DD-HH-mm-ss')}.dat`,
       },
       ['createDirectory']
     )
     if (destination) {
-      await effects.rpc.backupWallet(destination[0])
+      await effects.rpc.backupWallet(destination)
       addToast('Wallet backed up successfully!', { appearance: 'success' })
     }
   }

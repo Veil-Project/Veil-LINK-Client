@@ -89,6 +89,10 @@ ipcMain.handle('show-open-dialog', (_, options: any) => {
   if (mainWindow.window === null) return
   return dialog.showOpenDialogSync(mainWindow.window, options)
 })
+ipcMain.handle('show-save-dialog', (_, options: any) => {
+  if (mainWindow.window === null) return
+  return dialog.showSaveDialogSync(mainWindow.window, options)
+})
 ipcMain.handle('open-external-link', (_, url: string) => {
   shell.openExternal(url)
 })

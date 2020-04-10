@@ -24,4 +24,11 @@ export default {
       properties: [...properties, 'openDirectory'],
     })
   },
+
+  async showSaveDialog(options: any = {}, properties: string[] = []) {
+    return await window.ipcRenderer.invoke('show-save-dialog', {
+      ...options,
+      properties: [...properties, 'createDirectory'],
+    })
+  },
 }
