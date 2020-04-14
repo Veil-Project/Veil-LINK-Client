@@ -11,6 +11,9 @@ import ConvertLegacyCoins from './ConvertLegacyCoins'
 import { useStore } from 'store'
 import EncryptWallet from './EncryptWallet'
 import AppSidebar from 'components/AppSidebar'
+import Portal from 'components/Portal'
+import Overlay from 'components/Overlay'
+import DaemonWarmup from 'components/DaemonWarmup'
 
 const Wallet = (props: RouteComponentProps) => {
   const { state, actions } = useStore()
@@ -32,31 +35,48 @@ const Wallet = (props: RouteComponentProps) => {
   }
 
   return (
-    <div className="flex-1 w-full flex">
-      <div
-        className="flex-none bg-gray-700 flex flex-col relative"
-        style={{ width: 310 }}
-      >
-        <AppSidebar />
-      </div>
-      <div
-        className="flex-1 flex flex-col bg-gray-800 relative"
-        style={{ minWidth: 0 }}
-      >
-        <Home />
-      </div>
+    <>
+      {state.app.isRestarting && (
+        <Portal>
+          <Overlay>
+            <div
+              className="text-white p-6 rounded-lg"
+              style={{
+                backgroundColor: '#23282cee',
+                backdropFilter: 'blur(8px)',
+              }}
+            >
+              <DaemonWarmup />
+            </div>
+          </Overlay>
+        </Portal>
+      )}
+      <div className="flex-1 w-full flex">
+        <div
+          className="flex-none bg-gray-700 flex flex-col relative"
+          style={{ width: 310 }}
+        >
+          <AppSidebar />
+        </div>
+        <div
+          className="flex-1 flex flex-col bg-gray-800 relative"
+          style={{ minWidth: 0 }}
+        >
+          <Home />
+        </div>
 
-      <Router
-        className="fixed inset-0 z-50 p-20 flex items-stretch justify-center"
-        style={{ backgroundColor: '#00000066' }}
-      >
-        <About path="/about" />
-        <Receive path="/receive" />
-        <Settings path="/settings/*" />
-        <Console path="/console" />
-        <ConvertLegacyCoins path="/convert" />
-      </Router>
-    </div>
+        <Router
+          className="fixed inset-0 z-50 p-20 flex items-stretch justify-center"
+          style={{ backgroundColor: '#00000066' }}
+        >
+          <About path="/about" />
+          <Receive path="/receive" />
+          <Settings path="/settings/*" />
+          <Console path="/console" />
+          <ConvertLegacyCoins path="/convert" />
+        </Router>
+      </div>
+    </>
   )
 }
 

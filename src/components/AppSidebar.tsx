@@ -13,9 +13,6 @@ import formatTime from 'utils/formatTime'
 import UnspendableBalanceBlock from './Sidebar/UnspendableBalanceBlock'
 import StakingBlock from './Sidebar/StakingBlock'
 import ReceivingAddressBlock from './Sidebar/ReceivingAddressBlock'
-import DaemonWarmup from './DaemonWarmup'
-import Portal from './Portal'
-import Overlay from './Overlay'
 import { FiChevronDown } from 'react-icons/fi'
 import WalletMenu from './WalletMenu'
 
@@ -48,6 +45,7 @@ const MenuButton = () => {
           className={`absolute z-10 top-100 mt-1 ${
             window.platform === 'darwin' ? 'right-0' : 'left-0'
           }`}
+          style={{ willChange: 'transform' }}
         >
           <AppMenu onClickOption={() => setIsMenuOpen(false)} />
         </div>
@@ -57,7 +55,6 @@ const MenuButton = () => {
 }
 
 const WalletMenuButton = () => {
-  const [isRestarting, setIsRestarting] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { state, effects, actions } = useStore()
   const { addToast } = useToasts()
@@ -83,10 +80,8 @@ const WalletMenuButton = () => {
         "Choose directory with a Veil wallet. If wallet doesn't exist a new one will be created.",
     })
     if (wallet) {
-      setIsRestarting(true)
       await actions.daemon.configure({ wallet: wallet[0] })
-      await actions.app.reload()
-      setIsRestarting(false)
+      await actions.app.reload({ resetTransactions: true })
     }
   }
 
@@ -122,18 +117,9 @@ const WalletMenuButton = () => {
 
   return (
     <>
-      {isRestarting && (
-        <Portal>
-          <Overlay>
-            <div className="text-white p-6 rounded-lg bg-gray-700">
-              <DaemonWarmup />
-            </div>
-          </Overlay>
-        </Portal>
-      )}
       <button
         onClick={toggleMenu}
-        className={`flex items-center font-medium outline-none py-1 px-2 rounded ${
+        className={`flex items-center font-medium outline-none h-6 pb-2px px-2 rounded ${
           isMenuOpen ? 'bg-blue-700' : 'hover:bg-blue-600'
         } active:bg-blue-700`}
       >
@@ -143,7 +129,11 @@ const WalletMenuButton = () => {
       {isMenuOpen && (
         <div
           className="absolute z-10 top-100 mt-1"
-          style={{ left: '50%', transform: 'translateX(-50%)' }}
+          style={{
+            left: '50%',
+            transform: 'translateX(-50%)',
+            willChange: 'transform',
+          }}
         >
           <WalletMenu onOpenWallet={openWallet} onBackupWallet={backupWallet} />
         </div>

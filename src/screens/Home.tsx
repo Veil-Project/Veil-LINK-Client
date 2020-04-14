@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useRef } from 'react'
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { Router, Location, navigate } from '@reach/router'
 import { TransitionGroup, CSSTransition } from 'react-transition-group'
 import { FiSearch, FiRefreshCw } from 'react-icons/fi'
@@ -61,20 +61,42 @@ const SearchField = ({ placeholder, value, onChange }: SearchFieldProps) => {
 }
 
 const Transactions = () => {
+  const [isLoading, setIsLoading] = useState(true)
   const { state, actions } = useStore()
   const viewPortRef = useRef(null)
 
-  const { txids, category, query, isUpdating } = state.transactions
+  const {
+    txids,
+    category,
+    query,
+    isCacheReady,
+    isUpdating,
+    lastUpdated,
+  } = state.transactions
 
   const reloadTransactions = async () => {
+    await actions.transactions.initializeCache()
     await actions.transactions.updateFromCache()
     await actions.transactions.updateFromWallet()
-    await actions.balance.fetch()
+    setIsLoading(false)
   }
 
   useEffect(() => {
     reloadTransactions()
   }, [])
+
+  const categoryLabel = (category: string) => {
+    switch (category) {
+      case 'send':
+        return 'sent'
+      case 'receive':
+        return 'received'
+      case 'stake':
+        return 'staking'
+      default:
+        return ''
+    }
+  }
 
   return state.wallet.hasTransactions ? (
     <>
@@ -127,7 +149,7 @@ const Transactions = () => {
           listLength={txids.length || state.wallet.txCount}
           itemMinHeight={48}
           margin={2}
-          overscan={20000}
+          overscan={10000}
         >
           {({ innerRef, index, style }: any) => (
             <div ref={innerRef} style={style} key={txids[index] || index}>
@@ -138,13 +160,24 @@ const Transactions = () => {
       </div>
       <div className="flex justify-between items-center bg-gray-700 text-gray-400 leading-none h-12 px-4 text-sm border-l-2 border-gray-800">
         <div className="-ml-2px">
-          {isUpdating
-            ? 'Updating transactions…'
-            : `${txids.length} transactions`}
+          {isCacheReady
+            ? isLoading || isUpdating
+              ? lastUpdated
+                ? 'Updating transactions…'
+                : 'Loading transactions…'
+              : `${txids.length} ${categoryLabel(category)} transactions`
+            : 'Loading database…'}
         </div>
         <div>
-          {isUpdating ? (
-            <Spinner size={12} />
+          {isLoading || isUpdating ? (
+            <Spinner
+              size={12}
+              percentage={
+                !lastUpdated && state.wallet.txCount
+                  ? (txids.length / state.wallet.txCount) * 100 * 1.25
+                  : null
+              }
+            />
           ) : (
             state.app.connectionMethod === 'rpc' && (
               <button

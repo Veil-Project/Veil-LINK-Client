@@ -5,7 +5,10 @@ import db from 'store/db'
 export default {
   initialize({ onChanges }: { onChanges(changes: any): void }) {
     db.on('changes', onChanges)
-    db.open()
+  },
+
+  async open() {
+    return await db.open()
   },
 
   async addTransaction(transaction: any) {
@@ -28,7 +31,7 @@ export default {
     const txs = db.transactions.orderBy('time').reverse()
 
     if (!category && !query) {
-      return txs.primaryKeys()
+      return await txs.primaryKeys()
     }
 
     return (await txs.toArray())

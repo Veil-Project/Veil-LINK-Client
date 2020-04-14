@@ -59,10 +59,12 @@ const TransactionSummary = ({ txid }: { txid: string | null }) => {
   const isVisible = useIsVisible(ref)
   const isLoaded = !!transaction
 
+  let isMounted = true
+
   const updateFromCache = async () => {
     if (!txid) return
     const tx = await effects.db.fetchTransaction(txid)
-    setTransaction(tx)
+    if (isMounted) setTransaction(tx)
   }
 
   const updateFromWallet = async () => {
@@ -74,6 +76,9 @@ const TransactionSummary = ({ txid }: { txid: string | null }) => {
   useEffect(() => {
     if (isVisible && !isLoaded) {
       updateFromCache()
+    }
+    return () => {
+      isMounted = false
     }
   }, [isVisible, isLoaded])
 
@@ -165,7 +170,7 @@ const TransactionSummary = ({ txid }: { txid: string | null }) => {
         </div>
         <div
           className="max-w-md flex-shrink truncate"
-          style={{ minWidth: 0, maxWidth: '220px' }}
+          style={{ minWidth: 0, maxWidth: '500px' }}
         >
           {transaction ? (
             transactionDescription(transaction)

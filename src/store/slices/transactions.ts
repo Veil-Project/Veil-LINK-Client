@@ -1,4 +1,4 @@
-import { AsyncAction, Action } from 'store'
+import { AsyncAction, Action, Derive } from 'store'
 import transformWalletTx from 'utils/transformWalletTx'
 import transactionWorker from 'workers/transactions'
 
@@ -55,6 +55,8 @@ type State = {
   txids: string[]
   category: string
   query: string
+  lastUpdated: number
+  isCacheReady: boolean
   isUpdating: boolean
 }
 
@@ -62,10 +64,13 @@ export const state: State = {
   txids: [],
   category: '',
   query: '',
+  isCacheReady: false,
   isUpdating: false,
+  lastUpdated: Number(localStorage.getItem('transactionsLastUpdated')),
 }
 
 type Actions = {
+  initializeCache: AsyncAction
   verifyLocalDatabaseBelongsToWallet: AsyncAction
   setCategory: Action<string>
   setQuery: Action<string>
@@ -76,6 +81,11 @@ type Actions = {
 }
 
 export const actions: Actions = {
+  async initializeCache({ state, effects }) {
+    await effects.db.open()
+    state.transactions.isCacheReady = true
+  },
+
   async verifyLocalDatabaseBelongsToWallet({ effects, actions }) {
     const tx = await effects.db.fetchFirstTransaction()
     if (!tx) return
@@ -101,40 +111,47 @@ export const actions: Actions = {
     actions.transactions.updateFromCache()
   },
 
-  async updateFromCache({ state, actions, effects }) {
-    const { txCount } = state.wallet
+  async updateFromCache({ state, effects }) {
     const { category, query } = state.transactions
-
-    state.transactions.isUpdating = true
-
-    let txids = await effects.db.listTransactionIds({ category, query })
-
-    if (!category && !query && txCount && txids.length / txCount < 0.5) {
-      console.log(
-        'Wallet indicates it has transactions, but no transactions found in local cache. Refetching everything…'
-      )
-      await actions.transactions.updateFromWallet(true)
-      txids = await effects.db.listTransactionIds({ category, query })
-    }
-
-    state.transactions.txids = txids
-    state.transactions.isUpdating = false
+    state.transactions.txids = await effects.db.listTransactionIds({
+      category,
+      query,
+    })
   },
 
   async updateFromWallet({ actions, effects, state }, ignoreLastBlock = false) {
+    if (state.transactions.isUpdating) return
+
     try {
       state.transactions.isUpdating = true
       await actions.transactions.verifyLocalDatabaseBelongsToWallet()
 
-      const { credentials } = await effects.daemon.getInfo()
-      const lastBlock = ignoreLastBlock
+      let lastBlock = ignoreLastBlock
         ? ''
-        : localStorage.getItem('lastblock') || ''
+        : localStorage.getItem('transactionsLastBlock') || ''
+
+      if (lastBlock) {
+        const { txCount } = state.wallet
+        const txidCount = state.transactions.txids.length
+        if (txCount && txidCount / txCount < 0.5) {
+          console.log(
+            'Wallet indicates it has transactions, but no transactions found in local cache. Refetching everything…'
+          )
+          lastBlock = ''
+        }
+      }
+
+      const { credentials } = await effects.daemon.getInfo()
       const newLastBlock = await transactionWorker.importWalletTransactions({
         credentials,
         lastBlock,
       })
-      localStorage.setItem('lastblock', newLastBlock)
+      state.transactions.lastUpdated = new Date().getTime()
+      localStorage.setItem(
+        'transactionsLastUpdated',
+        String(state.transactions.lastUpdated)
+      )
+      localStorage.setItem('transactionsLastBlock', newLastBlock)
       return null
     } catch (e) {
       console.error(e)
@@ -149,9 +166,11 @@ export const actions: Actions = {
     await effects.db.addTransaction(transformWalletTx(tx))
   },
 
-  async reset({ effects, actions, state }) {
+  async reset({ effects, state }) {
     await effects.db.clearTransactions()
-    localStorage.removeItem('lastblock')
     state.transactions.txids = []
+    state.transactions.lastUpdated = 0
+    localStorage.removeItem('transactionsLastBlock')
+    localStorage.removeItem('transactionsLastUpdated')
   },
 }

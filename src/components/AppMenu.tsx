@@ -28,10 +28,10 @@ interface MenuProps {
 }
 
 const AppMenu = ({ onClickOption }: MenuProps) => {
-  const { state, effects } = useStore()
+  const { state, actions } = useStore()
 
   const handleRestartDaemon = async () => {
-    await effects.daemon.stop()
+    await actions.app.reload({ resetTransactions: false })
   }
 
   return (
@@ -41,6 +41,7 @@ const AppMenu = ({ onClickOption }: MenuProps) => {
           window.platform === 'darwin' ? 'top right' : 'top left',
         backgroundColor: '#1a1e21ee',
         backdropFilter: 'blur(8px)',
+        willChange: 'transform, opacity',
       }}
       initial={{ scale: 0.5, opacity: 1 }}
       animate={{ scale: 1, opacity: 1 }}

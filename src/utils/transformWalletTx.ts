@@ -80,7 +80,7 @@ export default (walletTx: WalletTransaction) => {
       myDetails[0]?.address ||
       (myOutputs[0]?.output_record?.stealth_address
         ? 'stealth'
-        : walletTx.details[0].address),
+        : walletTx.details[0]?.address),
     category,
     type,
     requiresReveal:

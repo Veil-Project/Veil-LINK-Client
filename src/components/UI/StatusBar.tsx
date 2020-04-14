@@ -14,7 +14,7 @@ const StatusBar = ({ progress, label }: StatusBarProps) => {
       onMouseOver={() => setTooltipVisibility(true)}
       onMouseOut={() => setTooltipVisibility(false)}
     >
-      <div className="bg-gray-700 rounded-full px-6 h-2 relative text-xs font-medium">
+      <div className="bg-gray-600 rounded-full px-6 h-2 relative text-xs font-medium">
         <div
           className={`absolute left-0 top-0 bottom-0 bg-gradient-r-blue rounded-full`}
           style={{ width: `${progress}%` }}

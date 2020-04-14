@@ -15,12 +15,14 @@ type State = {
   locale: string
   status: AppStatus
   connectionMethod: 'daemon' | 'rpc'
+  isRestarting: boolean
 }
 
 export const state: State = {
   locale: 'en',
   status: 'initial',
   connectionMethod: 'daemon',
+  isRestarting: false,
 }
 
 interface RpcError {
@@ -33,7 +35,7 @@ type Actions = {
   connectViaRpc: AsyncAction
   update: AsyncAction
   reset: AsyncAction
-  reload: AsyncAction
+  reload: AsyncAction<{ resetTransactions: boolean }>
   handleShutdown: Action
   handleDaemonExit: Action
   handleRpcError: Action<RpcError>
@@ -82,7 +84,8 @@ export const actions: Actions = {
     await actions.app.transition()
   },
 
-  async update({ actions }) {
+  async update({ state, actions }) {
+    if (state.app.isRestarting) return
     await actions.blockchain.load()
     await actions.wallet.load()
     await actions.balance.fetch()
@@ -94,10 +97,13 @@ export const actions: Actions = {
     await actions.app.transition()
   },
 
-  async reload({ actions }) {
+  async reload({ state, actions }, { resetTransactions = false }) {
+    state.app.isRestarting = true
     await actions.daemon.restart()
     await actions.app.update()
     await actions.wallet.fetchReceivingAddress()
+    if (resetTransactions) await actions.transactions.reset()
+    state.app.isRestarting = false
     await actions.transactions.updateFromWallet()
   },
 

@@ -146,6 +146,10 @@ export default {
     return await callAsync('backupwallet', destination)
   },
 
+  async setTxFee(fee: number) {
+    return await callAsync('settxfee', fee)
+  },
+
   async sendCommand(command: string) {
     const [cmd, ...args] = command
       .match(/"[^"]+"|'[^']+'|\S+/g)

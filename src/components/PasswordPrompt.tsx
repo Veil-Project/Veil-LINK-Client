@@ -13,7 +13,7 @@ const PasswordPrompt = ({ title, onCancel, onSubmit, disabled }: any) => {
       current.focus()
       current.setSelectionRange(0, current.value.length)
     }
-  }, [passwordField.current, disabled])
+  }, [passwordField, disabled])
 
   useHotkeys('Enter', () => {
     password && onSubmit(password)
