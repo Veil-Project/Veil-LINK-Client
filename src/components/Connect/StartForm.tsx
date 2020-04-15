@@ -13,7 +13,7 @@ const StartForm = ({ onSubmit }: Props) => {
   const { effects } = useStore()
 
   const chooseDataDirectory = async () => {
-    const path = await effects.electron.openFolder()
+    const path = await effects.electron.openFolder({}, ['createDirectory'])
     if (path && path.length) {
       setDataDirectory(path[0])
     }
