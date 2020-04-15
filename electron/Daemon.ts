@@ -62,6 +62,13 @@ export default class Daemon extends EventEmitter {
             progress: parseInt(progressMatch[1]),
           })
         break
+      case /Progress=\d/i.test(message):
+        const rescanMatch = message.match(/Progress=([\d.]*)/i)
+        if (rescanMatch)
+          this.emit('warmup', {
+            progress: parseFloat(rescanMatch[1]) * 100,
+          })
+        break
       case /[DONE]]/i.test(message):
         this.emit('warmup', { progress: 100 })
         break
@@ -71,7 +78,7 @@ export default class Daemon extends EventEmitter {
         break
       case /updatetip/i.test(message):
         const dateMatch = message.match(/date='(.*)'/i)
-        const heightMatch = message.match(/height='(.*)'/i)
+        const heightMatch = message.match(/height=(\d*)/i)
         if (dateMatch && heightMatch)
           this.emit('blockchain-tip', {
             date: dateMatch[1],
