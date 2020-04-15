@@ -94,6 +94,10 @@ export default {
     return await callAsync('getBlockchainInfo')
   },
 
+  async getBlock(block: string) {
+    return await callAsync('getblock', block)
+  },
+
   async getWalletInfo() {
     return await callAsync('getwalletinfo')
   },

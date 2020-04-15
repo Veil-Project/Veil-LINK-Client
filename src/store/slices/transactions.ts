@@ -131,6 +131,17 @@ export const actions: Actions = {
         : localStorage.getItem('transactionsLastBlock') || ''
 
       if (lastBlock) {
+        try {
+          await effects.rpc.getBlock(lastBlock)
+        } catch (e) {
+          if (e.code === -5) {
+            console.log('Last block not found. Refetching everything…')
+            lastBlock = ''
+          }
+        }
+      }
+
+      if (lastBlock) {
         const { txCount } = state.wallet
         const txidCount = state.transactions.txids.length
         if (txCount && txidCount / txCount < 0.5) {
