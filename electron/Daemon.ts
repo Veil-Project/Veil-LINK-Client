@@ -23,7 +23,7 @@ export type DaemonStatus =
 
 export interface DaemonOptions {
   datadir?: string
-  network?: 'main' | 'test' | 'regtest' | 'dev'
+  network?: 'mainnet' | 'testnet' | 'regtest' | 'devnet'
   seed?: string
   wallet?: string
 }
@@ -106,9 +106,7 @@ export default class Daemon extends EventEmitter {
   }
 
   private handleExit(_code: any) {
-    if (this.status === 'stopping') {
-      this.status = 'stopped'
-    }
+    this.status = 'stopped'
     this.emit('exit')
   }
 
@@ -224,7 +222,7 @@ export default class Daemon extends EventEmitter {
             `--rpcpassword=${this.credentials.pass}`,
             `--rpcport=58812`,
             '--printtoconsole',
-            network === 'test' ? '--testnet' : '',
+            network === 'testnet' ? '--testnet' : '',
             datadir ? `--datadir=${datadir}` : '',
             seed ? `--importseed=${seed}` : '',
             wallet ? `--wallet=${wallet}` : '',
