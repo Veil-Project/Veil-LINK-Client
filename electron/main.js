@@ -70,8 +70,8 @@ daemon.on('stdout', function (message) {
 daemon.on('stderr', function (message) {
     mainWindow.emit('daemon-stderr', message);
 });
-daemon.on('blockchain-tip', function (date) {
-    mainWindow.emit('daemon-blockchain-tip', date);
+daemon.on('blockchain-tip', function (tip) {
+    mainWindow.emit('daemon-blockchain-tip', tip);
 });
 daemon.on('error', function (message) {
     mainWindow.emit('daemon-error', message);

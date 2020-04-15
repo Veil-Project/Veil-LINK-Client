@@ -42,8 +42,8 @@ daemon.on('stderr', (message: string | null) => {
   mainWindow.emit('daemon-stderr', message)
 })
 
-daemon.on('blockchain-tip', (date: string) => {
-  mainWindow.emit('daemon-blockchain-tip', date)
+daemon.on('blockchain-tip', (tip: any) => {
+  mainWindow.emit('daemon-blockchain-tip', tip)
 })
 
 daemon.on('error', (message: string) => {
