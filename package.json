@@ -22,7 +22,7 @@
     "build": "yarn app:build && yarn electron:compile",
     "package": "rimraf release && yarn build && electron-builder build -c.extraMetadata.main=electron/main.js",
     "package-all": "rimraf release && yarn build && electron-builder build -mwl -c.extraMetadata.main=electron/main.js",
-    "release": "package-all",
+    "release": "yarn package-all",
     "app:dev": "BROWSER=false react-scripts start",
     "app:build": "react-scripts build",
     "electron:compile": "tsc --project electron/tsconfig.json",
