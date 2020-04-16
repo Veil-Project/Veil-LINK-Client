@@ -4759,6 +4759,11 @@ electron-builder@^22.5.0:
     update-notifier "^4.1.0"
     yargs "^15.3.1"
 
+electron-log@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/electron-log/-/electron-log-4.1.1.tgz#c57e3d833f723742eb430dc2cdaa6f97d8dbcaff"
+  integrity sha512-vkK3rNBOciRiinxrsdgg8hyUia+ct8ZMjBblvKjgNk4uHEDjjSyn313NOwv75xOMVIKlfmYzxaN8kR/oGC33aQ==
+
 electron-publish@22.5.0:
   version "22.5.0"
   resolved "https://registry.yarnpkg.com/electron-publish/-/electron-publish-22.5.0.tgz#b360b9dad7b91a78fae065fa9f4c7106e55fdc4d"

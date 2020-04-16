@@ -75,6 +75,9 @@ app.on('window-all-closed', () => {
 
 app.on('ready', e => {
   mainWindow.open()
+  const log = require('electron-log')
+  log.transports.file.level = 'debug'
+  autoUpdater.logger = log
   autoUpdater.checkForUpdatesAndNotify()
 })
 

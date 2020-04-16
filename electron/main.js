@@ -105,6 +105,9 @@ electron_1.app.on('window-all-closed', function () {
 });
 electron_1.app.on('ready', function (e) {
     mainWindow.open();
+    var log = require('electron-log');
+    log.transports.file.level = 'debug';
+    electron_updater_1.autoUpdater.logger = log;
     electron_updater_1.autoUpdater.checkForUpdatesAndNotify();
 });
 electron_1.app.on('activate', function (e) {
