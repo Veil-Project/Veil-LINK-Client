@@ -37,7 +37,9 @@ export default {
     return (await txs.toArray())
       .filter(
         (tx: any) =>
-          (!category || tx.category === category) && tx.txid.includes(query)
+          (!category || tx.category === category) &&
+          tx.txid.includes(query) &&
+          (tx.category !== 'stake' || tx.confirmations > 25)
       )
       .map((tx: any) => tx.txid)
   },
