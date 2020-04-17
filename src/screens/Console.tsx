@@ -184,7 +184,7 @@ const Console = (props: RouteComponentProps) => {
 
   return (
     <Modal
-      className="h-full"
+      className="h-full flex"
       onClose={() => navigate('/')}
       canClose={!isLoading}
     >

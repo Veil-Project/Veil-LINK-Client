@@ -22,7 +22,7 @@ const Modal = ({
     <Overlay>
       <div
         className={`rounded-lg shadow-lg overflow-hidden relative text-white ${className}`}
-        style={{ backgroundColor: '#353b43dd', backdropFilter: 'blur(8px)' }}
+        style={{ backgroundColor: '#353b43f8' }}
       >
         {!hideClose && (
           <button

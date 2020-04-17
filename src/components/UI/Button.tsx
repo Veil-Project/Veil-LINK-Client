@@ -36,16 +36,19 @@ const Button = ({
       'bg-blue-500': !disabled && primary,
       'bg-gray-500': !disabled && secondary,
       'bg-gray-600': !disabled && !secondary && !primary,
-      'bg-gray-600 cursor-default text-gray-400': disabled,
+      'cursor-default text-gray-400': disabled,
     }
   )
 
+  const btnStyle = disabled ? { backgroundColor: '#ffffff11' } : {}
+
   return to ? (
-    <Link to={to} className={btnClass} {...props} />
+    <Link to={to} className={btnClass} style={btnStyle} {...props} />
   ) : (
     <button
       onClick={onClick}
       className={[btnClass, disabled ? disabledClassName : ''].join(' ')}
+      style={btnStyle}
       disabled={disabled}
       {...props}
     />

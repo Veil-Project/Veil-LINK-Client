@@ -12,8 +12,7 @@ const WalletMenu = ({ onOpenWallet, onBackupWallet }: MenuProps) => {
     <motion.div
       style={{
         transformOrigin: 'top center',
-        backgroundColor: '#1a1e21ee',
-        backdropFilter: 'blur(8px)',
+        backgroundColor: '#1a1e21f8',
         willChange: 'transform, opacity',
       }}
       initial={{ scale: 0.5, opacity: 1 }}
