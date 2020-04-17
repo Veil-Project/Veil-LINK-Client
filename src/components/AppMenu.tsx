@@ -41,6 +41,12 @@ const AppMenu = ({ onClickOption }: MenuProps) => {
         />
         <MenuLink
           onClick={onClickOption}
+          label="About"
+          shortcut="⌘I"
+          to="/about"
+        />
+        <MenuLink
+          onClick={onClickOption}
           label="Console"
           shortcut="C"
           to="/console"

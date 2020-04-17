@@ -2,7 +2,6 @@ import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { Router, Location, navigate } from '@reach/router'
 import { TransitionGroup, CSSTransition } from 'react-transition-group'
 import { FiSearch, FiRefreshCw } from 'react-icons/fi'
-import useHotkeys from '@reecelucas/react-use-hotkeys'
 // @ts-ignore
 import ViewPortList from 'react-viewport-list'
 import './Home.css'
@@ -249,18 +248,6 @@ const Transactions = () => {
 }
 
 const Home = () => {
-  useHotkeys('Meta+,', () => {
-    navigate('/settings')
-  })
-
-  useHotkeys('Meta+n', () => {
-    navigate('/send')
-  })
-
-  useHotkeys('c', () => {
-    navigate('/console')
-  })
-
   return (
     <div className="h-screen flex flex-col relative">
       <Transactions />

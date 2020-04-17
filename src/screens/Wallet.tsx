@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react'
-import { Router, RouteComponentProps } from '@reach/router'
+import { Router, RouteComponentProps, navigate } from '@reach/router'
 
 import Home from './Home'
 import About from './About'
-import Receive from './Receive'
 import Settings from './Settings'
 import Console from './Console'
 
@@ -15,6 +14,7 @@ import Portal from 'components/Portal'
 import Overlay from 'components/Overlay'
 import DaemonWarmup from 'components/DaemonWarmup'
 import ChangePassword from './ChangePassword'
+import useHotkeys from '@reecelucas/react-use-hotkeys'
 
 const Wallet = (props: RouteComponentProps) => {
   const { state, actions } = useStore()
@@ -30,6 +30,22 @@ const Wallet = (props: RouteComponentProps) => {
       clearTimeout(timeout)
     }
   }, [actions.app])
+
+  useHotkeys('Meta+,', () => {
+    navigate('/settings')
+  })
+
+  useHotkeys('Meta+i', () => {
+    navigate('/about')
+  })
+
+  useHotkeys('Meta+n', () => {
+    navigate('/send')
+  })
+
+  useHotkeys('c', () => {
+    navigate('/console')
+  })
 
   if (!state.wallet.encrypted) {
     return <EncryptWallet />
@@ -67,8 +83,7 @@ const Wallet = (props: RouteComponentProps) => {
         </div>
 
         <Router>
-          <About path="/about" />
-          <Receive path="/receive" />
+          <About path="/about/*" />
           <Settings path="/settings/*" />
           <Console path="/console" />
           <ConvertLegacyCoins path="/convert" />
