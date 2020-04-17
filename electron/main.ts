@@ -1,9 +1,9 @@
 import { app, dialog, ipcMain, shell } from 'electron'
-import { autoUpdater } from 'electron-updater'
 import url from 'url'
 import path from 'path'
 import Daemon, { DaemonOptions } from './Daemon'
 import AppWindow from './AppWindow'
+import { checkForUpdates } from './updater'
 
 // Set up main window
 const startUrl =
@@ -75,10 +75,6 @@ app.on('window-all-closed', () => {
 
 app.on('ready', e => {
   mainWindow.open()
-  const log = require('electron-log')
-  log.transports.file.level = 'debug'
-  autoUpdater.logger = log
-  autoUpdater.checkForUpdatesAndNotify()
 })
 
 app.on('activate', e => {
@@ -119,4 +115,9 @@ ipcMain.handle('start-daemon', async (_, options: DaemonOptions) => {
 })
 ipcMain.handle('stop-daemon', async _ => {
   return await daemon.stop()
+})
+
+// Updater API
+ipcMain.handle('check-for-updates', _ => {
+  checkForUpdates()
 })

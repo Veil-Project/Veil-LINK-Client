@@ -113,7 +113,9 @@ export default class Daemon extends EventEmitter {
   }
 
   private handleExit(_code: any) {
-    this.status = 'stopped'
+    if (this.status === 'stopping') {
+      this.status = 'stopped'
+    }
     this.emit('exit')
   }
 

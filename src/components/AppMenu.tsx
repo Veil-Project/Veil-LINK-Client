@@ -8,30 +8,44 @@ interface MenuLinkProps {
   onClick(): void
   label: string
   shortcut?: string
-  to: string
+  to?: string
 }
 
-const MenuLink = ({ onClick, label, to, shortcut }: MenuLinkProps) => (
-  <Link
-    to={to}
-    tabIndex={-1}
-    className="px-2 h-8 rounded flex items-center justify-between hover:bg-blue-500"
-    onClick={onClick}
-  >
-    <span className="text-white">{label}</span>
-    <span className="">{shortcut}</span>
-  </Link>
-)
+const MenuLink = ({ onClick, label, to, shortcut }: MenuLinkProps) =>
+  to ? (
+    <Link
+      to={to}
+      tabIndex={-1}
+      className="px-2 h-8 rounded flex items-center justify-between font-medium hover:bg-blue-500"
+      onClick={onClick}
+    >
+      <span className="text-white">{label}</span>
+      <span className="">{shortcut}</span>
+    </Link>
+  ) : (
+    <button
+      tabIndex={-1}
+      className="px-2 h-8 rounded flex items-center justify-between font-medium hover:bg-blue-500"
+      onClick={onClick}
+    >
+      <span className="text-white">{label}</span>
+      <span className="">{shortcut}</span>
+    </button>
+  )
 
 interface MenuProps {
   onClickOption(): void
 }
 
 const AppMenu = ({ onClickOption }: MenuProps) => {
-  const { state, actions } = useStore()
+  const { state, actions, effects } = useStore()
 
   const handleRestartDaemon = async () => {
     await actions.app.reload({ resetTransactions: false })
+  }
+
+  const checkForUpdates = async () => {
+    await effects.electron.checkForUpdates()
   }
 
   return (
@@ -61,6 +75,10 @@ const AppMenu = ({ onClickOption }: MenuProps) => {
           shortcut="C"
           to="/console"
         />
+      </div>
+
+      <div className="flex flex-col p-2">
+        <MenuLink onClick={checkForUpdates} label="Check for updates" />
       </div>
 
       {state.app.connectionMethod === 'daemon' && (

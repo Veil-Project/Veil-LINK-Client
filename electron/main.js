@@ -40,11 +40,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
-var electron_updater_1 = require("electron-updater");
 var url_1 = __importDefault(require("url"));
 var path_1 = __importDefault(require("path"));
 var Daemon_1 = __importDefault(require("./Daemon"));
 var AppWindow_1 = __importDefault(require("./AppWindow"));
+var updater_1 = require("./updater");
 // Set up main window
 var startUrl = process.env.ELECTRON_START_URL ||
     url_1.default.format({
@@ -105,10 +105,6 @@ electron_1.app.on('window-all-closed', function () {
 });
 electron_1.app.on('ready', function (e) {
     mainWindow.open();
-    var log = require('electron-log');
-    log.transports.file.level = 'debug';
-    electron_updater_1.autoUpdater.logger = log;
-    electron_updater_1.autoUpdater.checkForUpdatesAndNotify();
 });
 electron_1.app.on('activate', function (e) {
     if (!mainWindow.isOpen()) {
@@ -164,3 +160,7 @@ electron_1.ipcMain.handle('stop-daemon', function (_) { return __awaiter(void 0,
         }
     });
 }); });
+// Updater API
+electron_1.ipcMain.handle('check-for-updates', function (_) {
+    updater_1.checkForUpdates();
+});

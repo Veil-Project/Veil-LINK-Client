@@ -31,4 +31,8 @@ export default {
       properties: [...properties, 'createDirectory'],
     })
   },
+
+  async checkForUpdates() {
+    return await window.ipcRenderer.invoke('check-for-updates')
+  },
 }
