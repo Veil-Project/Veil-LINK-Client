@@ -4,7 +4,7 @@ import { Router, RouteComponentProps } from '@reach/router'
 import Home from './Home'
 import About from './About'
 import Receive from './Receive'
-import Settings from './Settings/Settings'
+import Settings from './Settings'
 import Console from './Console'
 
 import ConvertLegacyCoins from './ConvertLegacyCoins'
@@ -14,6 +14,7 @@ import AppSidebar from 'components/AppSidebar'
 import Portal from 'components/Portal'
 import Overlay from 'components/Overlay'
 import DaemonWarmup from 'components/DaemonWarmup'
+import ChangePassword from './ChangePassword'
 
 const Wallet = (props: RouteComponentProps) => {
   const { state, actions } = useStore()
@@ -65,15 +66,13 @@ const Wallet = (props: RouteComponentProps) => {
           <Home />
         </div>
 
-        <Router
-          className="fixed inset-0 z-50 p-20 flex items-stretch justify-center"
-          style={{ backgroundColor: '#00000066' }}
-        >
+        <Router>
           <About path="/about" />
           <Receive path="/receive" />
           <Settings path="/settings/*" />
           <Console path="/console" />
           <ConvertLegacyCoins path="/convert" />
+          <ChangePassword path="/change-password" />
         </Router>
       </div>
     </>

@@ -183,7 +183,11 @@ const Console = (props: RouteComponentProps) => {
   }, [currentIndex])
 
   return (
-    <Modal onClose={() => navigate('/')} canClose={!isLoading}>
+    <Modal
+      className="h-full"
+      onClose={() => navigate('/')}
+      canClose={!isLoading}
+    >
       <label className="block w-full flex flex-col p-4 overflow-y-auto font-mono text-sm">
         <div>
           Welcome to the Veil RPC console.

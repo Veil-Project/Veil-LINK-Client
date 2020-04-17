@@ -1,22 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-
-interface MenuLinkProps {
-  onClick(): void
-  label: string
-  shortcut?: string
-}
-
-const MenuLink = ({ onClick, label, shortcut }: MenuLinkProps) => (
-  <button
-    tabIndex={-1}
-    className="w-full px-2 h-8 rounded flex items-center justify-between hover:bg-blue-500"
-    onClick={onClick}
-  >
-    <span className="text-white">{label}</span>
-    <span className="">{shortcut}</span>
-  </button>
-)
+import MenuLink from './MenuLink'
 
 interface MenuProps {
   onOpenWallet(): void
@@ -37,18 +21,19 @@ const WalletMenu = ({ onOpenWallet, onBackupWallet }: MenuProps) => {
       onClick={e => e.nativeEvent.stopImmediatePropagation()}
       className="w-48 bg-gray-700 text-sm text-gray-300 font-medium rounded shadow-lg"
     >
-      <div className="flex flex-col p-2">
-        <MenuLink onClick={onOpenWallet} label="Open wallet…" shortcut="⌘O" />
-      </div>
       <div
-        className="border-t p-2"
+        className="border-b p-2"
         style={{ borderColor: 'rgba(255, 255, 255, .05)' }}
       >
+        <MenuLink to="/change-password" label="Change password" />
         <MenuLink
           onClick={onBackupWallet}
           label="Backup wallet…"
           shortcut="⌘B"
         />
+      </div>
+      <div className="flex flex-col p-2">
+        <MenuLink onClick={onOpenWallet} label="Open wallet…" shortcut="⌘O" />
       </div>
     </motion.div>
   )

@@ -114,6 +114,14 @@ export default {
     return await callAsync('walletpassphrase', password, false, 60 * 60)
   },
 
+  async changePassword(currentPassword: string, newPassword: string) {
+    return await callAsync(
+      'walletpassphrasechange',
+      currentPassword,
+      newPassword
+    )
+  },
+
   async lockWallet() {
     return await callAsync('walletlock')
   },

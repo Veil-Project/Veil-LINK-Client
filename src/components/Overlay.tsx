@@ -2,7 +2,7 @@ import React from 'react'
 
 const Overlay = ({ children }: any) => (
   <div
-    className="fixed inset-0 z-50 flex items-center justify-center"
+    className="fixed inset-0 z-50 flex items-center justify-center p-20"
     style={{ backgroundColor: 'rgba(0,0,0,.5)' }}
   >
     {children}

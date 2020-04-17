@@ -1,10 +1,10 @@
 import React from 'react'
 import { Router, Link, RouteComponentProps } from '@reach/router'
 
-import General from './General'
-import Network from './Network'
-import Privacy from './Privacy'
-import Advanced from './Advanced'
+import General from './Settings/General'
+import Network from './Settings/Network'
+import Privacy from './Settings/Privacy'
+import Advanced from './Settings/Advanced'
 
 import Modal from 'components/UI/Modal'
 import Button from 'components/UI/Button'

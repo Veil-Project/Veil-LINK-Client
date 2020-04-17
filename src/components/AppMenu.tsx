@@ -1,37 +1,8 @@
 import React from 'react'
 import { useStore } from 'store'
-import { Link } from '@reach/router'
 import { motion } from 'framer-motion'
 import { version } from '../../package.json'
-
-interface MenuLinkProps {
-  onClick(): void
-  label: string
-  shortcut?: string
-  to?: string
-}
-
-const MenuLink = ({ onClick, label, to, shortcut }: MenuLinkProps) =>
-  to ? (
-    <Link
-      to={to}
-      tabIndex={-1}
-      className="px-2 h-8 rounded flex items-center justify-between font-medium hover:bg-blue-500"
-      onClick={onClick}
-    >
-      <span className="text-white">{label}</span>
-      <span className="">{shortcut}</span>
-    </Link>
-  ) : (
-    <button
-      tabIndex={-1}
-      className="px-2 h-8 rounded flex items-center justify-between font-medium hover:bg-blue-500"
-      onClick={onClick}
-    >
-      <span className="text-white">{label}</span>
-      <span className="">{shortcut}</span>
-    </button>
-  )
+import MenuLink from './MenuLink'
 
 interface MenuProps {
   onClickOption(): void
