@@ -35,12 +35,6 @@ const AppMenu = ({ onClickOption }: MenuProps) => {
       <div className="flex flex-col p-2">
         <MenuLink
           onClick={onClickOption}
-          label="Settings"
-          shortcut="⌘,"
-          to="/settings"
-        />
-        <MenuLink
-          onClick={onClickOption}
           label="About"
           shortcut="⌘I"
           to="/about"
@@ -50,6 +44,12 @@ const AppMenu = ({ onClickOption }: MenuProps) => {
           label="Console"
           shortcut="C"
           to="/console"
+        />
+        <MenuLink
+          onClick={onClickOption}
+          label="Settings"
+          shortcut="⌘,"
+          to="/settings"
         />
       </div>
 

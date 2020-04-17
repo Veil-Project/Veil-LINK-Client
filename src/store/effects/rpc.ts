@@ -94,6 +94,10 @@ export default {
     return await callAsync('getBlockchainInfo')
   },
 
+  async getNetworkInfo() {
+    return await callAsync('getnetworkinfo')
+  },
+
   async getPeerInfo() {
     return await callAsync('getPeerInfo')
   },

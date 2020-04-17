@@ -7,6 +7,7 @@ type BlockchainTip = {
 
 type State = {
   chain: string | null
+  height: number | null
   initialBlockDownload: boolean
   verificationProgress: number
   tip: BlockchainTip | null
@@ -20,6 +21,7 @@ type Actions = {
 
 export const state: State = {
   chain: null,
+  height: null,
   initialBlockDownload: false,
   verificationProgress: 0,
   tip: null,
@@ -31,11 +33,13 @@ export const actions: Actions = {
     try {
       const {
         chain,
+        blocks,
         initialblockdownload: initialBlockDownload,
         verificationprogress: verificationProgress,
       } = await effects.rpc.getBlockchainInfo()
 
       state.blockchain.chain = chain
+      state.blockchain.height = blocks
       state.blockchain.initialBlockDownload = initialBlockDownload
       state.blockchain.verificationProgress = verificationProgress
 
