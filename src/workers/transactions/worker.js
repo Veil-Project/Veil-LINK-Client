@@ -30,6 +30,6 @@ registerPromiseWorker(async ({ type, options }) => {
       }
     }
 
-    return newLastBlock
+    return { lastBlock: newLastBlock, transactionCount: transactions.length }
   }
 })
