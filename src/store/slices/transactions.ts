@@ -153,7 +153,9 @@ export const actions: Actions = {
       }
 
       const { credentials } = await effects.daemon.getInfo()
-      const newLastBlock = await transactionWorker.importWalletTransactions({
+      const {
+        lastBlock: newLastBlock,
+      } = await transactionWorker.importWalletTransactions({
         credentials,
         lastBlock,
       })
