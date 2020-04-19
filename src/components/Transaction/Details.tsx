@@ -3,6 +3,7 @@ import formatDate from 'utils/formatDate'
 import formatTime from 'utils/formatTime'
 import ExternalLink from 'components/ExternalLink'
 import { useToasts } from 'react-toast-notifications'
+import JsonViewer from 'components/JsonViewer'
 
 const TransactionDetails = ({ transaction }: { transaction: any }) => {
   const { addToast } = useToasts()
@@ -100,6 +101,9 @@ const TransactionDetails = ({ transaction }: { transaction: any }) => {
         >
           Copy
         </button>
+      </div>
+      <div className="mt-4">
+        <JsonViewer src={transaction} />
       </div>
     </div>
   )

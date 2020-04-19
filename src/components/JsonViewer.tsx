@@ -3,16 +3,17 @@ import ReactJson from 'react-json-view'
 
 interface JsonViewerProps {
   src: object
+  collapsed?: number
 }
 
-const JsonViewer = ({ src }: JsonViewerProps) => (
+const JsonViewer = ({ src, collapsed = 1 }: JsonViewerProps) => (
   <ReactJson
     src={src}
     name={null}
     theme="twilight"
     displayObjectSize={false}
     displayDataTypes={false}
-    collapsed={1}
+    collapsed={collapsed}
     style={{
       fontFamily: 'inherit',
       padding: '4px 0',
