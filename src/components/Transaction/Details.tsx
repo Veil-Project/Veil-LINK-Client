@@ -103,7 +103,7 @@ const TransactionDetails = ({ transaction }: { transaction: any }) => {
         </button>
       </div>
       <div className="mt-4">
-        <JsonViewer src={transaction} />
+        <JsonViewer src={transaction} collapsed={0} />
       </div>
     </div>
   )
