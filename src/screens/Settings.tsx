@@ -1,58 +1,61 @@
-import React from 'react'
-import { Router, Link, RouteComponentProps } from '@reach/router'
-
-import General from './Settings/General'
-import Network from './Settings/Network'
-import Privacy from './Settings/Privacy'
-import Advanced from './Settings/Advanced'
+import React, { useState } from 'react'
+import { RouteComponentProps, navigate } from '@reach/router'
+import { useStore } from 'store'
+import { useToasts } from 'react-toast-notifications'
+import PasswordPrompt from 'components/PasswordPrompt'
 
 import Modal from 'components/UI/Modal'
 import Button from 'components/UI/Button'
 
-// TODO: figure out correct type for wrapping Link props
-const ActiveLink = (props: any) => (
-  <Link
-    {...props}
-    getProps={({ isCurrent }) => ({
-      className: isCurrent
-        ? 'px-4 h-10 rounded flex items-center justify-start bg-gray-700 text-sm text-white font-medium'
-        : 'px-4 h-10 rounded flex items-center justify-start text-gray-300 text-sm font-medium hover:text-white hover:bg-gray-700',
-    })}
-  />
-)
+const Settings = (props: RouteComponentProps) => {
+  const [requiresPassword, setRequiresPassword] = useState(false)
+  const { actions, effects } = useStore()
+  const { addToast } = useToasts()
 
-const Settings = (props: RouteComponentProps) => (
-  <Modal hideClose={true}>
-    <div className="w-full flex flex-col">
-      <div className="flex-1 flex">
-        <div
-          className="flex-none w-48 p-4 flex flex-col"
-          style={{ backgroundColor: 'rgba(0,0,0,.15)' }}
-        >
-          <ActiveLink to="./">General</ActiveLink>
-          <ActiveLink to="network">Network</ActiveLink>
-          <ActiveLink to="privacy">Privacy</ActiveLink>
-          <ActiveLink to="advanced">Advanced</ActiveLink>
-        </div>
-        <div className="flex-1 p-6">
-          <Router>
-            <General path="/" />
-            <Network path="network" />
-            <Privacy path="privacy" />
-            <Advanced path="advanced" />
-          </Router>
-        </div>
-      </div>
-      <div
-        className="flex-none flex justify-end px-6 py-4"
-        style={{ backgroundColor: 'rgba(255,255,255,.025)' }}
-      >
-        <Button to="/" primary>
-          Done
+  const resetSettings = () => {
+    actions.app.reset()
+    effects.electron.relaunch()
+  }
+
+  const resetCache = () => {
+    actions.transactions.reset()
+  }
+
+  const startRescan = async (password: string) => {
+    try {
+      await effects.rpc.unlockWallet(password)
+      await effects.rpc.rescanRingCtWallet()
+      addToast('Rescan started', { appearance: 'success' })
+    } catch (e) {
+      addToast(e.message, { appearance: 'error' })
+    } finally {
+      await effects.rpc.lockWallet()
+      setRequiresPassword(false)
+    }
+  }
+
+  return (
+    <Modal onClose={() => navigate('/')} canClose={true}>
+      <div className="grid gap-4">
+        <Button primary onClick={() => setRequiresPassword(true)}>
+          Rescan RingCT wallet
+        </Button>
+        <Button primary onClick={resetCache}>
+          Reset transaction cache
+        </Button>
+        <Button primary onClick={resetSettings}>
+          Reset settings
         </Button>
       </div>
-    </div>
-  </Modal>
-)
 
+      {requiresPassword && (
+        <PasswordPrompt
+          title={`Rescan RingCT wallet`}
+          onCancel={() => setRequiresPassword(false)}
+          onSubmit={startRescan}
+        />
+      )}
+    </Modal>
+  )
+}
 export default Settings

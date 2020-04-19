@@ -3,6 +3,7 @@ import { Router, RouteComponentProps, navigate } from '@reach/router'
 
 import Home from './Home'
 import About from './About'
+import Help from './Help'
 import Settings from './Settings'
 import Console from './Console'
 
@@ -84,6 +85,7 @@ const Wallet = (props: RouteComponentProps) => {
 
         <Router>
           <About path="/about/*" />
+          <Help path="/help" />
           <Settings path="/settings/*" />
           <Console path="/console" />
           <ConvertLegacyCoins path="/convert" />

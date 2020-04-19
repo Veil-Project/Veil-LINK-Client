@@ -51,6 +51,7 @@ const AppMenu = ({ onClickOption }: MenuProps) => {
           shortcut="⌘,"
           to="/settings"
         />
+        <MenuLink onClick={onClickOption} label="Help" to="/help" />
       </div>
 
       <div className="flex flex-col p-2">
