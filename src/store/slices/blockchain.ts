@@ -8,6 +8,7 @@ type BlockchainTip = {
 type State = {
   chain: string | null
   height: number | null
+  bestBlock?: string
   initialBlockDownload: boolean
   verificationProgress: number
   tip: BlockchainTip | null
@@ -40,6 +41,7 @@ export const actions: Actions = {
 
       state.blockchain.chain = chain
       state.blockchain.height = blocks
+      state.blockchain.bestBlock = blocks
       state.blockchain.initialBlockDownload = initialBlockDownload
       state.blockchain.verificationProgress = verificationProgress
 
