@@ -85,5 +85,6 @@ export default (walletTx: WalletTransaction) => {
     type,
     requiresReveal:
       (type === 'ringct' || type === 'ct') && receivedAmount <= 0.00000001,
+    walletTx,
   }
 }
