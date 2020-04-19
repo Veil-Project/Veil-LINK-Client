@@ -2,7 +2,6 @@ import { dialog } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 
-let updater: any
 autoUpdater.autoDownload = false
 log.transports.file.level = 'debug'
 autoUpdater.logger = log
@@ -26,9 +25,6 @@ autoUpdater.on('update-available', async info => {
 
   if (buttonIndex === 0) {
     autoUpdater.downloadUpdate()
-  } else {
-    updater.enabled = true
-    updater = null
   }
 })
 
@@ -37,8 +33,6 @@ autoUpdater.on('update-not-available', () => {
     title: 'No Updates',
     message: 'Current version is up-to-date.',
   })
-  updater.enabled = true
-  updater = null
 })
 
 autoUpdater.on('update-downloaded', async () => {
@@ -48,13 +42,6 @@ autoUpdater.on('update-downloaded', async () => {
   })
   autoUpdater.quitAndInstall()
 })
-
-// export this to MenuItem click callback
-// export function checkForUpdates(menuItem: any, focusedWindow: any, event: any) {
-//   updater = menuItem
-//   updater.enabled = false
-//   autoUpdater.checkForUpdates()
-// }
 
 // export this to MenuItem click callback
 export function checkForUpdates() {
