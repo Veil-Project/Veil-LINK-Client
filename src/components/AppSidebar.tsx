@@ -203,7 +203,7 @@ const AppSidebar = () => {
             className={`absolute left-0 top-0 bottom-0 bg-gray-500 z-0`}
             style={{ width: `${blockchain.verificationProgress * 100}%` }}
           />
-          <div className="relative z-10 leading-snug">
+          <div className="relative z-10 leading-snug text-center">
             <div className="font-medium">
               Syncing {(blockchain.verificationProgress * 100).toFixed(2)}%
             </div>
