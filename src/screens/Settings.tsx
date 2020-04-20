@@ -35,15 +35,15 @@ const Settings = (props: RouteComponentProps) => {
   }
 
   return (
-    <Modal onClose={() => navigate('/')} canClose={true}>
+    <Modal className="p-10" onClose={() => navigate('/')} canClose={true}>
       <div className="grid gap-4">
-        <Button primary onClick={() => setRequiresPassword(true)}>
+        <Button secondary onClick={() => setRequiresPassword(true)}>
           Rescan RingCT wallet
         </Button>
-        <Button primary onClick={resetCache}>
+        <Button secondary onClick={resetCache}>
           Reset transaction cache
         </Button>
-        <Button primary onClick={resetSettings}>
+        <Button secondary onClick={resetSettings}>
           Reset settings
         </Button>
       </div>
