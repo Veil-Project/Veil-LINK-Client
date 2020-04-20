@@ -15,6 +15,9 @@ import StakingBlock from './Sidebar/StakingBlock'
 import ReceivingAddressBlock from './Sidebar/ReceivingAddressBlock'
 import { FiChevronDown } from 'react-icons/fi'
 import WalletMenu from './WalletMenu'
+import Portal from './Portal'
+import Overlay from './Overlay'
+import Button from './UI/Button'
 
 const MenuButton = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -143,15 +146,47 @@ const WalletMenuButton = () => {
 }
 
 const AppSidebar = () => {
+  const [showConfirmation, setShowConfirmation] = useState(false)
   const { state, effects } = useStore()
   const { blockchain } = state
 
+  useHotkeys('escape', () => {
+    setShowConfirmation(false)
+  })
+
   const lockWallet = () => {
-    effects.rpc.lockWallet()
+    if (!showConfirmation) {
+      setShowConfirmation(true)
+    } else {
+      effects.rpc.lockWallet()
+      setShowConfirmation(false)
+    }
   }
 
   return (
     <>
+      {showConfirmation && (
+        <Portal>
+          <Overlay>
+            <div className="bg-gray-700 text-white rounded-lg p-6 w-full max-w-sm shadow-lg">
+              <div className="mb-6 leading-snug">
+                <h1 className="mb-1 font-semibold">
+                  Are you sure you want to lock the wallet?
+                </h1>
+                <p className="text-gray-300">This will also disable staking.</p>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Button onClick={() => setShowConfirmation(false)}>
+                  Cancel
+                </Button>
+                <Button primary onClick={lockWallet}>
+                  Lock wallet
+                </Button>
+              </div>
+            </div>
+          </Overlay>
+        </Portal>
+      )}
       <div className="pb-titlebar bg-blue-500 draggable">
         <div className="h-titlebar px-1 flex items-center relative">
           <div className="flex-1 flex">
