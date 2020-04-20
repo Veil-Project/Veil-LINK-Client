@@ -74,7 +74,7 @@ const Help = (props: RouteComponentProps) => {
             <div className="h-24 flex items-center justify-center">
               <div className="p-5 pt-6 rounded-full flex items-center justify-center bg-blue-500">
                 <svg
-                  enable-background="new 0 0 24 24"
+                  enableBackground="new 0 0 24 24"
                   height="40px"
                   width="40px"
                   viewBox="0 0 24 24"
@@ -101,7 +101,7 @@ const Help = (props: RouteComponentProps) => {
             <div className="h-24 flex items-center justify-center">
               <svg
                 id="Layer_3"
-                enable-background="new 0 0 64 64"
+                enableBackground="new 0 0 64 64"
                 height="72px"
                 width="72px"
                 className="fill-current"
