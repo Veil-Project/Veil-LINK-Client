@@ -4,9 +4,25 @@ import { RouteComponentProps, navigate } from '@reach/router'
 import Modal from 'components/UI/Modal'
 import ExternalLink from 'components/ExternalLink'
 import VeilLogo from 'components/Icon/VeilLogo'
-import { FiHelpCircle } from 'react-icons/fi'
+import { useStore } from 'store'
 
 const Help = (props: RouteComponentProps) => {
+  const { state } = useStore()
+
+  const revealConfig = () => {
+    window.remote.shell.showItemInFolder(
+      `${state.daemon.actualDatadir}/veil.conf`
+    )
+  }
+
+  const revealDebugLog = () => {
+    window.remote.shell.showItemInFolder(
+      `${state.daemon.actualDatadir}/${
+        state.blockchain.chain === 'test' ? 'testnet4/' : ''
+      }debug.log`
+    )
+  }
+
   return (
     <Modal className="p-10" onClose={() => navigate('/')} canClose={true}>
       <ul className="leading-loose grid grid-cols-2 gap-2 text-center">
@@ -152,6 +168,20 @@ const Help = (props: RouteComponentProps) => {
           </ExternalLink>
         </li>
       </ul>
+      <div className="text-center flex flex-col items-center mt-6 -mb-2 text-sm leading-loose font-medium">
+        <button
+          className="underline text-gray-300 hover:text-white hover:no-underline"
+          onClick={revealConfig}
+        >
+          Reveal configuration file
+        </button>
+        <button
+          className="underline text-gray-300 hover:text-white hover:no-underline"
+          onClick={revealDebugLog}
+        >
+          Reveal debug log
+        </button>
+      </div>
     </Modal>
   )
 }
