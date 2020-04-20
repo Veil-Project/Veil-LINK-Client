@@ -77,7 +77,6 @@ const StakingBlock = ({ onEnableStaking, onDisableStaking }: any) => {
     <SidebarBlock
       title="Staking Overview"
       titleAccessory={
-        staking.status.current === 'disabled' &&
         staking.isAvailable && (
           <StakingButton
             currentStatus={staking.status.current}
