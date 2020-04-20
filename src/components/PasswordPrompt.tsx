@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Portal from './Portal'
 import Button from './UI/Button'
 import useHotkeys from '@reecelucas/react-use-hotkeys'
+import Overlay from './Overlay'
 
 const PasswordPrompt = ({ title, onCancel, onSubmit, disabled }: any) => {
   const [password, setPassword] = useState('')
@@ -21,10 +22,7 @@ const PasswordPrompt = ({ title, onCancel, onSubmit, disabled }: any) => {
 
   return (
     <Portal>
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center"
-        style={{ backgroundColor: 'rgba(0,0,0,.5)' }}
-      >
+      <Overlay>
         <div className="bg-gray-700 rounded-lg p-6 w-full max-w-xs shadow-lg">
           <header className="text-center mb-4">
             <div className="text-white">{title}</div>
@@ -57,7 +55,7 @@ const PasswordPrompt = ({ title, onCancel, onSubmit, disabled }: any) => {
             </Button>
           </div>
         </div>
-      </div>
+      </Overlay>
     </Portal>
   )
 }
