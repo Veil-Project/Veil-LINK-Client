@@ -67,7 +67,7 @@ const ReceivingAddressBlock = () => {
       <SidebarBlock
         title="Receiving Address"
         titleAccessory={
-          currentReceivingAddress && (
+          currentReceivingAddress ? (
             <div className="pr-2">
               <button
                 className="p-2 font-semibold text-teal-500 hover:text-white outline-none"
@@ -82,23 +82,17 @@ const ReceivingAddressBlock = () => {
                 <FiRefreshCw size="14" />
               </button>
             </div>
+          ) : (
+            <button
+              className="text-teal-500 hover:text-white font-semibold py-2 px-4"
+              onClick={() => handleRegenerateAddress()}
+            >
+              Generate
+            </button>
           )
         }
       >
         <ReceivingAddress address={currentReceivingAddress} />
-        {!currentReceivingAddress && (
-          <>
-            <div className="mt-4 flex">
-              <Button
-                primary
-                className="w-full"
-                onClick={() => handleRegenerateAddress()}
-              >
-                Generate address
-              </Button>
-            </div>
-          </>
-        )}
       </SidebarBlock>
     </>
   )

@@ -18,6 +18,10 @@ import WalletMenu from './WalletMenu'
 import Portal from './Portal'
 import Overlay from './Overlay'
 import Button from './UI/Button'
+import PasswordPrompt from './PasswordPrompt'
+import Dialog from './Dialog'
+import Confirm from './Confirm'
+import Spinner from './UI/Spinner'
 
 const MenuButton = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -147,45 +151,57 @@ const WalletMenuButton = () => {
 
 const AppSidebar = () => {
   const [showConfirmation, setShowConfirmation] = useState(false)
-  const { state, effects } = useStore()
-  const { blockchain } = state
+  const [requiresPassword, setRequiresPassword] = useState(false)
+  const { addToast } = useToasts()
+  const { state, actions, effects } = useStore()
+  const { staking, blockchain } = state
 
   useHotkeys('escape', () => {
     setShowConfirmation(false)
   })
 
+  useEffect(() => {
+    if (staking.error) {
+      addToast(staking.error, { appearance: 'error' })
+    }
+  }, [staking.error, addToast])
+
   const lockWallet = () => {
     if (!showConfirmation) {
       setShowConfirmation(true)
     } else {
-      effects.rpc.lockWallet()
       setShowConfirmation(false)
+      actions.staking.disable()
+    }
+  }
+
+  const handleEnableStaking = async (password: string) => {
+    const error = await actions.staking.enable(password)
+    if (error) {
+      addToast(error.message, { appearance: 'error' })
+    } else {
+      setRequiresPassword(false)
     }
   }
 
   return (
     <>
+      {requiresPassword && (
+        <PasswordPrompt
+          title="Enable staking"
+          onCancel={() => setRequiresPassword(false)}
+          onSubmit={(password: string) => handleEnableStaking(password)}
+        />
+      )}
       {showConfirmation && (
-        <Portal>
-          <Overlay>
-            <div className="bg-gray-700 text-white rounded-lg p-6 w-full max-w-sm shadow-lg">
-              <div className="mb-6 leading-snug">
-                <h1 className="mb-1 font-semibold">
-                  Are you sure you want to lock the wallet?
-                </h1>
-                <p className="text-gray-300">This will also disable staking.</p>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <Button onClick={() => setShowConfirmation(false)}>
-                  Cancel
-                </Button>
-                <Button primary onClick={lockWallet}>
-                  Lock wallet
-                </Button>
-              </div>
-            </div>
-          </Overlay>
-        </Portal>
+        <Confirm
+          title="Are you sure you want to lock the wallet?"
+          message="This will also disable staking."
+          cancelLabel="Cancel"
+          submitLabel="Lock wallet"
+          onCancel={() => setShowConfirmation(false)}
+          onSubmit={lockWallet}
+        />
       )}
       <div className="pb-titlebar bg-blue-500 draggable">
         <div className="h-titlebar px-1 flex items-center relative">
@@ -202,8 +218,17 @@ const AppSidebar = () => {
               </span>
             )}
             <div className="p-1 mb-2px">
-              {state.wallet.locked ? (
-                <FaLock size={14} title="Locked" className="opacity-50" />
+              {state.staking.isWorking ? (
+                <div className="w-6 h-6 flex items-center justify-center">
+                  <Spinner size={8} strokeWidth={2} />
+                </div>
+              ) : state.wallet.locked ? (
+                <button
+                  onClick={() => setRequiresPassword(true)}
+                  className="w-6 h-6 flex items-center justify-center rounded pointer outline-none opacity-50 hover:opacity-100 hover:bg-blue-600 active:bg-blue-700"
+                >
+                  <FaLock size={14} title="Locked" />
+                </button>
               ) : (
                 <button
                   onClick={lockWallet}
@@ -227,7 +252,7 @@ const AppSidebar = () => {
 
       <div className="flex-1 overflow-y-auto flex flex-col">
         {state.balance.unspendableBalance > 0 && <UnspendableBalanceBlock />}
-        <StakingBlock />
+        <StakingBlock onEnableStaking={() => setRequiresPassword(true)} />
         <ReceivingAddressBlock />
       </div>
 

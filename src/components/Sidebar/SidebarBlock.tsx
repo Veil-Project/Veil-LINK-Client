@@ -18,7 +18,7 @@ const SidebarBlock = ({
   return (
     <div className="mb-px">
       <div
-        className="h-8 flex justify-between font-semibold text-xs leading-none bg-gray-600 cursor-default"
+        className="h-8 flex justify-between items-center font-semibold text-xs leading-none bg-gray-600 cursor-default"
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex items-center">

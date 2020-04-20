@@ -7,6 +7,7 @@ type State = {
     current: StakingStatus
     requested: StakingStatus | null
   }
+  isWorking: Derive<State, boolean>
   isEnabled: Derive<State, boolean>
   isAvailable: Derive<State, boolean>
   error: string | null
@@ -29,6 +30,7 @@ export const state: State = {
     current: 'disabled',
     requested: null,
   },
+  isWorking: state => state.status.requested !== null,
   isEnabled: state => state.status.current === 'enabled',
   isAvailable: (state, globalState) =>
     globalState.balance.breakdown.zerocoinSpendable > 0,

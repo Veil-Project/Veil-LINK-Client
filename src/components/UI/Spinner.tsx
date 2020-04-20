@@ -26,7 +26,8 @@ const Spinner = ({ size = 20, strokeWidth = 3, percentage }: Props) => {
       viewBox={viewBox}
     >
       <circle
-        className="text-gray-500 stroke-current"
+        style={{ color: 'rgba(255,255,255,.2)' }}
+        className="stroke-current"
         fill="none"
         cx={size}
         cy={size}

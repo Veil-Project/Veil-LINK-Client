@@ -26,8 +26,24 @@ const UnspendableBalanceBlock = () => {
   const { state } = useStore()
   const { balance } = state
 
+  const ConvertLink = (
+    <Link
+      to="/convert"
+      className="text-teal-500 py-2 px-4 hover:text-white hover:no-underline"
+    >
+      Convert
+    </Link>
+  )
+
   return (
-    <SidebarBlock title="Unspendable Balances">
+    <SidebarBlock
+      title="Unspendable Balances"
+      titleAccessory={
+        balance.legacyBalance !== null &&
+        balance.legacyBalance > 0 &&
+        ConvertLink
+      }
+    >
       <div className="leading-relaxed text-sm">
         {balance.unconfirmedBalance !== null &&
           balance.unconfirmedBalance > 0 && (
@@ -37,17 +53,7 @@ const UnspendableBalanceBlock = () => {
           <Row label="Immature" amount={balance.immatureBalance} />
         )}
         {balance.legacyBalance !== null && balance.legacyBalance > 0 && (
-          <>
-            <Row label="Legacy" amount={balance.legacyBalance} />
-            <div className="text-xs mb-1">
-              <Link
-                to="/convert"
-                className="underline text-gray-300 hover:text-white hover:no-underline"
-              >
-                Convert legacy balance…
-              </Link>
-            </div>
-          </>
+          <Row label="Legacy" amount={balance.legacyBalance} />
         )}
       </div>
     </SidebarBlock>

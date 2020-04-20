@@ -27,13 +27,18 @@ const StakingButton = ({
       return null
     case 'disabled':
       return isAvailable ? (
-        <Button
-          primary
+        <button
           onClick={onEnable}
           disabled={requestedStatus === 'enabled'}
+          className={
+            'font-semibold py-2 px-4 ' +
+            (requestedStatus === 'enabled'
+              ? 'text-gray-300'
+              : 'text-teal-500 hover:text-white')
+          }
         >
-          {requestedStatus === 'enabled' ? 'Please wait…' : 'Enable staking'}
-        </Button>
+          {requestedStatus === 'enabled' ? 'Please wait…' : 'Enable'}
+        </button>
       ) : (
         <div className="h-9 text-center text-sm font-semibold flex items-center justify-center rounded bg-gray-600 text-gray-300 pb-px">
           Staking unavailable
@@ -42,18 +47,10 @@ const StakingButton = ({
   }
 }
 
-const StakingBlock = () => {
+const StakingBlock = ({ onEnableStaking }: { onEnableStaking: any }) => {
   const [data, setData] = useState<number[]>([])
-  const [requiresPassword, setRequiresPassword] = useState(false)
-  const { addToast } = useToasts()
-  const { state, actions, effects } = useStore()
+  const { state, effects } = useStore()
   const { staking } = state
-
-  useEffect(() => {
-    if (staking.error) {
-      addToast(staking.error, { appearance: 'error' })
-    }
-  }, [staking.error, addToast])
 
   useEffect(() => {
     ;(async () => {
@@ -67,41 +64,26 @@ const StakingBlock = () => {
     })()
   }, [effects.db, state.transactions.txids.length])
 
-  const handleEnableStaking = async (password: string) => {
-    const error = await actions.staking.enable(password)
-    if (error) {
-      addToast(error.message, { appearance: 'error' })
-    } else {
-      setRequiresPassword(false)
-    }
-  }
-
   return (
-    <>
-      {requiresPassword && (
-        <PasswordPrompt
-          title="Enable staking"
-          onCancel={() => setRequiresPassword(false)}
-          onSubmit={(password: string) => handleEnableStaking(password)}
-        />
-      )}
-      <SidebarBlock title="Staking Overview">
-        <StakingOverview
-          isDimmed={staking.status.current === 'disabled'}
-          data={data}
-        />
-        {staking.status.current === 'disabled' && (
-          <div className="mt-4 grid">
-            <StakingButton
-              isAvailable={staking.isAvailable}
-              currentStatus={staking.status.current}
-              requestedStatus={staking.status.requested}
-              onEnable={() => setRequiresPassword(true)}
-            />
-          </div>
-        )}
-      </SidebarBlock>
-    </>
+    <SidebarBlock
+      title="Staking Overview"
+      titleAccessory={
+        staking.status.current === 'disabled' &&
+        staking.isAvailable && (
+          <StakingButton
+            isAvailable={staking.isAvailable}
+            currentStatus={staking.status.current}
+            requestedStatus={staking.status.requested}
+            onEnable={onEnableStaking}
+          />
+        )
+      }
+    >
+      <StakingOverview
+        isDimmed={staking.status.current === 'disabled'}
+        data={data}
+      />
+    </SidebarBlock>
   )
 }
 
