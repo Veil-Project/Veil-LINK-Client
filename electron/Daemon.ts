@@ -19,12 +19,14 @@ export type DaemonStatus =
   | 'wallet-loaded'
   | 'stopping'
   | 'stopped'
+  | 'reindex-required'
   | 'crashed'
 
 export interface DaemonOptions {
   datadir?: string
   network?: 'mainnet' | 'testnet' | 'regtest' | 'devnet'
   seed?: string
+  reindex?: boolean
   wallet?: string
 }
 
@@ -101,6 +103,9 @@ export default class Daemon extends EventEmitter {
         break
       case /new wallet load detected/i.test(message):
         this.status = 'new-wallet'
+        break
+      case /error loading block database/i.test(message):
+        this.status = 'reindex-required'
         break
       case /error/i.test(message):
         this.emit('error', message)
@@ -211,7 +216,7 @@ export default class Daemon extends EventEmitter {
     })
   }
 
-  start({ network, datadir, seed, wallet }: DaemonOptions) {
+  start({ network, datadir, seed, reindex, wallet }: DaemonOptions) {
     if (!this.path || !this.installed) {
       return Promise.reject()
     }
@@ -234,6 +239,7 @@ export default class Daemon extends EventEmitter {
             network === 'testnet' ? '--testnet' : '',
             datadir ? `--datadir=${datadir}` : '',
             seed ? `--importseed=${seed}` : '',
+            reindex ? '--reindex' : '',
             wallet ? `--wallet=${wallet}` : '',
           ].filter(opt => opt !== '')
         )

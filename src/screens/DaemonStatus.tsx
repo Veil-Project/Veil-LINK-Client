@@ -18,7 +18,7 @@ const DaemonStatus = ({ showStartButton }: DaemonStatusProps) => {
   const handleStartDaemon = async () => {
     setIsStarting(true)
     try {
-      await actions.daemon.start()
+      await actions.daemon.start({ reindex: status === 'reindex-required' })
       await actions.app.transition()
     } finally {
       setIsStarting(false)
@@ -26,6 +26,7 @@ const DaemonStatus = ({ showStartButton }: DaemonStatusProps) => {
   }
 
   let message
+  let buttonLabel = 'Try again'
   switch (status) {
     case 'starting':
       message = 'Starting Veil server…'
@@ -39,6 +40,10 @@ const DaemonStatus = ({ showStartButton }: DaemonStatusProps) => {
     case 'already-started':
       message =
         'It looks like another instance of Veil is already running. Please stop it and try again.'
+      break
+    case 'reindex-required':
+      buttonLabel = 'Start and reindex'
+      message = 'Error loading block database. A reindex is required.'
       break
   }
 
@@ -66,7 +71,7 @@ const DaemonStatus = ({ showStartButton }: DaemonStatusProps) => {
                   onClick={handleStartDaemon}
                   primary
                 >
-                  Try Again
+                  {buttonLabel}
                 </Button>
                 {status === 'already-started' && (
                   <Button

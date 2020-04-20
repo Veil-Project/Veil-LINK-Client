@@ -170,7 +170,7 @@ const CreateWallet = ({ switchMode }: Props) => {
   const doCreateWallet = async () => {
     try {
       setStep('create')
-      await actions.daemon.start(seed.join(' '))
+      await actions.daemon.start({ seed: seed.join(' ') })
       await actions.app.transition()
     } catch (e) {
       console.error(e)

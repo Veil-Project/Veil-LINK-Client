@@ -41,7 +41,7 @@ const RestoreWallet = ({ switchMode }: Props) => {
 
     try {
       setIsRestoring(true)
-      await actions.daemon.start(seed.join(' '))
+      await actions.daemon.start({ seed: seed.join(' ') })
       await actions.app.transition()
     } catch (e) {
       console.error(e)

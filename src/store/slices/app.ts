@@ -6,6 +6,7 @@ type AppStatus =
   | 'startup'
   | 'connect'
   | 'conflict'
+  | 'reindex'
   | 'setup'
   | 'wallet'
   | 'error'
@@ -68,6 +69,9 @@ export const actions: Actions = {
         break
       case 'already-started':
         state.app.status = 'conflict'
+        break
+      case 'reindex-required':
+        state.app.status = 'reindex'
         break
       case 'crashed':
         state.app.status = 'error'

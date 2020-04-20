@@ -42,6 +42,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var url_1 = __importDefault(require("url"));
 var path_1 = __importDefault(require("path"));
+var fs_1 = __importDefault(require("fs"));
 var Daemon_1 = __importDefault(require("./Daemon"));
 var AppWindow_1 = __importDefault(require("./AppWindow"));
 var updater_1 = require("./updater");
@@ -160,6 +161,23 @@ electron_1.ipcMain.handle('stop-daemon', function (_) { return __awaiter(void 0,
         }
     });
 }); });
+electron_1.ipcMain.handle('read-daemon-config', function (_, datadir) {
+    try {
+        return fs_1.default.readFileSync(datadir + "/veil.conf");
+    }
+    catch (e) {
+        return null;
+    }
+});
+electron_1.ipcMain.handle('write-daemon-config', function (_, datadir, content) {
+    try {
+        fs_1.default.writeFileSync(datadir + "/veil.conf", content, 'utf-8');
+        return true;
+    }
+    catch (e) {
+        return false;
+    }
+});
 // Updater API
 electron_1.ipcMain.handle('check-for-updates', function (_) {
     updater_1.checkForUpdates();

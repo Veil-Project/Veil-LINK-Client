@@ -1,4 +1,4 @@
-import { DaemonOptions } from 'store/slices/daemon'
+import { DaemonOptions, DaemonStartOptions } from 'store/slices/daemon'
 
 export default {
   initialize({
@@ -25,13 +25,23 @@ export default {
   async getInfo() {
     return await window.ipcRenderer.invoke('get-daemon-info')
   },
+  async readConfig(datadir: string) {
+    return await window.ipcRenderer.invoke('read-daemon-config', datadir)
+  },
+  async writeConfig(datadir: string, content: string) {
+    return await window.ipcRenderer.invoke(
+      'write-daemon-config',
+      datadir,
+      content
+    )
+  },
   async download(url: string, onProgress: Function) {
     window.ipcRenderer.on('daemon-download-progress', onProgress)
     const download = await window.ipcRenderer.invoke('download-daemon', url)
     window.ipcRenderer.removeListener('daemon-download-progress', onProgress)
     return download
   },
-  async start(options: DaemonOptions | void) {
+  async start(options: (DaemonOptions & DaemonStartOptions) | void) {
     return await window.ipcRenderer.invoke('start-daemon', options)
   },
   async startFromSeed(seed: string) {

@@ -29,6 +29,7 @@ const Root = () => {
     case 'setup':
       return <Setup />
     case 'conflict':
+    case 'reindex':
       return <DaemonStatus showStartButton={true} />
     case 'wallet':
       return <Wallet />

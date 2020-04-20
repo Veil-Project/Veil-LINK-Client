@@ -51,6 +51,13 @@ const AppMenu = ({ onClickOption }: MenuProps) => {
           shortcut="⌘,"
           to="/settings"
         />
+        {state.app.connectionMethod !== 'rpc' && (
+          <MenuLink
+            onClick={onClickOption}
+            label="Edit Config"
+            to="/configure"
+          />
+        )}
         <MenuLink onClick={onClickOption} label="Help" to="/help" />
       </div>
 

@@ -1,14 +1,20 @@
 import { Action, AsyncAction, Derive } from 'store'
 import { DaemonStatus } from '../../../electron/Daemon'
+import getDefaultVeilDatadir from 'utils/getDefaultVeilDatadir'
+import defaultConfig from 'lib/default-veilconf'
 
 const VEILD_DOWNLOAD_URL =
   'https://github.com/Veil-Project/veil/releases/download/v1.0.4.8/veil-1.0.4-osx64.tar.gz'
 const VEILD_CHECKSUM = '741efac28070072ed8a2788934a70eee'
 
+export interface DaemonStartOptions {
+  seed?: string
+  reindex?: boolean
+}
+
 export interface DaemonOptions {
   network?: 'main' | 'test' | 'regtest' | 'dev' | null
   datadir?: string | null
-  seed?: string
   wallet?: string
 }
 
@@ -43,6 +49,7 @@ type State = {
   configured: Derive<State, boolean>
   downloaded: Derive<State, boolean>
   loaded: Derive<State, boolean>
+  actualDatadir: Derive<State, string>
   download: DownloadStatus
   options: DaemonOptions
   warmup: WarmupStatus
@@ -61,6 +68,13 @@ export const state: State = {
   configured: state => state.options.network !== null,
   downloaded: state => state.download.completedAt !== null,
   loaded: state => state.status !== null,
+  actualDatadir: state => {
+    if (state.options.datadir) {
+      return state.options.datadir
+    } else {
+      return getDefaultVeilDatadir()
+    }
+  },
   options: {
     network: null,
     datadir: null,
@@ -85,8 +99,10 @@ type Actions = {
   load: AsyncAction
   download: AsyncAction
   configure: AsyncAction<DaemonOptions>
-  start: AsyncAction<string | void>
+  start: AsyncAction<DaemonStartOptions | void>
   restart: AsyncAction
+  readConfig: AsyncAction<void, string>
+  writeConfig: AsyncAction<string, boolean>
   reset: Action
   logStdout: Action<string>
   logStderr: Action<string>
@@ -161,12 +177,12 @@ export const actions: Actions = {
     localStorage.setItem('daemonOptions', JSON.stringify(state.daemon.options))
   },
 
-  async start({ effects, state }, seed?) {
+  async start({ effects, state }, options = {}) {
     try {
       state.daemon.error = null
       state.daemon.status = await effects.daemon.start({
         ...state.daemon.options,
-        seed: seed || undefined,
+        ...options,
       })
     } catch (e) {
       state.daemon.error = e
@@ -182,6 +198,15 @@ export const actions: Actions = {
     } catch (e) {
       state.daemon.error = e
     }
+  },
+
+  async readConfig({ state, effects }) {
+    const content = await effects.daemon.readConfig(state.daemon.actualDatadir)
+    return content === null ? defaultConfig : content
+  },
+
+  async writeConfig({ state, effects }, content) {
+    return await effects.daemon.writeConfig(state.daemon.actualDatadir, content)
   },
 
   reset({ actions, state }) {

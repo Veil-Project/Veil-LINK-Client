@@ -5,6 +5,7 @@ import Home from './Home'
 import About from './About'
 import Help from './Help'
 import Settings from './Settings'
+import Configure from './Configure'
 import Console from './Console'
 
 import ConvertLegacyCoins from './ConvertLegacyCoins'
@@ -87,6 +88,7 @@ const Wallet = (props: RouteComponentProps) => {
           <About path="/about/*" />
           <Help path="/help" />
           <Settings path="/settings/*" />
+          <Configure path="/configure" />
           <Console path="/console" />
           <ConvertLegacyCoins path="/convert" />
           <ChangePassword path="/change-password" />

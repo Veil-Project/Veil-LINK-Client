@@ -1,6 +1,7 @@
 import { app, dialog, ipcMain, shell } from 'electron'
 import url from 'url'
 import path from 'path'
+import fs from 'fs'
 import Daemon, { DaemonOptions } from './Daemon'
 import AppWindow from './AppWindow'
 import { checkForUpdates } from './updater'
@@ -115,6 +116,21 @@ ipcMain.handle('start-daemon', async (_, options: DaemonOptions) => {
 })
 ipcMain.handle('stop-daemon', async _ => {
   return await daemon.stop()
+})
+ipcMain.handle('read-daemon-config', (_, datadir: string) => {
+  try {
+    return fs.readFileSync(`${datadir}/veil.conf`)
+  } catch (e) {
+    return null
+  }
+})
+ipcMain.handle('write-daemon-config', (_, datadir: string, content: string) => {
+  try {
+    fs.writeFileSync(`${datadir}/veil.conf`, content, 'utf-8')
+    return true
+  } catch (e) {
+    return false
+  }
 })
 
 // Updater API
