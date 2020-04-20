@@ -41,43 +41,35 @@ const AppMenu = ({ onClickOption }: MenuProps) => {
         />
         <MenuLink
           onClick={onClickOption}
-          label="Console"
-          shortcut="C"
-          to="/console"
-        />
-        <MenuLink
-          onClick={onClickOption}
           label="Settings"
           shortcut="⌘,"
           to="/settings"
         />
-        {state.app.connectionMethod !== 'rpc' && (
-          <MenuLink
-            onClick={onClickOption}
-            label="Edit Config"
-            to="/configure"
-          />
-        )}
+        <MenuLink onClick={checkForUpdates} label="Check for updates" />
         <MenuLink onClick={onClickOption} label="Help" to="/help" />
       </div>
 
-      <div className="flex flex-col p-2">
-        <MenuLink onClick={checkForUpdates} label="Check for updates" />
+      <div
+        className="flex flex-col p-2 border-t"
+        style={{ borderColor: 'rgba(255, 255, 255, .05)' }}
+      >
+        <MenuLink
+          onClick={onClickOption}
+          label="Console"
+          shortcut="C"
+          to="/console"
+        />
+        {state.app.connectionMethod === 'daemon' && (
+          <MenuLink
+            onClick={onClickOption}
+            label="Edit configuration"
+            to="/configure"
+          />
+        )}
+        {state.app.connectionMethod === 'daemon' && (
+          <MenuLink label="Restart Veil server" onClick={handleRestartDaemon} />
+        )}
       </div>
-
-      {state.app.connectionMethod === 'daemon' && (
-        <div
-          className="border-t p-2"
-          style={{ borderColor: 'rgba(255, 255, 255, .05)' }}
-        >
-          <button
-            className="block w-full px-2 h-8 rounded flex items-center justify-start font-medium text-white hover:bg-blue-500"
-            onClick={handleRestartDaemon}
-          >
-            Restart Veil server
-          </button>
-        </div>
-      )}
       <div
         className="border-t py-3 pl-4 text-xs text-gray-400"
         style={{ borderColor: 'rgba(255, 255, 255, .05)' }}

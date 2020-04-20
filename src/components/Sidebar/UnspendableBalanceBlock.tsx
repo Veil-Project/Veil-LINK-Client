@@ -31,7 +31,7 @@ const UnspendableBalanceBlock = () => {
       to="/convert"
       className="text-teal-500 py-2 px-4 hover:text-white hover:no-underline"
     >
-      Convert
+      Convert legacy
     </Link>
   )
 

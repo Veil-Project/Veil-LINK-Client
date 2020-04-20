@@ -184,6 +184,13 @@ const AppSidebar = () => {
     }
   }
 
+  const handleDisableStaking = async () => {
+    const error = await actions.staking.disable()
+    if (error) {
+      addToast(error.message, { appearance: 'error' })
+    }
+  }
+
   return (
     <>
       {requiresPassword && (
@@ -195,8 +202,7 @@ const AppSidebar = () => {
       )}
       {showConfirmation && (
         <Confirm
-          title="Are you sure you want to lock the wallet?"
-          message="This will also disable staking."
+          title="Are you sure you want to lock the wallet and disable staking?"
           cancelLabel="Cancel"
           submitLabel="Lock wallet"
           onCancel={() => setShowConfirmation(false)}
@@ -252,7 +258,10 @@ const AppSidebar = () => {
 
       <div className="flex-1 overflow-y-auto flex flex-col">
         {state.balance.unspendableBalance > 0 && <UnspendableBalanceBlock />}
-        <StakingBlock onEnableStaking={() => setRequiresPassword(true)} />
+        <StakingBlock
+          onEnableStaking={() => setRequiresPassword(true)}
+          onDisableStaking={handleDisableStaking}
+        />
         <ReceivingAddressBlock />
       </div>
 

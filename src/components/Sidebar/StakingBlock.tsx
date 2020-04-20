@@ -10,23 +10,36 @@ import StakingOverview from 'components/StakingOverview'
 import SidebarBlock from './SidebarBlock'
 
 interface StakingButtonProps {
-  isAvailable: boolean
   currentStatus: StakingStatus
   requestedStatus: StakingStatus | null
   onEnable: any
+  onDisable: any
 }
 
 const StakingButton = ({
-  isAvailable,
   currentStatus,
   requestedStatus,
   onEnable,
+  onDisable,
 }: StakingButtonProps) => {
   switch (currentStatus) {
     case 'enabled':
-      return null
+      return (
+        <button
+          onClick={onDisable}
+          disabled={requestedStatus === 'enabled'}
+          className={
+            'font-semibold py-2 px-4 ' +
+            (requestedStatus === 'disabled'
+              ? 'text-gray-300'
+              : 'text-teal-500 hover:text-white')
+          }
+        >
+          {requestedStatus === 'disabled' ? 'Please wait…' : 'Disable staking'}
+        </button>
+      )
     case 'disabled':
-      return isAvailable ? (
+      return (
         <button
           onClick={onEnable}
           disabled={requestedStatus === 'enabled'}
@@ -37,17 +50,13 @@ const StakingButton = ({
               : 'text-teal-500 hover:text-white')
           }
         >
-          {requestedStatus === 'enabled' ? 'Please wait…' : 'Enable'}
+          {requestedStatus === 'enabled' ? 'Please wait…' : 'Enable staking'}
         </button>
-      ) : (
-        <div className="h-9 text-center text-sm font-semibold flex items-center justify-center rounded bg-gray-600 text-gray-300 pb-px">
-          Staking unavailable
-        </div>
       )
   }
 }
 
-const StakingBlock = ({ onEnableStaking }: { onEnableStaking: any }) => {
+const StakingBlock = ({ onEnableStaking, onDisableStaking }: any) => {
   const [data, setData] = useState<number[]>([])
   const { state, effects } = useStore()
   const { staking } = state
@@ -71,10 +80,10 @@ const StakingBlock = ({ onEnableStaking }: { onEnableStaking: any }) => {
         staking.status.current === 'disabled' &&
         staking.isAvailable && (
           <StakingButton
-            isAvailable={staking.isAvailable}
             currentStatus={staking.status.current}
             requestedStatus={staking.status.requested}
             onEnable={onEnableStaking}
+            onDisable={onDisableStaking}
           />
         )
       }
