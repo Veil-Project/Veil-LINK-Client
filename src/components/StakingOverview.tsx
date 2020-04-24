@@ -30,7 +30,7 @@ const StakingOverview = ({ data, isDimmed }: Props) => {
           />
           <div className="h-6 flex items-end justify-center uppercase">
             {moment()
-              .subtract(7 - i, 'days')
+              .subtract(6 - i, 'days')
               .format('dd')}
           </div>
         </div>
