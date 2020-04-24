@@ -209,7 +209,7 @@ const AppSidebar = () => {
           onSubmit={lockWallet}
         />
       )}
-      <div className="pb-titlebar bg-blue-500 draggable">
+      <div className="pb-titlebar bg-blue-500 relative z-10 draggable">
         <div className="h-titlebar px-1 flex items-center relative">
           <div className="flex-1 flex">
             {window.platform !== 'darwin' && <MenuButton />}
@@ -256,7 +256,7 @@ const AppSidebar = () => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto flex flex-col">
+      <div className="flex-1 overflow-y-auto flex flex-col relative z-0">
         {state.balance.unspendableBalance > 0 && <UnspendableBalanceBlock />}
         <StakingBlock
           onEnableStaking={() => setRequiresPassword(true)}
@@ -266,7 +266,7 @@ const AppSidebar = () => {
       </div>
 
       {(blockchain.initialBlockDownload ||
-        blockchain.verificationProgress < 0.98) && (
+        blockchain.verificationProgress < 0.995) && (
         <div className="h-12 px-4 bg-gray-600 flex justify-center items-center text-sm leading-none relative">
           <div
             className={`absolute left-0 top-0 bottom-0 bg-gray-500 z-0`}
