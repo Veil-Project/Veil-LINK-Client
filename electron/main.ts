@@ -57,7 +57,7 @@ daemon.on('exit', () => {
 
 // App listeners
 app.on('before-quit', e => {
-  if (daemon.running) {
+  if (daemon.isRunning) {
     e.preventDefault()
     mainWindow.emit('app-quitting')
     const stopAndQuit = async () => {

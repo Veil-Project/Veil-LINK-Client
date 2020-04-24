@@ -44,6 +44,7 @@ export default class Daemon extends EventEmitter {
 
   path: string | null = VEILD_DEFAULT_PATH
   status: DaemonStatus = 'unknown'
+  isRunning: boolean = false
 
   private handleStdout(data: any) {
     const message = data?.toString().trim() || ''
@@ -121,6 +122,7 @@ export default class Daemon extends EventEmitter {
     if (this.status === 'stopping') {
       this.status = 'stopped'
     }
+    this.isRunning = false
     this.emit('exit')
   }
 
@@ -163,10 +165,6 @@ export default class Daemon extends EventEmitter {
     } catch (e) {
       return null
     }
-  }
-
-  get running() {
-    return ['starting', 'wallet-loaded'].includes(this.status)
   }
 
   getInfo() {
@@ -221,9 +219,11 @@ export default class Daemon extends EventEmitter {
       return Promise.reject()
     }
 
-    if (this.status === 'wallet-loaded') {
+    if (this.isRunning) {
       return Promise.resolve(this.status)
     }
+
+    this.isRunning = true
 
     try {
       // Avoid dupe starts
@@ -260,6 +260,7 @@ export default class Daemon extends EventEmitter {
       })
     } catch (e) {
       this.status = 'crashed'
+      this.isRunning = false
       return Promise.reject(e)
     }
   }

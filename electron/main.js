@@ -82,7 +82,7 @@ daemon.on('exit', function () {
 });
 // App listeners
 electron_1.app.on('before-quit', function (e) {
-    if (daemon.running) {
+    if (daemon.isRunning) {
         e.preventDefault();
         mainWindow.emit('app-quitting');
         var stopAndQuit = function () { return __awaiter(void 0, void 0, void 0, function () {
