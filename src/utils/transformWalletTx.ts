@@ -84,7 +84,7 @@ export default (walletTx: WalletTransaction) => {
     category,
     type,
     requiresReveal:
-      (type === 'ringct' || type === 'ct') && receivedAmount <= 0.00000001,
+      (type === 'ringct' || type === 'ct') && receivedAmount <= 0.00000002,
     walletTx,
   }
 }

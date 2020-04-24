@@ -96,7 +96,7 @@ const TransactionSummary = ({ txid }: { txid: string | null }) => {
   }
 
   const handleUpdateTransaction = async (password?: string) => {
-    if (state.wallet.locked && !password) {
+    if (!password) {
       setRequiresPassword(true)
       return
     }
@@ -106,6 +106,7 @@ const TransactionSummary = ({ txid }: { txid: string | null }) => {
     try {
       if (password) await effects.rpc.unlockWallet(password)
       await actions.transactions.update(transaction.txid)
+      await updateFromCache()
       setRequiresPassword(false)
     } catch (e) {
       if (e.code === -13) {
