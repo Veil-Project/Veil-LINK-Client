@@ -6,6 +6,11 @@ import { uniq, map, chunk } from 'lodash'
 import transformWalletTx from 'utils/transformWalletTx'
 import { sleep } from 'utils/sleep'
 
+const isCoinstake = tx =>
+  tx.debug.vin.length === 0 &&
+  tx.debug.vout.length === 1 &&
+  tx.debug.vout[0].amount === '0.00'
+
 registerPromiseWorker(async ({ type, options }) => {
   if (type === 'importWalletTransactionsMessage') {
     const { credentials, lastBlock } = options
@@ -24,7 +29,9 @@ registerPromiseWorker(async ({ type, options }) => {
           chunkedTxids[i].map(txid => rpc.getTransaction(txid))
         )
         await db.transactions.bulkPut(
-          fullTransactions.map(tx => transformWalletTx(tx))
+          fullTransactions
+            .filter(tx => !isCoinstake(tx))
+            .map(tx => transformWalletTx(tx))
         )
         await sleep(500)
       }
