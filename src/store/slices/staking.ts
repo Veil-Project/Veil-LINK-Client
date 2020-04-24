@@ -33,7 +33,8 @@ export const state: State = {
   isWorking: state => state.status.requested !== null,
   isEnabled: state => state.status.current === 'enabled',
   isAvailable: (state, globalState) =>
-    globalState.balance.breakdown.zerocoinSpendable > 0,
+    globalState.balance.breakdown.zerocoinSpendable > 0 &&
+    globalState.blockchain.isSynced,
   error: null,
 }
 

@@ -265,8 +265,7 @@ const AppSidebar = () => {
         <ReceivingAddressBlock />
       </div>
 
-      {(blockchain.initialBlockDownload ||
-        blockchain.verificationProgress < 0.9999) && (
+      {(blockchain.initialBlockDownload || !blockchain.isSynced) && (
         <div className="h-12 px-4 bg-gray-600 flex justify-center items-center text-sm leading-none relative">
           <div
             className={`absolute left-0 top-0 bottom-0 bg-gray-600 z-0 candystripes`}

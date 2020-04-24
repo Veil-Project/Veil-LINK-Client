@@ -13,6 +13,7 @@ type State = {
   verificationProgress: number
   tip: BlockchainTip | null
   connected: Derive<State, boolean>
+  isSynced: Derive<State, boolean>
 }
 
 type Actions = {
@@ -27,6 +28,7 @@ export const state: State = {
   verificationProgress: 0,
   tip: null,
   connected: state => state.chain !== null,
+  isSynced: state => state.verificationProgress > 0.99999,
 }
 
 export const actions: Actions = {
