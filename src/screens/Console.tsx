@@ -173,6 +173,7 @@ const Console = (props: RouteComponentProps) => {
 
   useEffect(() => {
     commandsEndRef.current?.scrollIntoView()
+    inputRef.current?.focus()
   }, [commandHistory])
 
   useEffect(() => {
