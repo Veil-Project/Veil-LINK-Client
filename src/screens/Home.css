@@ -4,11 +4,32 @@
 
 .appear-exit > div {
   transform: translateY(100%);
-  transition: all 300ms cubic-bezier(.05, .3, .14, 1);
+  transition: all 300ms cubic-bezier(0.05, 0.3, 0.14, 1);
 }
 
 .appear-enter.appear-enter-active > div {
   opacity: 1;
   transform: translateY(0);
-  transition: all 300ms cubic-bezier(.05, .5, .14, 1);
+  transition: all 300ms cubic-bezier(0.05, 0.5, 0.14, 1);
+}
+
+.candystripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0) 25px,
+    rgba(255, 255, 255, 0.02) 25px,
+    rgba(255, 255, 255, 0.02) 50px
+  );
+  animation: progress 2s linear infinite;
+  background-size: 150% 100%;
+}
+
+@keyframes progress {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -70px 0px;
+  }
 }
