@@ -105,6 +105,7 @@ const TransactionSummary = ({ txid }: { txid: string | null }) => {
 
     try {
       if (password) await effects.rpc.unlockWallet(password)
+      await effects.rpc.rescanRingCtWallet()
       await actions.transactions.update(transaction.txid)
       await updateFromCache()
       setRequiresPassword(false)
