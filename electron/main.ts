@@ -76,6 +76,7 @@ app.on('window-all-closed', () => {
 
 app.on('ready', e => {
   mainWindow.open()
+  checkForUpdates()
 })
 
 app.on('activate', e => {

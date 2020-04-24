@@ -106,6 +106,7 @@ electron_1.app.on('window-all-closed', function () {
 });
 electron_1.app.on('ready', function (e) {
     mainWindow.open();
+    updater_1.checkForUpdates();
 });
 electron_1.app.on('activate', function (e) {
     if (!mainWindow.isOpen()) {
