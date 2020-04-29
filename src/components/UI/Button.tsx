@@ -1,6 +1,7 @@
 import React, { MouseEvent } from 'react'
 import { Link } from '@reach/router'
 import classnames from 'classnames'
+import ExternalLink from 'components/ExternalLink'
 
 interface ButtonProps {
   to?: string
@@ -43,7 +44,16 @@ const Button = ({
   const btnStyle = disabled ? { backgroundColor: '#ffffff11' } : {}
 
   return to ? (
-    <Link to={to} className={btnClass} style={btnStyle} {...props} />
+    to.startsWith('http') ? (
+      <ExternalLink
+        href={to}
+        className={btnClass}
+        style={btnStyle}
+        {...props}
+      />
+    ) : (
+      <Link to={to} className={btnClass} style={btnStyle} {...props} />
+    )
   ) : (
     <button
       onClick={onClick}

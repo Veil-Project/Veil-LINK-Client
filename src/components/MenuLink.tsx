@@ -6,14 +6,24 @@ interface MenuLinkProps {
   shortcut?: string
   to?: string
   onClick?(): void
+  disabled?: boolean
 }
 
-const MenuLink = ({ onClick, label, to, shortcut }: MenuLinkProps) =>
+const MenuLink = ({
+  onClick,
+  label,
+  to,
+  shortcut,
+  disabled = false,
+}: MenuLinkProps) =>
   to ? (
     <Link
       to={to}
       tabIndex={-1}
-      className="w-full px-2 h-8 rounded flex items-center justify-between font-medium hover:bg-blue-500"
+      className={
+        'w-full px-2 h-8 rounded flex items-center justify-between font-medium ' +
+        (disabled ? 'opacity-50 pointer-events-none' : 'hover:bg-blue-500')
+      }
       onClick={onClick}
     >
       <span className="text-white">{label}</span>
@@ -22,7 +32,11 @@ const MenuLink = ({ onClick, label, to, shortcut }: MenuLinkProps) =>
   ) : (
     <button
       tabIndex={-1}
-      className="w-full px-2 h-8 rounded flex items-center justify-between font-medium hover:bg-blue-500"
+      disabled={disabled}
+      className={
+        'w-full px-2 h-8 rounded flex items-center justify-between font-medium ' +
+        (disabled ? 'opacity-50 pointer-events-none' : 'hover:bg-blue-500')
+      }
       onClick={onClick}
     >
       <span className="text-white">{label}</span>

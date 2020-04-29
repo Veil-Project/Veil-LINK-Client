@@ -5,6 +5,7 @@ import Overlay from 'components/Overlay'
 
 interface ModalProps {
   children: any
+  id?: string
   className?: string
   canClose?: boolean
   hideClose?: boolean
@@ -13,12 +14,13 @@ interface ModalProps {
 
 const Modal = ({
   children,
+  id = 'modal',
   className,
   onClose,
   canClose,
   hideClose,
 }: ModalProps) => (
-  <Portal id="modal">
+  <Portal id={id}>
     <Overlay>
       <div
         className={`rounded-lg shadow-lg overflow-hidden relative text-white ${className}`}

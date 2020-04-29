@@ -1,7 +1,25 @@
 export default {
   initialize(options: any) {
-    const { onQuit } = options
+    const {
+      onQuit,
+      onUpdateNotAvailable,
+      onUpdateAvailable,
+      onUpdateDownloadProgress,
+      onUpdateError,
+    } = options
+
     onQuit && window.ipcRenderer.on('app-quitting', onQuit)
+
+    onUpdateAvailable &&
+      window.ipcRenderer.on('update-available', onUpdateAvailable)
+    onUpdateNotAvailable &&
+      window.ipcRenderer.on('update-not-available', onUpdateNotAvailable)
+    onUpdateDownloadProgress &&
+      window.ipcRenderer.on(
+        'update-download-progress',
+        onUpdateDownloadProgress
+      )
+    onUpdateError && window.ipcRenderer.on('update-error', onUpdateError)
   },
 
   relaunch() {
@@ -32,7 +50,11 @@ export default {
     })
   },
 
+  // Auto-update
   async checkForUpdates() {
     return await window.ipcRenderer.invoke('check-for-updates')
+  },
+  async installUpdate() {
+    return await window.ipcRenderer.invoke('install-update')
   },
 }

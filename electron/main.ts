@@ -4,7 +4,13 @@ import path from 'path'
 import fs from 'fs'
 import Daemon, { DaemonOptions } from './Daemon'
 import AppWindow from './AppWindow'
-import { checkForUpdates } from './updater'
+import { autoUpdater } from 'electron-updater'
+import log from 'electron-log'
+
+autoUpdater.autoDownload = false
+log.transports.file.level = 'debug'
+autoUpdater.logger = log
+log.info('App starting...')
 
 // Set up main window
 const startUrl =
@@ -76,7 +82,6 @@ app.on('window-all-closed', () => {
 
 app.on('ready', e => {
   mainWindow.open()
-  checkForUpdates()
 })
 
 app.on('activate', e => {
@@ -136,5 +141,29 @@ ipcMain.handle('write-daemon-config', (_, datadir: string, content: string) => {
 
 // Updater API
 ipcMain.handle('check-for-updates', _ => {
-  checkForUpdates()
+  autoUpdater.checkForUpdates()
+})
+
+ipcMain.handle('install-update', _ => {
+  autoUpdater.downloadUpdate()
+})
+
+autoUpdater.on('error', error => {
+  mainWindow.emit('update-error', error.stack)
+})
+
+autoUpdater.on('update-available', info => {
+  mainWindow.emit('update-available', info)
+})
+
+autoUpdater.on('update-not-available', () => {
+  mainWindow.emit('update-not-available')
+})
+
+autoUpdater.on('update-downloaded', () => {
+  autoUpdater.quitAndInstall()
+})
+
+autoUpdater.on('download-progress', progress => {
+  mainWindow.emit('update-download-progress', progress)
 })

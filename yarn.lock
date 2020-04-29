@@ -12164,6 +12164,13 @@ tailwindcss-grid@^1.2.1:
   resolved "https://registry.yarnpkg.com/tailwindcss-grid/-/tailwindcss-grid-1.2.1.tgz#44d6310f754078b1a49fa30d0a4dfd69d09a4413"
   integrity sha512-H/IjlRgREBUbBz3hlC+inGX45S8qx3T6pIY3aa2MJuy85tiSUk5BsdJDmkoCNA3HWfIyL1+NFJSgKyv+ADOJFw==
 
+tailwindcss-typography@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/tailwindcss-typography/-/tailwindcss-typography-3.0.1.tgz#7c74c46bf80841782024ee854cbf8e4e5cb57b1c"
+  integrity sha512-NnAGJSaw34zFcm6JWMdrrwbb7YaKeEmjsx2aIzs80Manc2BEddnALVvJzz2o4frfrVmKtCDt2Zesd1WtW8MYRQ==
+  dependencies:
+    lodash "^4.17.15"
+
 tailwindcss@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-1.2.0.tgz#5df317cebac4f3131f275d258a39da1ba3a0f291"

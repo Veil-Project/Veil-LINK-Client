@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useStore } from 'store'
+import { useToasts } from 'react-toast-notifications'
 import { motion } from 'framer-motion'
 import { version } from '../../package.json'
 import MenuLink from './MenuLink'
@@ -9,14 +10,26 @@ interface MenuProps {
 }
 
 const AppMenu = ({ onClickOption }: MenuProps) => {
-  const { state, actions, effects } = useStore()
+  const [updateRequested, setUpdateRequested] = useState(false)
+  const { state, actions } = useStore()
+  const { addToast } = useToasts()
+
+  useEffect(() => {
+    if (updateRequested && state.autoUpdate.status === 'up-to-date') {
+      addToast('No update available. Current version is up-to-date.', {
+        appearance: 'info',
+      })
+    }
+    setUpdateRequested(state.autoUpdate.status === 'checking')
+  }, [state.autoUpdate.status, updateRequested])
 
   const handleRestartDaemon = async () => {
     await actions.app.reload({ resetTransactions: false })
   }
 
   const checkForUpdates = async () => {
-    await effects.electron.checkForUpdates()
+    setUpdateRequested(true)
+    actions.autoUpdate.checkForUpdates()
   }
 
   return (
@@ -45,7 +58,15 @@ const AppMenu = ({ onClickOption }: MenuProps) => {
           shortcut="⌘,"
           to="/settings"
         />
-        <MenuLink onClick={checkForUpdates} label="Check for updates" />
+        <MenuLink
+          onClick={checkForUpdates}
+          disabled={state.autoUpdate.status === 'checking'}
+          label={
+            state.autoUpdate.status === 'checking'
+              ? 'Checking for updates…'
+              : 'Check for updates'
+          }
+        />
         <MenuLink onClick={onClickOption} label="Help" to="/help" />
       </div>
 

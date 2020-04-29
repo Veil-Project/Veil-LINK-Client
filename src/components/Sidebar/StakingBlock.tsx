@@ -64,7 +64,7 @@ const StakingBlock = ({ onEnableStaking, onDisableStaking }: any) => {
   useEffect(() => {
     ;(async () => {
       const txByDay = await Promise.all(
-        [7, 6, 5, 4, 3, 2, 1].map(daysAgo =>
+        [6, 5, 4, 3, 2, 1, 0].map(daysAgo =>
           effects.db.fetchStakesForDay(daysAgo)
         )
       )

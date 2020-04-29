@@ -1,4 +1,4 @@
 provider: s3
-endpoint: http://169.254.33.73:9000
+endpoint: http://192.168.2.70:9000
 bucket: test-update
 channel: latest

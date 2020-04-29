@@ -621,6 +621,150 @@ video {
   }
 }
 
+.c-h1 {
+  font-weight: 700;
+  line-height: 1.25;
+  font-size: 3rem;
+}
+
+@media (min-width: 640px) {
+  .c-h1 {
+    font-size: 4rem;
+  }
+}
+
+.c-h2 {
+  font-weight: 700;
+  line-height: 1.25;
+  font-size: 2.25rem;
+}
+
+@media (min-width: 640px) {
+  .c-h2 {
+    font-size: 3rem;
+  }
+}
+
+.c-h3 {
+  font-weight: 700;
+  line-height: 1.25;
+  font-size: 2.25rem;
+}
+
+.c-h4 {
+  font-weight: 700;
+  line-height: 1.25;
+  font-size: 1.875rem;
+}
+
+.c-h5 {
+  font-weight: 700;
+  line-height: 1.25;
+  font-size: 1.5rem;
+}
+
+.c-h6 {
+  font-weight: 700;
+  line-height: 1.25;
+  font-size: 1.25rem;
+}
+
+.c-link {
+  font-weight: 700;
+  color: #3d8eff;
+}
+
+.c-link:hover {
+  color: #0E51D7;
+  text-decoration: underline;
+}
+
+.c-rich-text {
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.625;
+}
+
+.c-rich-text > * + * {
+  margin-top: 1em;
+}
+
+.c-rich-text h1 {
+  font-weight: 700;
+  line-height: 1.25;
+  font-size: 3rem;
+}
+
+@media (min-width: 640px) {
+  .c-rich-text h1 {
+    font-size: 4rem;
+  }
+}
+
+.c-rich-text h2 {
+  font-weight: 700;
+  line-height: 1.25;
+  font-size: 2.25rem;
+}
+
+@media (min-width: 640px) {
+  .c-rich-text h2 {
+    font-size: 3rem;
+  }
+}
+
+.c-rich-text h3 {
+  font-weight: 700;
+  line-height: 1.25;
+  font-size: 2.25rem;
+}
+
+.c-rich-text h4 {
+  font-weight: 700;
+  line-height: 1.25;
+  font-size: 1.875rem;
+}
+
+.c-rich-text h5 {
+  font-weight: 700;
+  line-height: 1.25;
+  font-size: 1.5rem;
+}
+
+.c-rich-text h6 {
+  font-weight: 700;
+  line-height: 1.25;
+  font-size: 1.25rem;
+}
+
+.c-rich-text ul {
+  list-style-type: disc;
+  margin-left: 1em;
+}
+
+.c-rich-text ol {
+  list-style-type: decimal;
+  margin-left: 1em;
+}
+
+.c-rich-text a {
+  font-weight: 700;
+  color: #3d8eff;
+}
+
+.c-rich-text a:hover {
+  color: #0E51D7;
+  text-decoration: underline;
+}
+
+.c-rich-text b, .c-rich-text strong {
+  font-weight: 700;
+}
+
+.c-rich-text i, .c-rich-text em {
+  font-style: italic;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -11564,19 +11708,19 @@ video {
   font-variant-numeric: slashed-zero;
 }
 
-.numeric-lining-nums {
+.numeric-lining {
   font-variant-numeric: lining-nums;
 }
 
-.numeric-oldstyle-nums {
+.numeric-oldstyle {
   font-variant-numeric: oldstyle-nums;
 }
 
-.numeric-proportional-nums {
+.numeric-proportional {
   font-variant-numeric: proportional-nums;
 }
 
-.numeric-tabular-nums {
+.numeric-tabular {
   font-variant-numeric: tabular-nums;
 }
 
@@ -11730,6 +11874,190 @@ video {
 
 .animation-paused {
   animation-play-state: paused;
+}
+
+.ellipsis {
+  text-overflow: ellipsis;
+}
+
+.no-ellipsis {
+  text-overflow: clip;
+}
+
+.hyphens-none {
+  hyphens: none;
+}
+
+.hyphens-manual {
+  hyphens: manual;
+}
+
+.hyphens-auto {
+  hyphens: auto;
+}
+
+.kerning {
+  font-kerning: normal;
+}
+
+.kerning-none {
+  font-kerning: none;
+}
+
+.kerning-auto {
+  font-kerning: auto;
+}
+
+.font-family-unset {
+  font-family: inherit;
+}
+
+.font-weight-unset {
+  font-weight: inherit;
+}
+
+.font-style-unset {
+  font-style: inherit;
+}
+
+.text-size-unset {
+  font-size: inherit;
+}
+
+.text-align-unset {
+  text-align: inherit;
+}
+
+.leading-unset {
+  line-height: inherit;
+}
+
+.tracking-unset {
+  letter-spacing: inherit;
+}
+
+.text-color-unset {
+  color: inherit;
+}
+
+.text-transform-unset {
+  text-transform: inherit;
+}
+
+.caps-normal {
+  font-variant-caps: normal;
+}
+
+.caps-small {
+  font-variant-caps: small-caps;
+}
+
+.caps-all-small {
+  font-variant-caps: all-small-caps;
+}
+
+.caps-petite {
+  font-variant-caps: petite-caps;
+}
+
+.caps-unicase {
+  font-variant-caps: unicase;
+}
+
+.caps-titling {
+  font-variant-caps: titling-caps;
+}
+
+.nums-normal {
+  font-variant-numeric: normal;
+}
+
+.nums-ordinal {
+  font-variant-numeric: ordinal;
+}
+
+.nums-slashed-zero {
+  font-variant-numeric: slashed-zero;
+}
+
+.nums-lining {
+  font-variant-numeric: lining-nums;
+}
+
+.nums-oldstyle {
+  font-variant-numeric: oldstyle-nums;
+}
+
+.nums-proportional {
+  font-variant-numeric: proportional-nums;
+}
+
+.nums-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.nums-diagonal-fractions {
+  font-variant-numeric: diagonal-fractions;
+}
+
+.nums-stacked-fractions {
+  font-variant-numeric: stacked-fractions;
+}
+
+.ligatures-normal {
+  font-variant-ligatures: normal;
+}
+
+.ligatures-none {
+  font-variant-ligatures: none;
+}
+
+.ligatures-common {
+  font-variant-ligatures: common-ligatures;
+}
+
+.ligatures-no-common {
+  font-variant-ligatures: no-common-ligatures;
+}
+
+.ligatures-discretionary {
+  font-variant-ligatures: discretionary-ligatures;
+}
+
+.ligatures-no-discretionary {
+  font-variant-ligatures: no-discretionary-ligatures;
+}
+
+.ligatures-historical {
+  font-variant-ligatures: historical-ligatures;
+}
+
+.ligatures-no-historical {
+  font-variant-ligatures: no-historical-ligatures;
+}
+
+.ligatures-contextual {
+  font-variant-ligatures: contextual;
+}
+
+.ligatures-no-contextual {
+  font-variant-ligatures: no-contextual;
+}
+
+.text-rendering-auto {
+  text-rendering: auto;
+}
+
+.text-optimize-legibility {
+  text-rendering: optimizeLegibility;
+}
+
+.text-optimize-speed {
+  text-rendering: optimizeSpeed;
+}
+
+.text-geometric-precision {
+  text-rendering: geometricPrecision;
 }
 
 .draggable {
@@ -22668,6 +22996,42 @@ video {
     background-image: linear-gradient(to right, #3d8eff, #0F5AEF);
   }
 
+  .sm\:numeric-normal {
+    font-variant-numeric: normal;
+  }
+
+  .sm\:numeric-ordinal {
+    font-variant-numeric: ordinal;
+  }
+
+  .sm\:numeric-slashed-zero {
+    font-variant-numeric: slashed-zero;
+  }
+
+  .sm\:numeric-lining {
+    font-variant-numeric: lining-nums;
+  }
+
+  .sm\:numeric-oldstyle {
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  .sm\:numeric-proportional {
+    font-variant-numeric: proportional-nums;
+  }
+
+  .sm\:numeric-tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sm\:numeric-diagonal-fractions {
+    font-variant-numeric: diagonal-fractions;
+  }
+
+  .sm\:numeric-stacked-fractions {
+    font-variant-numeric: stacked-fractions;
+  }
+
   .sm\:animation-none {
     animation-name: none;
   }
@@ -22810,6 +23174,190 @@ video {
 
   .sm\:animation-paused {
     animation-play-state: paused;
+  }
+
+  .sm\:ellipsis {
+    text-overflow: ellipsis;
+  }
+
+  .sm\:no-ellipsis {
+    text-overflow: clip;
+  }
+
+  .sm\:hyphens-none {
+    hyphens: none;
+  }
+
+  .sm\:hyphens-manual {
+    hyphens: manual;
+  }
+
+  .sm\:hyphens-auto {
+    hyphens: auto;
+  }
+
+  .sm\:kerning {
+    font-kerning: normal;
+  }
+
+  .sm\:kerning-none {
+    font-kerning: none;
+  }
+
+  .sm\:kerning-auto {
+    font-kerning: auto;
+  }
+
+  .sm\:font-family-unset {
+    font-family: inherit;
+  }
+
+  .sm\:font-weight-unset {
+    font-weight: inherit;
+  }
+
+  .sm\:font-style-unset {
+    font-style: inherit;
+  }
+
+  .sm\:text-size-unset {
+    font-size: inherit;
+  }
+
+  .sm\:text-align-unset {
+    text-align: inherit;
+  }
+
+  .sm\:leading-unset {
+    line-height: inherit;
+  }
+
+  .sm\:tracking-unset {
+    letter-spacing: inherit;
+  }
+
+  .sm\:text-color-unset {
+    color: inherit;
+  }
+
+  .sm\:text-transform-unset {
+    text-transform: inherit;
+  }
+
+  .sm\:caps-normal {
+    font-variant-caps: normal;
+  }
+
+  .sm\:caps-small {
+    font-variant-caps: small-caps;
+  }
+
+  .sm\:caps-all-small {
+    font-variant-caps: all-small-caps;
+  }
+
+  .sm\:caps-petite {
+    font-variant-caps: petite-caps;
+  }
+
+  .sm\:caps-unicase {
+    font-variant-caps: unicase;
+  }
+
+  .sm\:caps-titling {
+    font-variant-caps: titling-caps;
+  }
+
+  .sm\:nums-normal {
+    font-variant-numeric: normal;
+  }
+
+  .sm\:nums-ordinal {
+    font-variant-numeric: ordinal;
+  }
+
+  .sm\:nums-slashed-zero {
+    font-variant-numeric: slashed-zero;
+  }
+
+  .sm\:nums-lining {
+    font-variant-numeric: lining-nums;
+  }
+
+  .sm\:nums-oldstyle {
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  .sm\:nums-proportional {
+    font-variant-numeric: proportional-nums;
+  }
+
+  .sm\:nums-tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sm\:nums-diagonal-fractions {
+    font-variant-numeric: diagonal-fractions;
+  }
+
+  .sm\:nums-stacked-fractions {
+    font-variant-numeric: stacked-fractions;
+  }
+
+  .sm\:ligatures-normal {
+    font-variant-ligatures: normal;
+  }
+
+  .sm\:ligatures-none {
+    font-variant-ligatures: none;
+  }
+
+  .sm\:ligatures-common {
+    font-variant-ligatures: common-ligatures;
+  }
+
+  .sm\:ligatures-no-common {
+    font-variant-ligatures: no-common-ligatures;
+  }
+
+  .sm\:ligatures-discretionary {
+    font-variant-ligatures: discretionary-ligatures;
+  }
+
+  .sm\:ligatures-no-discretionary {
+    font-variant-ligatures: no-discretionary-ligatures;
+  }
+
+  .sm\:ligatures-historical {
+    font-variant-ligatures: historical-ligatures;
+  }
+
+  .sm\:ligatures-no-historical {
+    font-variant-ligatures: no-historical-ligatures;
+  }
+
+  .sm\:ligatures-contextual {
+    font-variant-ligatures: contextual;
+  }
+
+  .sm\:ligatures-no-contextual {
+    font-variant-ligatures: no-contextual;
+  }
+
+  .sm\:text-rendering-auto {
+    text-rendering: auto;
+  }
+
+  .sm\:text-optimize-legibility {
+    text-rendering: optimizeLegibility;
+  }
+
+  .sm\:text-optimize-speed {
+    text-rendering: optimizeSpeed;
+  }
+
+  .sm\:text-geometric-precision {
+    text-rendering: geometricPrecision;
   }
 }
 
@@ -33745,6 +34293,42 @@ video {
     background-image: linear-gradient(to right, #3d8eff, #0F5AEF);
   }
 
+  .md\:numeric-normal {
+    font-variant-numeric: normal;
+  }
+
+  .md\:numeric-ordinal {
+    font-variant-numeric: ordinal;
+  }
+
+  .md\:numeric-slashed-zero {
+    font-variant-numeric: slashed-zero;
+  }
+
+  .md\:numeric-lining {
+    font-variant-numeric: lining-nums;
+  }
+
+  .md\:numeric-oldstyle {
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  .md\:numeric-proportional {
+    font-variant-numeric: proportional-nums;
+  }
+
+  .md\:numeric-tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .md\:numeric-diagonal-fractions {
+    font-variant-numeric: diagonal-fractions;
+  }
+
+  .md\:numeric-stacked-fractions {
+    font-variant-numeric: stacked-fractions;
+  }
+
   .md\:animation-none {
     animation-name: none;
   }
@@ -33887,6 +34471,190 @@ video {
 
   .md\:animation-paused {
     animation-play-state: paused;
+  }
+
+  .md\:ellipsis {
+    text-overflow: ellipsis;
+  }
+
+  .md\:no-ellipsis {
+    text-overflow: clip;
+  }
+
+  .md\:hyphens-none {
+    hyphens: none;
+  }
+
+  .md\:hyphens-manual {
+    hyphens: manual;
+  }
+
+  .md\:hyphens-auto {
+    hyphens: auto;
+  }
+
+  .md\:kerning {
+    font-kerning: normal;
+  }
+
+  .md\:kerning-none {
+    font-kerning: none;
+  }
+
+  .md\:kerning-auto {
+    font-kerning: auto;
+  }
+
+  .md\:font-family-unset {
+    font-family: inherit;
+  }
+
+  .md\:font-weight-unset {
+    font-weight: inherit;
+  }
+
+  .md\:font-style-unset {
+    font-style: inherit;
+  }
+
+  .md\:text-size-unset {
+    font-size: inherit;
+  }
+
+  .md\:text-align-unset {
+    text-align: inherit;
+  }
+
+  .md\:leading-unset {
+    line-height: inherit;
+  }
+
+  .md\:tracking-unset {
+    letter-spacing: inherit;
+  }
+
+  .md\:text-color-unset {
+    color: inherit;
+  }
+
+  .md\:text-transform-unset {
+    text-transform: inherit;
+  }
+
+  .md\:caps-normal {
+    font-variant-caps: normal;
+  }
+
+  .md\:caps-small {
+    font-variant-caps: small-caps;
+  }
+
+  .md\:caps-all-small {
+    font-variant-caps: all-small-caps;
+  }
+
+  .md\:caps-petite {
+    font-variant-caps: petite-caps;
+  }
+
+  .md\:caps-unicase {
+    font-variant-caps: unicase;
+  }
+
+  .md\:caps-titling {
+    font-variant-caps: titling-caps;
+  }
+
+  .md\:nums-normal {
+    font-variant-numeric: normal;
+  }
+
+  .md\:nums-ordinal {
+    font-variant-numeric: ordinal;
+  }
+
+  .md\:nums-slashed-zero {
+    font-variant-numeric: slashed-zero;
+  }
+
+  .md\:nums-lining {
+    font-variant-numeric: lining-nums;
+  }
+
+  .md\:nums-oldstyle {
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  .md\:nums-proportional {
+    font-variant-numeric: proportional-nums;
+  }
+
+  .md\:nums-tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .md\:nums-diagonal-fractions {
+    font-variant-numeric: diagonal-fractions;
+  }
+
+  .md\:nums-stacked-fractions {
+    font-variant-numeric: stacked-fractions;
+  }
+
+  .md\:ligatures-normal {
+    font-variant-ligatures: normal;
+  }
+
+  .md\:ligatures-none {
+    font-variant-ligatures: none;
+  }
+
+  .md\:ligatures-common {
+    font-variant-ligatures: common-ligatures;
+  }
+
+  .md\:ligatures-no-common {
+    font-variant-ligatures: no-common-ligatures;
+  }
+
+  .md\:ligatures-discretionary {
+    font-variant-ligatures: discretionary-ligatures;
+  }
+
+  .md\:ligatures-no-discretionary {
+    font-variant-ligatures: no-discretionary-ligatures;
+  }
+
+  .md\:ligatures-historical {
+    font-variant-ligatures: historical-ligatures;
+  }
+
+  .md\:ligatures-no-historical {
+    font-variant-ligatures: no-historical-ligatures;
+  }
+
+  .md\:ligatures-contextual {
+    font-variant-ligatures: contextual;
+  }
+
+  .md\:ligatures-no-contextual {
+    font-variant-ligatures: no-contextual;
+  }
+
+  .md\:text-rendering-auto {
+    text-rendering: auto;
+  }
+
+  .md\:text-optimize-legibility {
+    text-rendering: optimizeLegibility;
+  }
+
+  .md\:text-optimize-speed {
+    text-rendering: optimizeSpeed;
+  }
+
+  .md\:text-geometric-precision {
+    text-rendering: geometricPrecision;
   }
 }
 
@@ -44822,6 +45590,42 @@ video {
     background-image: linear-gradient(to right, #3d8eff, #0F5AEF);
   }
 
+  .lg\:numeric-normal {
+    font-variant-numeric: normal;
+  }
+
+  .lg\:numeric-ordinal {
+    font-variant-numeric: ordinal;
+  }
+
+  .lg\:numeric-slashed-zero {
+    font-variant-numeric: slashed-zero;
+  }
+
+  .lg\:numeric-lining {
+    font-variant-numeric: lining-nums;
+  }
+
+  .lg\:numeric-oldstyle {
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  .lg\:numeric-proportional {
+    font-variant-numeric: proportional-nums;
+  }
+
+  .lg\:numeric-tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lg\:numeric-diagonal-fractions {
+    font-variant-numeric: diagonal-fractions;
+  }
+
+  .lg\:numeric-stacked-fractions {
+    font-variant-numeric: stacked-fractions;
+  }
+
   .lg\:animation-none {
     animation-name: none;
   }
@@ -44964,6 +45768,190 @@ video {
 
   .lg\:animation-paused {
     animation-play-state: paused;
+  }
+
+  .lg\:ellipsis {
+    text-overflow: ellipsis;
+  }
+
+  .lg\:no-ellipsis {
+    text-overflow: clip;
+  }
+
+  .lg\:hyphens-none {
+    hyphens: none;
+  }
+
+  .lg\:hyphens-manual {
+    hyphens: manual;
+  }
+
+  .lg\:hyphens-auto {
+    hyphens: auto;
+  }
+
+  .lg\:kerning {
+    font-kerning: normal;
+  }
+
+  .lg\:kerning-none {
+    font-kerning: none;
+  }
+
+  .lg\:kerning-auto {
+    font-kerning: auto;
+  }
+
+  .lg\:font-family-unset {
+    font-family: inherit;
+  }
+
+  .lg\:font-weight-unset {
+    font-weight: inherit;
+  }
+
+  .lg\:font-style-unset {
+    font-style: inherit;
+  }
+
+  .lg\:text-size-unset {
+    font-size: inherit;
+  }
+
+  .lg\:text-align-unset {
+    text-align: inherit;
+  }
+
+  .lg\:leading-unset {
+    line-height: inherit;
+  }
+
+  .lg\:tracking-unset {
+    letter-spacing: inherit;
+  }
+
+  .lg\:text-color-unset {
+    color: inherit;
+  }
+
+  .lg\:text-transform-unset {
+    text-transform: inherit;
+  }
+
+  .lg\:caps-normal {
+    font-variant-caps: normal;
+  }
+
+  .lg\:caps-small {
+    font-variant-caps: small-caps;
+  }
+
+  .lg\:caps-all-small {
+    font-variant-caps: all-small-caps;
+  }
+
+  .lg\:caps-petite {
+    font-variant-caps: petite-caps;
+  }
+
+  .lg\:caps-unicase {
+    font-variant-caps: unicase;
+  }
+
+  .lg\:caps-titling {
+    font-variant-caps: titling-caps;
+  }
+
+  .lg\:nums-normal {
+    font-variant-numeric: normal;
+  }
+
+  .lg\:nums-ordinal {
+    font-variant-numeric: ordinal;
+  }
+
+  .lg\:nums-slashed-zero {
+    font-variant-numeric: slashed-zero;
+  }
+
+  .lg\:nums-lining {
+    font-variant-numeric: lining-nums;
+  }
+
+  .lg\:nums-oldstyle {
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  .lg\:nums-proportional {
+    font-variant-numeric: proportional-nums;
+  }
+
+  .lg\:nums-tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lg\:nums-diagonal-fractions {
+    font-variant-numeric: diagonal-fractions;
+  }
+
+  .lg\:nums-stacked-fractions {
+    font-variant-numeric: stacked-fractions;
+  }
+
+  .lg\:ligatures-normal {
+    font-variant-ligatures: normal;
+  }
+
+  .lg\:ligatures-none {
+    font-variant-ligatures: none;
+  }
+
+  .lg\:ligatures-common {
+    font-variant-ligatures: common-ligatures;
+  }
+
+  .lg\:ligatures-no-common {
+    font-variant-ligatures: no-common-ligatures;
+  }
+
+  .lg\:ligatures-discretionary {
+    font-variant-ligatures: discretionary-ligatures;
+  }
+
+  .lg\:ligatures-no-discretionary {
+    font-variant-ligatures: no-discretionary-ligatures;
+  }
+
+  .lg\:ligatures-historical {
+    font-variant-ligatures: historical-ligatures;
+  }
+
+  .lg\:ligatures-no-historical {
+    font-variant-ligatures: no-historical-ligatures;
+  }
+
+  .lg\:ligatures-contextual {
+    font-variant-ligatures: contextual;
+  }
+
+  .lg\:ligatures-no-contextual {
+    font-variant-ligatures: no-contextual;
+  }
+
+  .lg\:text-rendering-auto {
+    text-rendering: auto;
+  }
+
+  .lg\:text-optimize-legibility {
+    text-rendering: optimizeLegibility;
+  }
+
+  .lg\:text-optimize-speed {
+    text-rendering: optimizeSpeed;
+  }
+
+  .lg\:text-geometric-precision {
+    text-rendering: geometricPrecision;
   }
 }
 
@@ -55899,6 +56887,42 @@ video {
     background-image: linear-gradient(to right, #3d8eff, #0F5AEF);
   }
 
+  .xl\:numeric-normal {
+    font-variant-numeric: normal;
+  }
+
+  .xl\:numeric-ordinal {
+    font-variant-numeric: ordinal;
+  }
+
+  .xl\:numeric-slashed-zero {
+    font-variant-numeric: slashed-zero;
+  }
+
+  .xl\:numeric-lining {
+    font-variant-numeric: lining-nums;
+  }
+
+  .xl\:numeric-oldstyle {
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  .xl\:numeric-proportional {
+    font-variant-numeric: proportional-nums;
+  }
+
+  .xl\:numeric-tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .xl\:numeric-diagonal-fractions {
+    font-variant-numeric: diagonal-fractions;
+  }
+
+  .xl\:numeric-stacked-fractions {
+    font-variant-numeric: stacked-fractions;
+  }
+
   .xl\:animation-none {
     animation-name: none;
   }
@@ -56041,6 +57065,190 @@ video {
 
   .xl\:animation-paused {
     animation-play-state: paused;
+  }
+
+  .xl\:ellipsis {
+    text-overflow: ellipsis;
+  }
+
+  .xl\:no-ellipsis {
+    text-overflow: clip;
+  }
+
+  .xl\:hyphens-none {
+    hyphens: none;
+  }
+
+  .xl\:hyphens-manual {
+    hyphens: manual;
+  }
+
+  .xl\:hyphens-auto {
+    hyphens: auto;
+  }
+
+  .xl\:kerning {
+    font-kerning: normal;
+  }
+
+  .xl\:kerning-none {
+    font-kerning: none;
+  }
+
+  .xl\:kerning-auto {
+    font-kerning: auto;
+  }
+
+  .xl\:font-family-unset {
+    font-family: inherit;
+  }
+
+  .xl\:font-weight-unset {
+    font-weight: inherit;
+  }
+
+  .xl\:font-style-unset {
+    font-style: inherit;
+  }
+
+  .xl\:text-size-unset {
+    font-size: inherit;
+  }
+
+  .xl\:text-align-unset {
+    text-align: inherit;
+  }
+
+  .xl\:leading-unset {
+    line-height: inherit;
+  }
+
+  .xl\:tracking-unset {
+    letter-spacing: inherit;
+  }
+
+  .xl\:text-color-unset {
+    color: inherit;
+  }
+
+  .xl\:text-transform-unset {
+    text-transform: inherit;
+  }
+
+  .xl\:caps-normal {
+    font-variant-caps: normal;
+  }
+
+  .xl\:caps-small {
+    font-variant-caps: small-caps;
+  }
+
+  .xl\:caps-all-small {
+    font-variant-caps: all-small-caps;
+  }
+
+  .xl\:caps-petite {
+    font-variant-caps: petite-caps;
+  }
+
+  .xl\:caps-unicase {
+    font-variant-caps: unicase;
+  }
+
+  .xl\:caps-titling {
+    font-variant-caps: titling-caps;
+  }
+
+  .xl\:nums-normal {
+    font-variant-numeric: normal;
+  }
+
+  .xl\:nums-ordinal {
+    font-variant-numeric: ordinal;
+  }
+
+  .xl\:nums-slashed-zero {
+    font-variant-numeric: slashed-zero;
+  }
+
+  .xl\:nums-lining {
+    font-variant-numeric: lining-nums;
+  }
+
+  .xl\:nums-oldstyle {
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  .xl\:nums-proportional {
+    font-variant-numeric: proportional-nums;
+  }
+
+  .xl\:nums-tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .xl\:nums-diagonal-fractions {
+    font-variant-numeric: diagonal-fractions;
+  }
+
+  .xl\:nums-stacked-fractions {
+    font-variant-numeric: stacked-fractions;
+  }
+
+  .xl\:ligatures-normal {
+    font-variant-ligatures: normal;
+  }
+
+  .xl\:ligatures-none {
+    font-variant-ligatures: none;
+  }
+
+  .xl\:ligatures-common {
+    font-variant-ligatures: common-ligatures;
+  }
+
+  .xl\:ligatures-no-common {
+    font-variant-ligatures: no-common-ligatures;
+  }
+
+  .xl\:ligatures-discretionary {
+    font-variant-ligatures: discretionary-ligatures;
+  }
+
+  .xl\:ligatures-no-discretionary {
+    font-variant-ligatures: no-discretionary-ligatures;
+  }
+
+  .xl\:ligatures-historical {
+    font-variant-ligatures: historical-ligatures;
+  }
+
+  .xl\:ligatures-no-historical {
+    font-variant-ligatures: no-historical-ligatures;
+  }
+
+  .xl\:ligatures-contextual {
+    font-variant-ligatures: contextual;
+  }
+
+  .xl\:ligatures-no-contextual {
+    font-variant-ligatures: no-contextual;
+  }
+
+  .xl\:text-rendering-auto {
+    text-rendering: auto;
+  }
+
+  .xl\:text-optimize-legibility {
+    text-rendering: optimizeLegibility;
+  }
+
+  .xl\:text-optimize-speed {
+    text-rendering: optimizeSpeed;
+  }
+
+  .xl\:text-geometric-precision {
+    text-rendering: geometricPrecision;
   }
 }
 
@@ -66976,6 +68184,42 @@ video {
     background-image: linear-gradient(to right, #3d8eff, #0F5AEF);
   }
 
+  .dark\:numeric-normal {
+    font-variant-numeric: normal;
+  }
+
+  .dark\:numeric-ordinal {
+    font-variant-numeric: ordinal;
+  }
+
+  .dark\:numeric-slashed-zero {
+    font-variant-numeric: slashed-zero;
+  }
+
+  .dark\:numeric-lining {
+    font-variant-numeric: lining-nums;
+  }
+
+  .dark\:numeric-oldstyle {
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  .dark\:numeric-proportional {
+    font-variant-numeric: proportional-nums;
+  }
+
+  .dark\:numeric-tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dark\:numeric-diagonal-fractions {
+    font-variant-numeric: diagonal-fractions;
+  }
+
+  .dark\:numeric-stacked-fractions {
+    font-variant-numeric: stacked-fractions;
+  }
+
   .dark\:animation-none {
     animation-name: none;
   }
@@ -67118,5 +68362,189 @@ video {
 
   .dark\:animation-paused {
     animation-play-state: paused;
+  }
+
+  .dark\:ellipsis {
+    text-overflow: ellipsis;
+  }
+
+  .dark\:no-ellipsis {
+    text-overflow: clip;
+  }
+
+  .dark\:hyphens-none {
+    hyphens: none;
+  }
+
+  .dark\:hyphens-manual {
+    hyphens: manual;
+  }
+
+  .dark\:hyphens-auto {
+    hyphens: auto;
+  }
+
+  .dark\:kerning {
+    font-kerning: normal;
+  }
+
+  .dark\:kerning-none {
+    font-kerning: none;
+  }
+
+  .dark\:kerning-auto {
+    font-kerning: auto;
+  }
+
+  .dark\:font-family-unset {
+    font-family: inherit;
+  }
+
+  .dark\:font-weight-unset {
+    font-weight: inherit;
+  }
+
+  .dark\:font-style-unset {
+    font-style: inherit;
+  }
+
+  .dark\:text-size-unset {
+    font-size: inherit;
+  }
+
+  .dark\:text-align-unset {
+    text-align: inherit;
+  }
+
+  .dark\:leading-unset {
+    line-height: inherit;
+  }
+
+  .dark\:tracking-unset {
+    letter-spacing: inherit;
+  }
+
+  .dark\:text-color-unset {
+    color: inherit;
+  }
+
+  .dark\:text-transform-unset {
+    text-transform: inherit;
+  }
+
+  .dark\:caps-normal {
+    font-variant-caps: normal;
+  }
+
+  .dark\:caps-small {
+    font-variant-caps: small-caps;
+  }
+
+  .dark\:caps-all-small {
+    font-variant-caps: all-small-caps;
+  }
+
+  .dark\:caps-petite {
+    font-variant-caps: petite-caps;
+  }
+
+  .dark\:caps-unicase {
+    font-variant-caps: unicase;
+  }
+
+  .dark\:caps-titling {
+    font-variant-caps: titling-caps;
+  }
+
+  .dark\:nums-normal {
+    font-variant-numeric: normal;
+  }
+
+  .dark\:nums-ordinal {
+    font-variant-numeric: ordinal;
+  }
+
+  .dark\:nums-slashed-zero {
+    font-variant-numeric: slashed-zero;
+  }
+
+  .dark\:nums-lining {
+    font-variant-numeric: lining-nums;
+  }
+
+  .dark\:nums-oldstyle {
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  .dark\:nums-proportional {
+    font-variant-numeric: proportional-nums;
+  }
+
+  .dark\:nums-tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dark\:nums-diagonal-fractions {
+    font-variant-numeric: diagonal-fractions;
+  }
+
+  .dark\:nums-stacked-fractions {
+    font-variant-numeric: stacked-fractions;
+  }
+
+  .dark\:ligatures-normal {
+    font-variant-ligatures: normal;
+  }
+
+  .dark\:ligatures-none {
+    font-variant-ligatures: none;
+  }
+
+  .dark\:ligatures-common {
+    font-variant-ligatures: common-ligatures;
+  }
+
+  .dark\:ligatures-no-common {
+    font-variant-ligatures: no-common-ligatures;
+  }
+
+  .dark\:ligatures-discretionary {
+    font-variant-ligatures: discretionary-ligatures;
+  }
+
+  .dark\:ligatures-no-discretionary {
+    font-variant-ligatures: no-discretionary-ligatures;
+  }
+
+  .dark\:ligatures-historical {
+    font-variant-ligatures: historical-ligatures;
+  }
+
+  .dark\:ligatures-no-historical {
+    font-variant-ligatures: no-historical-ligatures;
+  }
+
+  .dark\:ligatures-contextual {
+    font-variant-ligatures: contextual;
+  }
+
+  .dark\:ligatures-no-contextual {
+    font-variant-ligatures: no-contextual;
+  }
+
+  .dark\:text-rendering-auto {
+    text-rendering: auto;
+  }
+
+  .dark\:text-optimize-legibility {
+    text-rendering: optimizeLegibility;
+  }
+
+  .dark\:text-optimize-speed {
+    text-rendering: optimizeSpeed;
+  }
+
+  .dark\:text-geometric-precision {
+    text-rendering: geometricPrecision;
   }
 }

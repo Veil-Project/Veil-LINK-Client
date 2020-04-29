@@ -1,6 +1,6 @@
 {
   "name": "veil-x",
-  "version": "1.0.0-beta.14",
+  "version": "1.0.0-beta.15",
   "license": "MIT",
   "homepage": "./",
   "repository": {
@@ -132,6 +132,7 @@
     "react-viewport-list": "^1.3.3",
     "request": "^2.88.2",
     "request-progress": "^3.0.0",
+    "tailwindcss-typography": "^3.0.1",
     "tar": "^6.0.1",
     "worker-loader": "^2.0.0"
   },

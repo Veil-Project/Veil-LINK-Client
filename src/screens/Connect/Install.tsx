@@ -5,8 +5,7 @@ import formatPath from 'utils/formatPath'
 
 import Button from 'components/UI/Button'
 
-import formatBytes from 'utils/formatBytes'
-import Spinner from 'components/UI/Spinner'
+import DownloadStatus from 'components/DownloadStatus'
 
 interface DaemonDetailsProps {
   path: string | null
@@ -32,34 +31,6 @@ const DaemonDetails = ({ version, path, checksum }: DaemonDetailsProps) => (
     </dl>
   </>
 )
-
-interface DownloadStatusProps {
-  percent?: number | null
-  speed?: number | null
-  size?: {
-    total: number | null
-    transferred: number | null
-  }
-}
-
-const DownloadStatus = ({ percent, size, speed }: DownloadStatusProps) => {
-  return (
-    <>
-      <Spinner percentage={percent ? percent * 100 : null} />
-      <div className="mt-4 text-sm text-gray-300 text-center">
-        {size && size.total && size.transferred ? (
-          <span>
-            {formatBytes(size.transferred)} of {formatBytes(size.total)} (
-            {speed ? formatBytes(speed || 0) : '--'}
-            /sec)
-          </span>
-        ) : (
-          'Starting download…'
-        )}
-      </div>
-    </>
-  )
-}
 
 const Install = ({ setMode }: { setMode: Function }) => {
   const [verifyInstallation, setVerifyInstallation] = useState(false)

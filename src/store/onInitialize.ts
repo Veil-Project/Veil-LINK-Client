@@ -32,6 +32,18 @@ export const onInitialize: AsyncAction = async ({ effects, actions }) => {
     onQuit(_: any) {
       actions.app.handleShutdown()
     },
+    onUpdateAvailable(_: any, info: any) {
+      actions.autoUpdate.updateAvailable(info)
+    },
+    onUpdateNotAvailable(_: any) {
+      actions.autoUpdate.updateNotAvailable()
+    },
+    onUpdateDownloadProgress(_: any, progress: any) {
+      actions.autoUpdate.downloadProgress(progress)
+    },
+    onUpdateError(_: any, error: any) {
+      actions.autoUpdate.handleError(error)
+    },
   })
 
   effects.db.initialize({
