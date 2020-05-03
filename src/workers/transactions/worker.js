@@ -30,7 +30,7 @@ registerPromiseWorker(async ({ type, options }) => {
         )
         await db.transactions.bulkPut(
           fullTransactions
-            .filter(tx => !isCoinstake(tx))
+            .filter(tx => !isCoinstake(tx) && tx.confirmations >= 0)
             .map(tx => transformWalletTx(tx))
         )
         await sleep(500)
