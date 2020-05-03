@@ -17,8 +17,9 @@ const Settings = (props: RouteComponentProps) => {
     effects.electron.relaunch()
   }
 
-  const resetCache = () => {
-    actions.transactions.reset()
+  const resetCache = async () => {
+    await actions.transactions.reset()
+    await actions.transactions.updateFromWallet()
   }
 
   const startRescan = async (password: string) => {
