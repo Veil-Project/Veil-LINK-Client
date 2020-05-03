@@ -6,6 +6,8 @@ type Status =
   | 'checking'
   | 'update-available'
   | 'up-to-date'
+  | 'downloading'
+  | 'ready-to-install'
   | 'installing'
   | 'error'
   | 'dismissed'
@@ -30,11 +32,13 @@ export const state: State = {
 
 type Actions = {
   dismiss: Action
+  download: Action
   install: Action
   checkForUpdates: Action
   updateAvailable: Action<any, void>
   updateNotAvailable: Action
   downloadProgress: Action<any, void>
+  downloadComplete: Action
   handleError: Action<any, void>
 }
 
@@ -45,6 +49,10 @@ export const actions: Actions = {
   },
   dismiss({ state }) {
     state.autoUpdate.status = 'dismissed'
+  },
+  download({ state, effects }) {
+    state.autoUpdate.status = 'downloading'
+    effects.electron.downloadUpdate()
   },
   install({ state, effects }) {
     state.autoUpdate.status = 'installing'
@@ -60,6 +68,9 @@ export const actions: Actions = {
   },
   downloadProgress({ state }, progress) {
     state.autoUpdate.downloadProgress = progress
+  },
+  downloadComplete({ state }) {
+    state.autoUpdate.status = 'ready-to-install'
   },
   handleError({ state }, error) {
     state.autoUpdate.error = error

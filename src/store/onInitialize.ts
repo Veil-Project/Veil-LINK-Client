@@ -41,6 +41,9 @@ export const onInitialize: AsyncAction = async ({ effects, actions }) => {
     onUpdateDownloadProgress(_: any, progress: any) {
       actions.autoUpdate.downloadProgress(progress)
     },
+    onUpdateDownloaded(_: any) {
+      actions.autoUpdate.downloadComplete()
+    },
     onUpdateError(_: any, error: any) {
       actions.autoUpdate.handleError(error)
     },

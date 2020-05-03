@@ -144,8 +144,12 @@ ipcMain.handle('check-for-updates', _ => {
   autoUpdater.checkForUpdates()
 })
 
-ipcMain.handle('install-update', _ => {
+ipcMain.handle('download-update', _ => {
   autoUpdater.downloadUpdate()
+})
+
+ipcMain.handle('install-update', _ => {
+  autoUpdater.quitAndInstall()
 })
 
 autoUpdater.on('error', error => {
@@ -161,7 +165,7 @@ autoUpdater.on('update-not-available', () => {
 })
 
 autoUpdater.on('update-downloaded', () => {
-  autoUpdater.quitAndInstall()
+  mainWindow.emit('update-downloaded')
 })
 
 autoUpdater.on('download-progress', progress => {

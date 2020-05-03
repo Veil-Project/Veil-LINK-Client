@@ -5,6 +5,7 @@ export default {
       onUpdateNotAvailable,
       onUpdateAvailable,
       onUpdateDownloadProgress,
+      onUpdateDownloaded,
       onUpdateError,
     } = options
 
@@ -19,6 +20,8 @@ export default {
         'update-download-progress',
         onUpdateDownloadProgress
       )
+    onUpdateDownloaded &&
+      window.ipcRenderer.on('update-downloaded', onUpdateDownloaded)
     onUpdateError && window.ipcRenderer.on('update-error', onUpdateError)
   },
 
@@ -53,6 +56,9 @@ export default {
   // Auto-update
   async checkForUpdates() {
     return await window.ipcRenderer.invoke('check-for-updates')
+  },
+  async downloadUpdate() {
+    return await window.ipcRenderer.invoke('download-update')
   },
   async installUpdate() {
     return await window.ipcRenderer.invoke('install-update')

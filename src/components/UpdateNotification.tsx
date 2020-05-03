@@ -11,8 +11,8 @@ const UpdateNotification = () => {
   const cancel = () => {
     actions.autoUpdate.dismiss()
   }
-  const updateNow = () => {
-    actions.autoUpdate.install()
+  const download = () => {
+    actions.autoUpdate.download()
   }
 
   return (
@@ -46,7 +46,7 @@ const UpdateNotification = () => {
         </div>
         <div className="flex-none flex justify-between">
           <Button
-            to={`https://github.com/Veil-Project/Veil-Link-Client/releases/tag/${autoUpdate.latestVersion}`}
+            to={`https://github.com/Veil-Project/Veil-Link-Client/releases/tag/v${autoUpdate.latestVersion}`}
             style={{ backgroundColor: '#ffffff11' }}
           >
             Learn more…
@@ -55,7 +55,7 @@ const UpdateNotification = () => {
             <Button style={{ backgroundColor: '#ffffff11' }} onClick={cancel}>
               Later
             </Button>
-            <Button primary onClick={updateNow}>
+            <Button primary onClick={download}>
               Update now
             </Button>
           </div>
