@@ -19,7 +19,7 @@ const AutoUpdater = () => {
         actions.autoUpdate.checkForUpdates()
         break
       case 'error':
-        addToast(`An error occured when updating. ${error}`, {
+        addToast(`Auto-update error. ${error}`, {
           appearance: 'error',
         })
         break
