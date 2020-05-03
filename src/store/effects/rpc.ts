@@ -154,8 +154,12 @@ export default {
     return await callAsync('sendtoaddress', address, amount)
   },
 
-  async sendRingCtToRingCt(address: string, amount: number) {
-    return await callAsync('sendringcttoringct', address, amount)
+  async sendRingCtToRingCt(
+    address: string,
+    amount: number,
+    subtractFees: boolean = false
+  ) {
+    return await callAsync('sendringcttoringct', address, amount, subtractFees)
   },
 
   async rescanRingCtWallet() {

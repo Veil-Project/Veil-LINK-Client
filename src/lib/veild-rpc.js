@@ -276,7 +276,7 @@ RpcClient.callspec = {
   sendstealthtoringct: 'str float',
   sendringcttobasecoin: 'str float',
   sendringcttostealth: 'str float',
-  sendringcttoringct: 'str float',
+  sendringcttoringct: 'str float bool',
   setAccount: '',
   setnetworkactive: 'bool',
   setnonautomintaddress: 'str',

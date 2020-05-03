@@ -174,9 +174,10 @@ export const actions: Actions = {
     }
   },
 
-  async update({ effects }, txid) {
+  async update({ effects, actions }, txid) {
     const tx = await effects.rpc.getTransaction(txid)
     await effects.db.addTransaction(transformWalletTx(tx))
+    actions.transactions.updateFromCache()
   },
 
   async reset({ effects, state }) {

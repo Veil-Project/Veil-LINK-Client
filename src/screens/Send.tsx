@@ -7,6 +7,7 @@ import classnames from 'classnames'
 import { useToasts } from 'react-toast-notifications'
 import { useStore } from 'store'
 import PasswordPrompt from 'components/PasswordPrompt'
+import Toggle from 'components/UI/Toggle'
 
 interface AddressValidityProps {
   valid: boolean
@@ -24,10 +25,13 @@ const AddressValidity = ({ valid }: AddressValidityProps) => {
   return <div className={className}>{valid ? 'Valid' : 'Invalid'}</div>
 }
 
+const MIN_FEE = 0.0001
+
 const Send = (props: RouteComponentProps) => {
   const { addToast } = useToasts()
   const [requiresPassword, setRequiresPassword] = useState(false)
   const [isAddressValid, setIsAddressValid] = useState(false)
+  const [subtractFees, setSubtractFees] = useState(false)
   const [isSending, setIsSending] = useState(false)
   const { register, watch, handleSubmit, getValues, setValue } = useForm()
   const { state, effects } = useStore()
@@ -56,8 +60,8 @@ const Send = (props: RouteComponentProps) => {
 
     try {
       if (password) await effects.rpc.unlockWallet(password)
-      await effects.rpc.setTxFee(0.0001)
-      await effects.rpc.sendRingCtToRingCt(address, amount)
+      await effects.rpc.setTxFee(MIN_FEE)
+      await effects.rpc.sendRingCtToRingCt(address, amount, subtractFees)
       addToast('Transaction sent!', { appearance: 'success' })
       navigate('/')
     } catch (e) {
@@ -79,6 +83,9 @@ const Send = (props: RouteComponentProps) => {
 
   const watchAddress = watch('address')
   const watchAmount = watch('amount')
+
+  const isSendingMaxAmount =
+    parseFloat(watchAmount) >= spendableBalance - MIN_FEE
 
   return (
     <Sheet onClose={() => navigate('/')}>
@@ -115,7 +122,7 @@ const Send = (props: RouteComponentProps) => {
                 placeholder="Amount to send"
               />
               <div className="absolute top-0 bottom-0 right-0 flex items-center pr-4 text-sm text-gray-300">
-                Maximum:
+                Max:
                 <button
                   className="ml-1 underline hover:text-white hover:no-underline"
                   onClick={e => {
@@ -127,6 +134,14 @@ const Send = (props: RouteComponentProps) => {
                 </button>
               </div>
             </div>
+          </div>
+          <div className="mt-4 flex">
+            <Toggle
+              on={subtractFees || isSendingMaxAmount}
+              disabled={isSendingMaxAmount}
+              onToggle={setSubtractFees}
+              label="Subtract fees from amount"
+            />
           </div>
           <div className="mt-6 flex justify-center">
             <Button
