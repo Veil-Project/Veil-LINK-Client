@@ -103,7 +103,7 @@
   ],
   "dependencies": {
     "@reach/router": "^1.2.1",
-    "@reecelucas/react-use-hotkeys": "^1.1.2",
+    "@reecelucas/react-use-hotkeys": "^1.2.0",
     "@types/react-toast-notifications": "^2.4.0",
     "@types/request": "^2.48.4",
     "@types/tar": "^4.0.3",

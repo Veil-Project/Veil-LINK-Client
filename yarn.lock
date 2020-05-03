@@ -1671,10 +1671,10 @@
     react-lifecycles-compat "^3.0.4"
     warning "^3.0.0"
 
-"@reecelucas/react-use-hotkeys@^1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@reecelucas/react-use-hotkeys/-/react-use-hotkeys-1.1.2.tgz#489c3310ae518927981a9ee3f7e8823847cfa293"
-  integrity sha512-P/jkcigaR6Z7/j3CDJszWHur3Q3ckITtIjmN6dsGtz3NzGtmLKGK35EjSdE1x6XNEN8vIMO1AlU2zEpEufLaYg==
+"@reecelucas/react-use-hotkeys@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@reecelucas/react-use-hotkeys/-/react-use-hotkeys-1.2.0.tgz#f9b7a5e902f099756d567dca9770b5db0c5df304"
+  integrity sha512-XssCgmTqTJosvFkWkzlYYz+B3X1++7WnofJgIilmgTXHsv/SZ383qYnpLPw/KRh2eiNIrRnRLdT+bMkvVhBwww==
   dependencies:
     shim-keyboard-event-key "^1.0.3"
 

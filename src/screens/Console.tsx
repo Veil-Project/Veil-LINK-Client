@@ -7,6 +7,7 @@ import React, {
   memo,
 } from 'react'
 import { navigate, RouteComponentProps } from '@reach/router'
+import RpcClient from 'lib/veild-rpc'
 import useHotkeys from '@reecelucas/react-use-hotkeys'
 import Modal from 'components/UI/Modal'
 import JsonViewer from 'components/JsonViewer'
@@ -67,9 +68,13 @@ const Console = (props: RouteComponentProps) => {
   const [commandHistory, setCommandHistory] = useState<Command[]>([
     { input: '' },
   ])
+  const [autoCompleteCommands, setAutoCompleteCommands] = useState<string[]>([])
+  const [autoCompleteIndex, setAutoCompleteIndex] = useState(0)
 
   const { state, effects } = useStore()
   const message = [...state.daemon.stdout].reverse()[0]
+  const currentCommand = commandHistory[currentIndex].input
+  const currentAutoCompleteCommand = autoCompleteCommands[autoCompleteIndex]
 
   useHotkeys('Meta+l', () => {
     if (isLoading) return
@@ -93,12 +98,34 @@ const Console = (props: RouteComponentProps) => {
   })
   useHotkeys('ArrowUp', () => {
     if (isLoading) return
-    setCurrentIndex(Math.max(currentIndex - 1, 0))
+    if (autoCompleteCommands.length) {
+      setAutoCompleteIndex(Math.max(autoCompleteIndex - 1, 0))
+    } else {
+      setCurrentIndex(Math.max(currentIndex - 1, 0))
+    }
   })
   useHotkeys('ArrowDown', () => {
     if (isLoading) return
-    setCurrentIndex(Math.min(currentIndex + 1, commandHistory.length - 1))
+    if (autoCompleteCommands.length) {
+      setAutoCompleteIndex(
+        Math.min(autoCompleteIndex + 1, autoCompleteCommands.length - 1)
+      )
+    } else {
+      setCurrentIndex(Math.min(currentIndex + 1, commandHistory.length - 1))
+    }
   })
+  useHotkeys(['Tab', 'ArrowRight'], () => {
+    if (isLoading) return
+    if (currentAutoCompleteCommand) {
+      setCurrentCommand(currentAutoCompleteCommand)
+    }
+  })
+
+  const setCurrentCommand = (command: string) => {
+    const newCommands = [...commandHistory]
+    newCommands[currentIndex].input = command
+    setCommandHistory(newCommands)
+  }
 
   const sendCommand = async (command: string): Promise<any> => {
     const response = await effects.rpc.sendCommand(command)
@@ -106,7 +133,7 @@ const Console = (props: RouteComponentProps) => {
   }
 
   const submitCommand = async () => {
-    const command = commandHistory[currentIndex].input
+    const command = currentAutoCompleteCommand || currentCommand
     if (!command || command === '') return
 
     if (command === 'exit') {
@@ -163,13 +190,25 @@ const Console = (props: RouteComponentProps) => {
   }
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const newCommands = [...commandHistory]
-    newCommands[currentIndex].input = e.target.value
-    setCommandHistory(newCommands)
+    setCurrentCommand(e.target.value)
   }
 
   const inputRef: React.RefObject<HTMLInputElement> = useRef(null)
   const commandsEndRef: React.RefObject<HTMLDivElement> = useRef(null)
+
+  useEffect(() => {
+    const matches = currentCommand
+      ? Object.keys(RpcClient.callspec)
+          .map(cmd => cmd.toLowerCase())
+          .filter(
+            cmd =>
+              cmd.startsWith(currentCommand) &&
+              (autoCompleteCommands.length > 1 || cmd !== currentCommand)
+          )
+      : []
+    setAutoCompleteCommands(matches)
+    setAutoCompleteIndex(0)
+  }, [currentCommand, autoCompleteCommands.length])
 
   useEffect(() => {
     commandsEndRef.current?.scrollIntoView()
@@ -181,7 +220,7 @@ const Console = (props: RouteComponentProps) => {
       inputRef.current.selectionStart = inputRef.current.selectionEnd =
         inputRef.current.value.length
     }
-  }, [currentIndex])
+  }, [currentIndex, currentCommand])
 
   return (
     <Modal
@@ -232,18 +271,45 @@ const Console = (props: RouteComponentProps) => {
         ) : isLoading ? (
           <div className="text-gray-300">{message || 'Please wait…'}</div>
         ) : (
-          <div className="flex items-center text-teal-400">
-            <span className="mr-2">></span>
-            <input
-              type="text"
-              className="w-full text-teal-400 bg-transparent outline-none font-mono"
-              style={{ caretColor: '#8adeff' }}
-              autoFocus
-              value={commandHistory[currentIndex].input}
-              onChange={handleChange}
-              disabled={isLoading}
-              ref={inputRef}
-            />
+          <div className="relative">
+            <div className="flex items-center text-teal-400">
+              <span className="w-4">></span>
+              <div className="w-full relative font-mono">
+                <input
+                  type="text"
+                  className="relative z-10 w-full text-teal-400 bg-transparent outline-none"
+                  style={{ caretColor: '#8adeff' }}
+                  autoFocus
+                  value={currentCommand}
+                  onChange={handleChange}
+                  disabled={isLoading}
+                  ref={inputRef}
+                />
+                <div className="absolute z-0 inset-0 flex items-center text-gray-300">
+                  {currentAutoCompleteCommand}
+                </div>
+              </div>
+            </div>
+            <div>
+              {autoCompleteCommands.map((cmd, i) => (
+                <div key={cmd} className="flex items-center">
+                  <span className="w-4 text-teal-500">
+                    {i === autoCompleteIndex && '•'}
+                  </span>
+                  <button
+                    key={cmd}
+                    className={`block ${
+                      i === autoCompleteIndex
+                        ? 'text-teal-500'
+                        : 'hover:text-teal-500'
+                    }`}
+                    onClick={() => setCurrentCommand(cmd)}
+                  >
+                    {cmd}
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </label>
