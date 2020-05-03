@@ -191,7 +191,16 @@ const TransactionSummary = ({ txid }: { txid: string | null }) => {
           {transaction ? (
             !isOpen &&
             (transaction.requiresReveal ? (
-              <Button size="sm" onClick={handleReveal}>
+              <Button
+                size="sm"
+                onClick={handleReveal}
+                disabled={!transaction.confirmations?.length}
+                title={
+                  transaction.confirmations?.length
+                    ? ''
+                    : 'Pending confirmation…'
+                }
+              >
                 Reveal
               </Button>
             ) : (
