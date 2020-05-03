@@ -16,7 +16,7 @@ import Loading from 'screens/Loading'
 
 // TODO: Move to transaction utils
 const transactionDescription = (transaction: any): string => {
-  const { type, category, address } = transaction
+  const { type, category, address, sentToSelf } = transaction
 
   let verb
   switch (category) {
@@ -32,7 +32,18 @@ const transactionDescription = (transaction: any): string => {
       verb = category
   }
 
-  return `${verb} ${type} ${address ? ` to ${address}` : ''}`
+  let noun
+  switch (type) {
+    case 'zerocoinspend':
+      noun = 'zerocoin'
+      break
+    default:
+      noun = type
+  }
+
+  return `${verb} ${noun} ${
+    sentToSelf ? 'to self' : address ? ` to ${address}` : ''
+  }`
 }
 
 // TODO: Move to transaction utils

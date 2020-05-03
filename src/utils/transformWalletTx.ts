@@ -51,6 +51,8 @@ export default (walletTx: WalletTransaction) => {
         )
       ) + changeAmount
 
+  const sentToSelf = receivedAmount === Math.abs(sentAmount)
+
   const fee = changeAmount > 0 ? parseFloat(feeRecord?.ct_fee) || 0 : 0
 
   const totalAmount =
@@ -76,6 +78,7 @@ export default (walletTx: WalletTransaction) => {
     sentAmount,
     fee,
     totalAmount,
+    sentToSelf,
     address:
       myDetails[0]?.address ||
       (myOutputs[0]?.output_record?.stealth_address
