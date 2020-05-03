@@ -75,6 +75,21 @@ export default {
       .toArray()
   },
 
+  async fetchStakesForPeriod(daysUntilToday: number) {
+    const start = moment()
+      .subtract(daysUntilToday, 'days')
+      .startOf('day')
+      .valueOf()
+    const end = moment()
+      .endOf('day')
+      .valueOf()
+    return await db.transactions
+      .where('time')
+      .between(start, end, true, true)
+      .filter((tx: any) => tx.category === 'stake')
+      .toArray()
+  },
+
   async clearTransactions() {
     return await db.transactions.clear()
   },

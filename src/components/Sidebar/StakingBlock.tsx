@@ -57,7 +57,8 @@ const StakingButton = ({
 }
 
 const StakingBlock = ({ onEnableStaking, onDisableStaking }: any) => {
-  const [data, setData] = useState<number[]>([])
+  const [chartData, setChartData] = useState<number[]>([])
+  const [summaryData, setSummaryData] = useState<[string, number][]>([])
   const { state, effects } = useStore()
   const { staking } = state
 
@@ -68,8 +69,14 @@ const StakingBlock = ({ onEnableStaking, onDisableStaking }: any) => {
           effects.db.fetchStakesForDay(daysAgo)
         )
       )
-      const data = txByDay.map((day: any) => sum(map(day, 'totalAmount')))
-      setData(data)
+      setChartData(txByDay.map((day: any) => sum(map(day, 'totalAmount'))))
+
+      const last7 = await effects.db.fetchStakesForPeriod(7)
+      const last30 = await effects.db.fetchStakesForPeriod(30)
+      setSummaryData([
+        ['Last 7 days', sum(map(last7, 'totalAmount'))],
+        ['Last 30 days', sum(map(last30, 'totalAmount'))],
+      ])
     })()
   }, [effects.db, state.transactions.txids.length])
 
@@ -89,7 +96,8 @@ const StakingBlock = ({ onEnableStaking, onDisableStaking }: any) => {
     >
       <StakingOverview
         isDimmed={staking.status.current === 'disabled'}
-        data={data}
+        chartData={chartData}
+        summaryData={summaryData}
       />
     </SidebarBlock>
   )
