@@ -1,4 +1,4 @@
-import React, { useState, memo, MouseEvent, useEffect, useRef } from 'react'
+import React, { useState, MouseEvent, useEffect, useRef } from 'react'
 import cx from 'classnames'
 import { motion } from 'framer-motion'
 import StatusIcon from './StatusIcon'
@@ -238,4 +238,4 @@ const TransactionSummary = ({ txid }: { txid: string | null }) => {
   )
 }
 
-export default memo(TransactionSummary)
+export default TransactionSummary
