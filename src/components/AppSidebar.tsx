@@ -275,13 +275,15 @@ const AppSidebar = () => {
             <div className="font-semibold">
               Syncing {(blockchain.verificationProgress * 100).toFixed(2)}%
             </div>
-            {blockchain.tip && (
-              <div className="text-xs text-gray-300">
-                {formatDate(new Date(blockchain.tip.date), 'short')}{' '}
-                {formatTime(new Date(blockchain.tip.date), 'short')} / Height:{' '}
-                {blockchain.tip.height}
-              </div>
-            )}
+            <div className="text-xs text-gray-300">
+              {blockchain.tip && (
+                <span>
+                  {formatDate(new Date(blockchain.tip.date), 'short')}{' '}
+                  {formatTime(new Date(blockchain.tip.date), 'short')} /{' '}
+                </span>
+              )}
+              Height: {blockchain?.tip?.height || blockchain.height}
+            </div>
           </div>
         </div>
       )}

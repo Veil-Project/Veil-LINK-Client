@@ -28,7 +28,7 @@ export const state: State = {
   verificationProgress: 0,
   tip: null,
   connected: state => state.chain !== null,
-  isSynced: state => state.verificationProgress > 0.99999,
+  isSynced: state => state.verificationProgress > 0.9999,
 }
 
 export const actions: Actions = {
