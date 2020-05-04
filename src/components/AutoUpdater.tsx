@@ -7,6 +7,7 @@ import UpdateProgress from 'components/UpdateProgress'
 import Confirm from 'components/Confirm'
 import Spinner from './UI/Spinner'
 import Overlay from './Overlay'
+import useInterval from 'hooks/useInterval'
 
 const AutoUpdater = () => {
   const { addToast } = useToasts()
@@ -25,6 +26,12 @@ const AutoUpdater = () => {
         break
     }
   }, [status])
+
+  useInterval(() => {
+    if (['pending', 'up-to-date', 'error', 'dismissed'].includes(status)) {
+      actions.autoUpdate.checkForUpdates()
+    }
+  }, 1000 * 60 * 60 * 12)
 
   const install = () => {
     actions.autoUpdate.install()
