@@ -96,9 +96,9 @@ export const actions: Actions = {
   },
 
   async reset({ actions, effects }) {
-    actions.daemon.reset()
     await effects.daemon.stop()
     await actions.app.transition()
+    actions.daemon.reset()
   },
 
   async reload({ state, actions }, { resetTransactions = false }) {

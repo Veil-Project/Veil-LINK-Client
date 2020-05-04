@@ -9,15 +9,18 @@ import Button from 'components/UI/Button'
 
 const Settings = (props: RouteComponentProps) => {
   const [requiresPassword, setRequiresPassword] = useState(false)
+  const [isBusy, setIsBusy] = useState(false)
   const { actions, effects } = useStore()
   const { addToast } = useToasts()
 
-  const resetSettings = () => {
-    actions.app.reset()
+  const resetSettings = async () => {
+    setIsBusy(true)
+    await actions.app.reset()
     effects.electron.relaunch()
   }
 
   const resetCache = async () => {
+    setIsBusy(true)
     await actions.transactions.reset()
     await actions.transactions.updateFromWallet()
     navigate('/')
@@ -39,13 +42,17 @@ const Settings = (props: RouteComponentProps) => {
   return (
     <Modal className="p-10" onClose={() => navigate('/')} canClose={true}>
       <div className="grid gap-4">
-        <Button secondary onClick={() => setRequiresPassword(true)}>
+        <Button
+          disabled={isBusy}
+          secondary
+          onClick={() => setRequiresPassword(true)}
+        >
           Rescan RingCT wallet
         </Button>
-        <Button secondary onClick={resetCache}>
+        <Button disabled={isBusy} secondary onClick={resetCache}>
           Reset transaction cache
         </Button>
-        <Button secondary onClick={resetSettings}>
+        <Button disabled={isBusy} secondary onClick={resetSettings}>
           Reset settings
         </Button>
       </div>
