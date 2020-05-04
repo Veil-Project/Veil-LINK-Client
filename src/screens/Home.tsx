@@ -200,26 +200,26 @@ const Transactions = () => {
         You can now send Veil to your receiving address.
       </p>
       <div className="max-w-xs mx-auto rounded bg-gray-700 text-left font-medium flex flex-col p-4 my-8">
-        <div className="flex items-center mb-2">
+        <div className="flex items-center mb-3">
           {state.wallet.currentReceivingAddress ? (
-            <div className="w-8 h-8 text-sm leading-none rounded-full bg-green-500 text-white flex items-center justify-center mr-2 font-semibold">
+            <div className="w-6 h-6 text-xs leading-none rounded-full bg-green-500 text-white flex items-center justify-center mr-3 font-semibold">
               <FaCheck />
             </div>
           ) : (
-            <div className="w-8 h-8 text-sm leading-none rounded-full bg-gray-500 flex items-center justify-center mr-2 font-semibold">
+            <div className="w-6 h-6 text-xs text-teal-500 leading-none rounded-full bg-gray-500 flex items-center justify-center mr-3 font-semibold">
               1
             </div>
           )}
           Generate a receiving address
         </div>
-        <div className="flex items-center mb-2">
-          <div className="w-8 h-8 text-sm leading-none rounded-full bg-gray-500 flex items-center justify-center mr-2 font-semibold">
+        <div className="flex items-center mb-3">
+          <div className="w-6 h-6 text-xs text-teal-500 leading-none rounded-full bg-gray-500 flex items-center justify-center mr-3 font-semibold">
             2
           </div>
           Transfer Veil to your wallet
         </div>
         <div className="flex items-center">
-          <div className="w-8 h-8 text-sm leading-none rounded-full bg-gray-500 flex items-center justify-center mr-2 font-semibold">
+          <div className="w-6 h-6 text-xs text-teal-500 leading-none rounded-full bg-gray-500 flex items-center justify-center mr-3 font-semibold">
             3
           </div>
           Enjoy using Veil!
