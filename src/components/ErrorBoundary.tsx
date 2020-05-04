@@ -23,7 +23,7 @@ export default class ErrorBoundary extends React.Component<{}, OwnState> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="m-auto font-semibold text-lg text-white">
+        <div className="flex-1 w-full flex items-center justify-center font-semibold text-lg text-white">
           <h1>Something went wrong.</h1>
         </div>
       )
