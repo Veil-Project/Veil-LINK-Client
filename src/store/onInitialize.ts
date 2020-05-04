@@ -55,6 +55,8 @@ export const onInitialize: AsyncAction = async ({ effects, actions }) => {
       const updates = changes.filter((change: any) => change.type === 2)
       const deletes = changes.filter((change: any) => change.type === 3)
 
+      console.log(creates, updates, deletes)
+
       if (creates.length > 0 || deletes.length > 0) {
         actions.transactions.updateFromCache()
       }
