@@ -20,6 +20,7 @@ const Settings = (props: RouteComponentProps) => {
   const resetCache = async () => {
     await actions.transactions.reset()
     await actions.transactions.updateFromWallet()
+    navigate('/')
   }
 
   const startRescan = async (password: string) => {
