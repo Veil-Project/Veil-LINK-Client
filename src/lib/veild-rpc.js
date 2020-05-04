@@ -304,6 +304,7 @@ RpcClient.callspec = {
   getzerocoinsupply: '',
   resetmintzerocoin: 'bool',
   resetspentzerocoin: '',
+  resendwallettransactions: '',
   reconsiderzerocoins: '',
   rescanzerocoinwallet: '',
   waitforblock: 'str int',
