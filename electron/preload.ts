@@ -5,6 +5,7 @@ import path from 'path'
 declare global {
   interface Window {
     platform: string
+    arch: string
     ipcRenderer: any
     remote: any
     clipboard: any
@@ -13,6 +14,7 @@ declare global {
 }
 
 window.platform = process.platform
+window.arch = process.arch
 window.ipcRenderer = ipcRenderer
 window.remote = remote
 window.clipboard = clipboard

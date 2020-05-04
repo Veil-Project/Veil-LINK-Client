@@ -4,12 +4,12 @@ import { EventEmitter } from 'events'
 import crypto from 'crypto'
 import fs from 'fs'
 import tar from 'tar'
+import extractZip from 'extract-zip'
 import path from 'path'
 import download from './download'
 
 const VEILD_USER = crypto.randomBytes(256 / 8).toString('hex')
 const VEILD_PASS = crypto.randomBytes(256 / 8).toString('hex')
-const VEILD_DEFAULT_PATH = `${app.getPath('userData')}/veild`
 
 export type DaemonStatus =
   | 'unknown'
@@ -42,7 +42,7 @@ export default class Daemon extends EventEmitter {
     pass: VEILD_PASS,
   }
 
-  path: string | null = VEILD_DEFAULT_PATH
+  path: string | null = null
   status: DaemonStatus = 'unknown'
   isRunning: boolean = false
 
@@ -191,21 +191,35 @@ export default class Daemon extends EventEmitter {
         .on('error', reject)
         .on('end', async () => {
           try {
-            await tar.extract({
-              file: downloadPath,
-              cwd: destinationPath,
-              filter: path => path.endsWith('veild'),
-            })
-            this.path = path.join(
-              destinationPath,
-              path
-                .basename(url, 'tar.gz')
-                .split('-')
-                .slice(0, 2)
-                .join('-'),
-              'bin',
-              'veild'
-            )
+            if (process.platform === 'win32') {
+              await extractZip(downloadPath, { dir: destinationPath })
+              this.path = path.join(
+                destinationPath,
+                path
+                  .basename(url, 'zip')
+                  .split('-')
+                  .slice(0, 2)
+                  .join('-'),
+                'bin',
+                'veild.exe'
+              )
+            } else {
+              await tar.extract({
+                file: downloadPath,
+                cwd: destinationPath,
+                filter: path => path.endsWith('veild'),
+              })
+              this.path = path.join(
+                destinationPath,
+                path
+                  .basename(url, 'tar.gz')
+                  .split('-')
+                  .slice(0, 2)
+                  .join('-'),
+                'bin',
+                'veild'
+              )
+            }
             resolve(this.path)
           } catch (e) {
             reject(e)

@@ -1,11 +1,10 @@
 import { Action, AsyncAction, Derive } from 'store'
 import { DaemonStatus } from '../../../electron/Daemon'
+import compareVersions from 'compare-versions'
 import getDefaultVeilDatadir from 'utils/getDefaultVeilDatadir'
 import defaultConfig from 'lib/default-veilconf'
-
-const VEILD_DOWNLOAD_URL =
-  'https://github.com/Veil-Project/veil/releases/download/v1.0.4.8/veil-1.0.4-osx64.tar.gz'
-const VEILD_CHECKSUM = '741efac28070072ed8a2788934a70eee'
+import VEILD from 'constants/veild'
+import { get } from 'lodash'
 
 export interface DaemonStartOptions {
   seed?: string
@@ -45,6 +44,7 @@ type State = {
   installed: boolean
   version: string | null
   checksum: string | null
+  upgradeAvailable: Derive<State, boolean>
   checksumValid: Derive<State, boolean>
   configured: Derive<State, boolean>
   downloaded: Derive<State, boolean>
@@ -64,7 +64,9 @@ export const state: State = {
   installed: false,
   version: null,
   checksum: null,
-  checksumValid: state => state.checksum === VEILD_CHECKSUM,
+  upgradeAvailable: state =>
+    !!state.version && compareVersions(state.version, VEILD.version) > 0,
+  checksumValid: state => state.checksum === VEILD.checksum,
   configured: state => state.options.network !== null,
   downloaded: state => state.download.completedAt !== null,
   loaded: state => state.status !== null,
@@ -149,12 +151,14 @@ export const actions: Actions = {
   },
 
   async download({ effects, actions, state }) {
+    const url = get(VEILD.download, [window.platform, window.arch])
+
     try {
       state.daemon.download.error = null
       state.daemon.download.completedAt = null
       state.daemon.download.inProgress = true
       const path = await effects.daemon.download(
-        VEILD_DOWNLOAD_URL,
+        url,
         (_: any, progress: DownloadProgress) => {
           state.daemon.download.status = progress
         }
@@ -209,8 +213,11 @@ export const actions: Actions = {
     return await effects.daemon.writeConfig(state.daemon.actualDatadir, content)
   },
 
-  reset({ actions, state }) {
+  reset({ effects, actions }) {
     actions.daemon.configure({ network: null, datadir: null })
+    localStorage.removeItem('daemonOptions')
+    localStorage.removeItem('daemonPath')
+    effects.daemon.setPath(null)
   },
 
   handleWarmup({ state }, { message, progress }) {
