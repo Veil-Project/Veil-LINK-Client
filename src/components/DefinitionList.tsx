@@ -22,7 +22,9 @@ const Row = ({ label, amount }: RowProps) => (
 const DefinitionList = ({ data }: { data: ([string, number] | null)[] }) => {
   return (
     <div className="leading-relaxed text-sm">
-      {data.map(row => (row ? <Row label={row[0]} amount={row[1]} /> : null))}
+      {data.map(row =>
+        row ? <Row key={row[0]} label={row[0]} amount={row[1]} /> : null
+      )}
     </div>
   )
 }
