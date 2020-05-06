@@ -13,9 +13,9 @@ const isCoinstake = tx =>
 
 registerPromiseWorker(async ({ type, options }) => {
   if (type === 'importWalletTransactionsMessage') {
-    const { credentials, lastBlock } = options
+    const { connectionInfo, lastBlock } = options
 
-    rpc.initialize(credentials)
+    rpc.initialize(connectionInfo)
 
     const { lastblock: newLastBlock, transactions } = await rpc.listSinceBlock(
       lastBlock

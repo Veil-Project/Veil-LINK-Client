@@ -56,6 +56,16 @@ export default {
     })
   },
 
+  getConnectionInfo() {
+    return {
+      host: client.host,
+      port: client.port,
+      protocol: 'http',
+      user: client.user,
+      pass: client.pass,
+    }
+  },
+
   async listSinceBlock(blockhash?: string) {
     return await callAsync('listsinceblock', blockhash) //, '*', count, offset)
   },
@@ -115,7 +125,12 @@ export default {
   },
 
   async unlockWalletForStaking(password: string) {
-    return await callAsync('walletpassphrase', password, true, 24 * 60 * 60)
+    return await callAsync(
+      'walletpassphrase',
+      password,
+      true,
+      60 * 60 * 24 * 365 * 3
+    )
   },
 
   async unlockWallet(password: string) {

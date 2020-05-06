@@ -152,11 +152,20 @@ export const actions: Actions = {
         }
       }
 
-      const { credentials } = await effects.daemon.getInfo()
+      let connectionInfo
+      switch (state.app.connectionMethod) {
+        case 'rpc':
+          connectionInfo = effects.rpc.getConnectionInfo()
+          break
+        default:
+          const { credentials } = await effects.daemon.getInfo()
+          connectionInfo = credentials
+      }
+
       const {
         lastBlock: newLastBlock,
       } = await transactionWorker.importWalletTransactions({
-        credentials,
+        connectionInfo,
         lastBlock,
       })
       state.transactions.lastUpdated = new Date().getTime()
