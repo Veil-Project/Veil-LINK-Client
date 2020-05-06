@@ -12,10 +12,7 @@ const ConnectionForm = ({
   const { register, handleSubmit } = useForm({ defaultValues })
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="bg-gray-700 rounded-lg p-6 w-full max-w-xs"
-    >
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="bg-gray-500 rounded">
         <select
           autoFocus
