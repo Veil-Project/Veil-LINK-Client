@@ -49,13 +49,13 @@ const AppMenu = ({ onClickOption }: MenuProps) => {
         <MenuLink
           onClick={onClickOption}
           label="About"
-          shortcut="⌘I"
+          shortcut={window.platform === 'darwin' ? '⌘I' : 'Win+I'}
           to="/about"
         />
         <MenuLink
           onClick={onClickOption}
           label="Settings"
-          shortcut="⌘,"
+          shortcut={window.platform === 'darwin' ? '⌘,' : 'Win+,'}
           to="/settings"
         />
         <MenuLink

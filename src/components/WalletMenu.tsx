@@ -28,11 +28,15 @@ const WalletMenu = ({ onOpenWallet, onBackupWallet }: MenuProps) => {
         <MenuLink
           onClick={onBackupWallet}
           label="Backup wallet…"
-          shortcut="⌘B"
+          shortcut={window.platform === 'darwin' ? '⌘B' : 'Win+B'}
         />
       </div>
       <div className="flex flex-col p-2">
-        <MenuLink onClick={onOpenWallet} label="Open wallet…" shortcut="⌘O" />
+        <MenuLink
+          onClick={onOpenWallet}
+          label="Open wallet…"
+          shortcut={window.platform === 'darwin' ? '⌘O' : 'Win+O'}
+        />
       </div>
     </motion.div>
   )
