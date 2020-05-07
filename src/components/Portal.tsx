@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 const Portal = ({ id, children }: any) => {
   const el = useRef(
@@ -21,4 +21,4 @@ const Portal = ({ id, children }: any) => {
 
   return createPortal(children, el.current)
 }
-export default memo(Portal)
+export default Portal
