@@ -27,6 +27,7 @@ const mainWindow = new AppWindow(startUrl)
 const daemon = new Daemon()
 
 daemon.on('transaction', (txid: string, event: string) => {
+  log.info(`Transaction ${event}: ${txid}`)
   mainWindow.emit('daemon-transaction', txid, event)
 })
 

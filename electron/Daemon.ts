@@ -58,25 +58,27 @@ export default class Daemon extends EventEmitter {
         const messageMatch = message.match(/init message: (.*)/i)
         if (messageMatch) this.emit('warmup', { message: messageMatch[1] })
         break
-      case /\d*%/i.test(message):
+      case /\[\d*%\]/i.test(message):
         const progressMatch = message.match(/(\d*)%/i)
         if (progressMatch)
           this.emit('warmup', {
             progress: parseInt(progressMatch[1]),
           })
         break
-      case /Progress=\d/i.test(message):
+      case /progress=\d/i.test(message):
         const rescanMatch = message.match(/Progress=([\d.]*)/i)
         if (rescanMatch)
           this.emit('warmup', {
             progress: parseFloat(rescanMatch[1]) * 100,
           })
         break
-      case /[DONE]]/i.test(message):
+      case /\[done\]]/i.test(message):
         this.emit('warmup', { progress: 100 })
         break
-      case /AddToWallet/i.test(message):
-        const txMatch = message.match(/addtowallet (.*) (new|update)/i)
+      case /addtowallet/i.test(message):
+        const txMatch = message.match(
+          /addtowallet\s*([a-z0-9]*)\s*(new|update)/i
+        )
         if (txMatch) this.emit('transaction', txMatch[1], txMatch[2])
         break
       case /updatetip/i.test(message):
