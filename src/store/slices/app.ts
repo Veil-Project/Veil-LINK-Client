@@ -16,6 +16,7 @@ type State = {
   locale: string
   status: AppStatus
   connectionMethod: 'daemon' | 'rpc'
+  modal: string | null
   isRestarting: boolean
 }
 
@@ -23,6 +24,7 @@ export const state: State = {
   locale: 'en',
   status: 'initial',
   connectionMethod: 'daemon',
+  modal: null,
   isRestarting: false,
 }
 
@@ -37,6 +39,8 @@ type Actions = {
   update: AsyncAction
   reset: AsyncAction
   reload: AsyncAction<{ resetTransactions: boolean }>
+  openModal: Action<string>
+  closeModal: Action
   handleShutdown: Action
   handleDaemonExit: Action
   handleRpcError: Action<RpcError>
@@ -109,6 +113,14 @@ export const actions: Actions = {
     if (resetTransactions) await actions.transactions.reset()
     state.app.isRestarting = false
     await actions.transactions.updateFromWallet()
+  },
+
+  openModal({ state }, modal) {
+    state.app.modal = modal
+  },
+
+  closeModal({ state }) {
+    state.app.modal = null
   },
 
   handleShutdown({ state }) {

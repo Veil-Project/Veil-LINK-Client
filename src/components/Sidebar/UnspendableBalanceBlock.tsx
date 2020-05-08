@@ -1,11 +1,10 @@
 import React from 'react'
 import { useStore } from 'store'
-import { Link } from '@reach/router'
 import SidebarBlock from './SidebarBlock'
 import DefinitionList from 'components/DefinitionList'
 
 const UnspendableBalanceBlock = () => {
-  const { state } = useStore()
+  const { state, actions } = useStore()
   const { balance } = state
 
   if (balance.unspendableBalance <= 0) {
@@ -13,12 +12,12 @@ const UnspendableBalanceBlock = () => {
   }
 
   const ConvertLink = (
-    <Link
-      to="/convert"
+    <button
+      onClick={() => actions.app.closeModal()}
       className="text-teal-500 py-2 px-4 hover:text-white hover:no-underline"
     >
       Convert legacy
-    </Link>
+    </button>
   )
 
   return (

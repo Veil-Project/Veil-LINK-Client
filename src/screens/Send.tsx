@@ -2,7 +2,6 @@ import React, { useState, ChangeEvent } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../components/UI/Button'
 import Sheet from '../components/UI/Sheet'
-import { navigate, RouteComponentProps } from '@reach/router'
 import classnames from 'classnames'
 import { useToasts } from 'react-toast-notifications'
 import { useStore } from 'store'
@@ -27,14 +26,14 @@ const AddressValidity = ({ valid }: AddressValidityProps) => {
 
 const MIN_FEE = 0.0001
 
-const Send = (props: RouteComponentProps) => {
+const Send = () => {
   const { addToast } = useToasts()
   const [requiresPassword, setRequiresPassword] = useState(false)
   const [isAddressValid, setIsAddressValid] = useState(false)
   const [subtractFees, setSubtractFees] = useState(false)
   const [isSending, setIsSending] = useState(false)
   const { register, watch, handleSubmit, getValues, setValue } = useForm()
-  const { state, effects } = useStore()
+  const { state, effects, actions } = useStore()
   const spendableBalance = state.balance.breakdown.ringctSpendable
 
   const checkAddressValidity = async (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -63,7 +62,7 @@ const Send = (props: RouteComponentProps) => {
       await effects.rpc.setTxFee(MIN_FEE)
       await effects.rpc.sendRingCtToRingCt(address, amount, subtractFees)
       addToast('Transaction sent!', { appearance: 'success' })
-      navigate('/')
+      actions.app.closeModal()
     } catch (e) {
       if (e.code === -13) {
         setRequiresPassword(true)
@@ -88,7 +87,7 @@ const Send = (props: RouteComponentProps) => {
     parseFloat(watchAmount) >= spendableBalance - MIN_FEE
 
   return (
-    <Sheet onClose={() => navigate('/')}>
+    <Sheet onClose={() => actions.app.closeModal()}>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="max-w-sm w-full m-auto text-center"

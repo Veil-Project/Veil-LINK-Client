@@ -6,7 +6,6 @@ import React, {
   useState,
   memo,
 } from 'react'
-import { navigate, RouteComponentProps } from '@reach/router'
 import RpcClient from 'lib/veild-rpc'
 import useHotkeys from '@reecelucas/react-use-hotkeys'
 import Modal from 'components/UI/Modal'
@@ -60,7 +59,7 @@ const Command = memo(({ command, reply, error }: CommandProps) => {
   )
 })
 
-const Console = (props: RouteComponentProps) => {
+const Console = () => {
   const [requiresPassword, setRequiresPassword] = useState()
   const [password, setPassword] = useState()
   const [isLoading, setIsLoading] = useState(false)
@@ -71,7 +70,7 @@ const Console = (props: RouteComponentProps) => {
   const [autoCompleteCommands, setAutoCompleteCommands] = useState<string[]>([])
   const [autoCompleteIndex, setAutoCompleteIndex] = useState(0)
 
-  const { state, effects } = useStore()
+  const { state, effects, actions } = useStore()
   const message = [...state.daemon.stdout].reverse()[0]
   const currentCommand = commandHistory[currentIndex].input
   const currentAutoCompleteCommand = autoCompleteCommands[autoCompleteIndex]
@@ -80,10 +79,6 @@ const Console = (props: RouteComponentProps) => {
     if (isLoading) return
     setCurrentIndex(0)
     setCommandHistory([{ input: '' }])
-  })
-  useHotkeys('Escape', () => {
-    if (isLoading) return
-    navigate('/')
   })
   useHotkeys('Enter', () => {
     if (isLoading && !password) return
@@ -137,7 +132,7 @@ const Console = (props: RouteComponentProps) => {
     if (!command || command === '') return
 
     if (command === 'exit') {
-      navigate('/')
+      actions.app.closeModal()
       return
     }
 
@@ -223,11 +218,7 @@ const Console = (props: RouteComponentProps) => {
   }, [currentIndex, currentCommand])
 
   return (
-    <Modal
-      className="h-full flex"
-      onClose={() => navigate('/')}
-      canClose={!isLoading}
-    >
+    <Modal className="h-full flex" canClose={!isLoading}>
       <label className="block w-full flex flex-col p-4 overflow-y-auto font-mono text-sm">
         <div>
           Welcome to the Veil RPC console.

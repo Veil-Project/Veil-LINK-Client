@@ -32,6 +32,11 @@ const AppMenu = ({ onClickOption }: MenuProps) => {
     actions.autoUpdate.checkForUpdates()
   }
 
+  const openModal = (modal: string) => {
+    actions.app.openModal(modal)
+    onClickOption()
+  }
+
   return (
     <motion.div
       style={{
@@ -47,16 +52,14 @@ const AppMenu = ({ onClickOption }: MenuProps) => {
     >
       <div className="flex flex-col p-2">
         <MenuLink
-          onClick={onClickOption}
+          onClick={() => openModal('about')}
           label="About"
           shortcut={window.platform === 'darwin' ? '⌘I' : 'Win+I'}
-          to="/about"
         />
         <MenuLink
-          onClick={onClickOption}
+          onClick={() => openModal('settings')}
           label="Settings"
           shortcut={window.platform === 'darwin' ? '⌘,' : 'Win+,'}
-          to="/settings"
         />
         <MenuLink
           onClick={checkForUpdates}
@@ -67,7 +70,7 @@ const AppMenu = ({ onClickOption }: MenuProps) => {
               : 'Check for updates'
           }
         />
-        <MenuLink onClick={onClickOption} label="Help" to="/help" />
+        <MenuLink onClick={() => openModal('help')} label="Help" />
       </div>
 
       <div
@@ -75,16 +78,14 @@ const AppMenu = ({ onClickOption }: MenuProps) => {
         style={{ borderColor: 'rgba(255, 255, 255, .05)' }}
       >
         <MenuLink
-          onClick={onClickOption}
+          onClick={() => openModal('console')}
           label="Console"
           shortcut="C"
-          to="/console"
         />
         {state.app.connectionMethod === 'daemon' && (
           <MenuLink
-            onClick={onClickOption}
+            onClick={() => openModal('configure')}
             label="Edit configuration"
-            to="/configure"
           />
         )}
         {state.app.connectionMethod === 'daemon' && (

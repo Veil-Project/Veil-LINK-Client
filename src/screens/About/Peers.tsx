@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { RouteComponentProps } from '@reach/router'
 import { useStore } from 'store'
 import JsonViewer from 'components/JsonViewer'
 import { FiX, FiArrowUp, FiArrowDown } from 'react-icons/fi'
 
-const Peers = (props: RouteComponentProps) => {
+const Peers = () => {
   const [peers, setPeers] = useState<any[]>([])
   const [selectedPeer, setSelectedPeer] = useState(null)
   const { effects } = useStore()

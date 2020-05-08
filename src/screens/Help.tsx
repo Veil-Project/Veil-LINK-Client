@@ -1,12 +1,11 @@
 import React from 'react'
-import { RouteComponentProps, navigate } from '@reach/router'
 
 import Modal from 'components/UI/Modal'
 import ExternalLink from 'components/ExternalLink'
 import VeilLogo from 'components/Icon/VeilLogo'
 import { useStore } from 'store'
 
-const Help = (props: RouteComponentProps) => {
+const Help = () => {
   const { state } = useStore()
 
   const revealConfig = () => {
@@ -24,7 +23,7 @@ const Help = (props: RouteComponentProps) => {
   }
 
   return (
-    <Modal className="p-10" onClose={() => navigate('/')} canClose={true}>
+    <Modal className="p-10" canClose={true}>
       <ul className="leading-loose grid grid-cols-2 gap-2 text-center">
         <li className="flex w-48">
           <ExternalLink

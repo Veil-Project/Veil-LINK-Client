@@ -1,6 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import MenuLink from './MenuLink'
+import { useStore } from 'store'
 
 interface MenuProps {
   onOpenWallet(): void
@@ -8,6 +9,8 @@ interface MenuProps {
 }
 
 const WalletMenu = ({ onOpenWallet, onBackupWallet }: MenuProps) => {
+  const { actions } = useStore()
+
   return (
     <motion.div
       style={{
@@ -24,7 +27,10 @@ const WalletMenu = ({ onOpenWallet, onBackupWallet }: MenuProps) => {
         className="border-b p-2"
         style={{ borderColor: 'rgba(255, 255, 255, .05)' }}
       >
-        <MenuLink to="/change-password" label="Change password" />
+        <MenuLink
+          onClick={() => actions.app.openModal('change-password')}
+          label="Change password"
+        />
         <MenuLink
           onClick={onBackupWallet}
           label="Backup wallet…"

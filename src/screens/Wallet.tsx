@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import { Router, RouteComponentProps, navigate } from '@reach/router'
 import useHotkeys from '@reecelucas/react-use-hotkeys'
 import { useStore } from 'store'
 
@@ -18,10 +17,10 @@ import Portal from 'components/Portal'
 import Overlay from 'components/Overlay'
 import DaemonWarmup from 'components/DaemonWarmup'
 import AutoUpdater from 'components/AutoUpdater'
-import Confirm from 'components/Confirm'
 
-const Wallet = (props: RouteComponentProps) => {
+const Wallet = () => {
   const { state, actions } = useStore()
+  const { modal } = state.app
 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>
@@ -36,19 +35,19 @@ const Wallet = (props: RouteComponentProps) => {
   }, [actions.app])
 
   useHotkeys('Meta+,', () => {
-    navigate('/settings')
+    actions.app.openModal('settings')
   })
 
   useHotkeys('Meta+i', () => {
-    navigate('/about')
+    actions.app.openModal('about')
   })
 
   useHotkeys('Meta+n', () => {
-    navigate('/send')
+    actions.app.openModal('send')
   })
 
   useHotkeys('c', () => {
-    navigate('/console')
+    actions.app.openModal('console')
   })
 
   if (!state.wallet.encrypted) {
@@ -88,15 +87,13 @@ const Wallet = (props: RouteComponentProps) => {
           <Home />
         </div>
 
-        <Router>
-          <About path="/about/*" />
-          <Help path="/help" />
-          <Settings path="/settings/*" />
-          <Configure path="/configure" />
-          <Console path="/console" />
-          <ConvertLegacyCoins path="/convert" />
-          <ChangePassword path="/change-password" />
-        </Router>
+        {modal === 'about' && <About />}
+        {modal === 'help' && <Help />}
+        {modal === 'settings' && <Settings />}
+        {modal === 'configure' && <Configure />}
+        {modal === 'console' && <Console />}
+        {modal === 'convert' && <ConvertLegacyCoins />}
+        {modal === 'change-password' && <ChangePassword />}
       </div>
     </>
   )

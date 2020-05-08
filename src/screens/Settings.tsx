@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { RouteComponentProps, navigate } from '@reach/router'
 import { useStore } from 'store'
 import { useToasts } from 'react-toast-notifications'
 import PasswordPrompt from 'components/PasswordPrompt'
@@ -7,7 +6,7 @@ import PasswordPrompt from 'components/PasswordPrompt'
 import Modal from 'components/UI/Modal'
 import Button from 'components/UI/Button'
 
-const Settings = (props: RouteComponentProps) => {
+const Settings = () => {
   const [requiresPassword, setRequiresPassword] = useState(false)
   const [isBusy, setIsBusy] = useState(false)
   const { actions, effects } = useStore()
@@ -23,7 +22,7 @@ const Settings = (props: RouteComponentProps) => {
     setIsBusy(true)
     await actions.transactions.reset()
     await actions.transactions.updateFromWallet()
-    navigate('/')
+    actions.app.closeModal()
   }
 
   const startRescan = async (password: string) => {
@@ -40,7 +39,7 @@ const Settings = (props: RouteComponentProps) => {
   }
 
   return (
-    <Modal className="p-10" onClose={() => navigate('/')} canClose={true}>
+    <Modal className="p-10" canClose={true}>
       <div className="grid gap-4">
         <Button
           disabled={isBusy}

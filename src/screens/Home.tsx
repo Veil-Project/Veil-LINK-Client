@@ -1,6 +1,4 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
-import { Router, Location, navigate } from '@reach/router'
-import { TransitionGroup, CSSTransition } from 'react-transition-group'
 import { FiSearch, FiRefreshCw } from 'react-icons/fi'
 // @ts-ignore
 import ViewPortList from 'react-viewport-list'
@@ -15,20 +13,6 @@ import VeilLogo from 'components/Icon/VeilLogo'
 import ExternalLink from 'components/ExternalLink'
 import { FaChevronDown, FaCheck } from 'react-icons/fa'
 import Spinner from 'components/UI/Spinner'
-
-const ModalTransitionRouter = (props: { children: any }) => (
-  <Location>
-    {({ location }) => (
-      <TransitionGroup>
-        <CSSTransition key={location.key} classNames="appear" timeout={300}>
-          <Router location={location} className="absolute inset-0">
-            {props.children}
-          </Router>
-        </CSSTransition>
-      </TransitionGroup>
-    )}
-  </Location>
-)
 
 interface SearchFieldProps {
   placeholder: string
@@ -130,7 +114,7 @@ const Transactions = () => {
         </div>
         <div className="flex items-center">
           <Button
-            to="/send"
+            onClick={() => actions.app.openModal('send')}
             primary
             title={state.balance.canSend ? '' : 'No spendable balance'}
             disabled={!state.balance.canSend}
@@ -248,13 +232,13 @@ const Transactions = () => {
 }
 
 const Home = () => {
+  const { state } = useStore()
+
   return (
     <div className="h-screen flex flex-col relative">
       <Transactions />
 
-      <ModalTransitionRouter>
-        <Send path="/send" />
-      </ModalTransitionRouter>
+      {state.app.modal === 'send' && <Send />}
     </div>
   )
 }

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { RouteComponentProps } from '@reach/router'
 import { version } from '../../../package.json'
 import { useStore } from 'store'
 import ExternalLink from 'components/ExternalLink'
 
-const General = (props: RouteComponentProps) => {
+const General = () => {
   const [networkInfo, setNetworkInfo] = useState<any>({})
   const { state, effects } = useStore()
   const { blockchain, daemon } = state

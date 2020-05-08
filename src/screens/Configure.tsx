@@ -1,24 +1,16 @@
 import React, { useState, useEffect } from 'react'
-import { RouteComponentProps, navigate } from '@reach/router'
 import { useStore } from 'store'
 import { useToasts } from 'react-toast-notifications'
 
 import Modal from 'components/UI/Modal'
 import Button from 'components/UI/Button'
 import Spinner from 'components/UI/Spinner'
-import useHotkeys from '@reecelucas/react-use-hotkeys'
 
-const Configure = (props: RouteComponentProps) => {
+const Configure = () => {
   const [content, setContent] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const { addToast } = useToasts()
   const { state, actions } = useStore()
-
-  const cancel = () => {
-    navigate('/')
-  }
-
-  useHotkeys('escape', cancel)
 
   useEffect(() => {
     ;(async () => {
@@ -32,7 +24,7 @@ const Configure = (props: RouteComponentProps) => {
     try {
       await actions.daemon.writeConfig(content || '')
       addToast('Configuration saved', { appearance: 'success' })
-      navigate('/')
+      actions.app.closeModal()
     } catch (e) {
       addToast(e.message, { appearance: 'error' })
     } finally {
@@ -41,11 +33,7 @@ const Configure = (props: RouteComponentProps) => {
   }
 
   return (
-    <Modal
-      className="w-full max-w-2xl h-full flex"
-      onClose={cancel}
-      canClose={true}
-    >
+    <Modal className="w-full max-w-2xl h-full flex" canClose={true}>
       {content !== null ? (
         <div className="w-full flex flex-col">
           <div
@@ -67,7 +55,7 @@ const Configure = (props: RouteComponentProps) => {
             <div className="grid grid-cols-2 gap-4">
               <Button
                 style={{ backgroundColor: '#ffffff11' }}
-                onClick={cancel}
+                onClick={() => actions.app.closeModal()}
                 disabled={isSaving}
               >
                 Cancel

@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Router, Link, RouteComponentProps, navigate } from '@reach/router'
 
 import Modal from 'components/UI/Modal'
 import Button from 'components/UI/Button'
@@ -9,10 +8,10 @@ import scorePassword from 'utils/scorePassword'
 import { useStore } from 'store'
 import { useToasts } from 'react-toast-notifications'
 
-const ChangePassword = (props: RouteComponentProps) => {
+const ChangePassword = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { register, handleSubmit, watch } = useForm()
-  const { effects } = useStore()
+  const { effects, actions } = useStore()
   const { addToast } = useToasts()
 
   const currentPassword = watch('currentPassword')
@@ -25,7 +24,7 @@ const ChangePassword = (props: RouteComponentProps) => {
     try {
       await effects.rpc.changePassword(data.currentPassword, data.newPassword)
       addToast('Password changed!', { appearance: 'success' })
-      navigate('/')
+      actions.app.closeModal()
     } catch (e) {
       addToast(e.message, { appearance: 'error' })
     } finally {
@@ -34,11 +33,7 @@ const ChangePassword = (props: RouteComponentProps) => {
   }
 
   return (
-    <Modal
-      className="w-full max-w-sm p-8 pt-6"
-      onClose={() => navigate('/')}
-      canClose={!isSubmitting}
-    >
+    <Modal className="w-full max-w-sm p-8 pt-6" canClose={!isSubmitting}>
       <h1 className="mb-6 text-lg text-center leading-none">Change password</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <input
