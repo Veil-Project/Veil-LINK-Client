@@ -19,6 +19,38 @@ import PasswordPrompt from './PasswordPrompt'
 import Confirm from './Confirm'
 import Spinner from './UI/Spinner'
 
+const SyncStatus = () => {
+  const { state } = useStore()
+  const { blockchain } = state
+
+  if (!blockchain.initialBlockDownload || blockchain.isSynced) {
+    return null
+  }
+
+  return (
+    <div className="h-12 px-4 bg-gray-600 flex justify-center items-center text-sm leading-none relative">
+      <div
+        className={`absolute left-0 top-0 bottom-0 bg-gray-600 z-0 candystripes`}
+        style={{ width: `${blockchain.verificationProgress * 100}%` }}
+      />
+      <div className="relative z-10 leading-normal text-center">
+        <div className="font-semibold">
+          Syncing {(blockchain.verificationProgress * 100).toFixed(2)}%
+        </div>
+        <div className="text-xs text-gray-300">
+          {blockchain.tip && (
+            <span>
+              {formatDate(new Date(blockchain.tip.date), 'short')}{' '}
+              {formatTime(new Date(blockchain.tip.date), 'short')} /{' '}
+            </span>
+          )}
+          Height: {blockchain?.tip?.height || blockchain.height}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const MenuButton = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -149,7 +181,7 @@ const AppSidebar = () => {
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [requiresPassword, setRequiresPassword] = useState(false)
   const { addToast } = useToasts()
-  const { state, actions, effects } = useStore()
+  const { state, actions } = useStore()
   const { staking, blockchain } = state
 
   useHotkeys('escape', () => {
@@ -253,7 +285,7 @@ const AppSidebar = () => {
       </div>
 
       <div className="flex-1 overflow-y-auto flex flex-col relative z-0">
-        {state.balance.unspendableBalance > 0 && <UnspendableBalanceBlock />}
+        <UnspendableBalanceBlock />
         <StakingBlock
           onEnableStaking={() => setRequiresPassword(true)}
           onDisableStaking={handleDisableStaking}
@@ -261,28 +293,7 @@ const AppSidebar = () => {
         <ReceivingAddressBlock />
       </div>
 
-      {(blockchain.initialBlockDownload || !blockchain.isSynced) && (
-        <div className="h-12 px-4 bg-gray-600 flex justify-center items-center text-sm leading-none relative">
-          <div
-            className={`absolute left-0 top-0 bottom-0 bg-gray-600 z-0 candystripes`}
-            style={{ width: `${blockchain.verificationProgress * 100}%` }}
-          />
-          <div className="relative z-10 leading-normal text-center">
-            <div className="font-semibold">
-              Syncing {(blockchain.verificationProgress * 100).toFixed(2)}%
-            </div>
-            <div className="text-xs text-gray-300">
-              {blockchain.tip && (
-                <span>
-                  {formatDate(new Date(blockchain.tip.date), 'short')}{' '}
-                  {formatTime(new Date(blockchain.tip.date), 'short')} /{' '}
-                </span>
-              )}
-              Height: {blockchain?.tip?.height || blockchain.height}
-            </div>
-          </div>
-        </div>
-      )}
+      <SyncStatus />
     </>
   )
 }

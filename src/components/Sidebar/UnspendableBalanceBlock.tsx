@@ -8,6 +8,10 @@ const UnspendableBalanceBlock = () => {
   const { state } = useStore()
   const { balance } = state
 
+  if (balance.unspendableBalance <= 0) {
+    return null
+  }
+
   const ConvertLink = (
     <Link
       to="/convert"
