@@ -48,7 +48,7 @@ const AppMenu = ({ onClickOption }: MenuProps) => {
       initial={{ scale: 0.5, opacity: 1 }}
       animate={{ scale: 1, opacity: 1 }}
       onClick={e => e.nativeEvent.stopImmediatePropagation()}
-      className="w-48 bg-gray-700 text-sm text-gray-300 font-medium rounded shadow-lg"
+      className="w-48 text-sm font-medium text-gray-300 bg-gray-700 rounded shadow-lg"
     >
       <div className="flex flex-col p-2">
         <MenuLink
@@ -93,7 +93,7 @@ const AppMenu = ({ onClickOption }: MenuProps) => {
         )}
       </div>
       <div
-        className="border-t py-3 pl-4 text-xs text-gray-400"
+        className="py-3 pl-4 text-xs text-gray-400 border-t"
         style={{ borderColor: 'rgba(255, 255, 255, .05)' }}
       >
         Veil X: {version}

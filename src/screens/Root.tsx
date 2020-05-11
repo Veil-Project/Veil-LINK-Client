@@ -8,6 +8,8 @@ import Wallet from './Wallet'
 import Shutdown from './Shutdown'
 import Error from './Error'
 import DaemonStatus from './DaemonStatus'
+import Spinner from 'components/UI/Spinner'
+import RpcError from './RpcError'
 
 const Root = () => {
   const { actions, state } = useStore()
@@ -20,7 +22,7 @@ const Root = () => {
 
   switch (state.app.status) {
     case 'initial':
-      return <div />
+      return <Spinner />
     case 'startup':
       return <Startup />
     case 'connect':
@@ -34,6 +36,8 @@ const Root = () => {
       return <Wallet />
     case 'shutdown':
       return <Shutdown key="shutdown" />
+    case 'rpc-error':
+      return <RpcError />
     default:
       return <Error key="error" message="Unknown app state" />
   }

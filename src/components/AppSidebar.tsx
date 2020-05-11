@@ -28,7 +28,7 @@ const SyncStatus = () => {
   }
 
   return (
-    <div className="h-12 px-4 bg-gray-600 flex justify-center items-center text-sm leading-none relative">
+    <div className="relative flex items-center justify-center h-12 px-4 text-sm leading-none bg-gray-600">
       <div
         className={`absolute left-0 top-0 bottom-0 bg-gray-600 z-0 candystripes`}
         style={{ width: `${blockchain.verificationProgress * 100}%` }}
@@ -68,7 +68,7 @@ const MenuButton = () => {
   return (
     <div className="relative">
       <button
-        className={`w-6 h-6 flex items-center justify-center rounded pointer outline-none ${
+        className={`w-6 h-6 flex items-center justify-center rounded pointer outline-none focus:outline-none ${
           isMenuOpen ? 'bg-blue-700' : 'hover:bg-blue-600'
         } active:bg-blue-700`}
         onClick={toggleMenu}
@@ -154,16 +154,16 @@ const WalletMenuButton = () => {
     <>
       <button
         onClick={toggleMenu}
-        className={`flex items-center font-medium outline-none h-6 pb-2px px-2 rounded ${
+        className={`flex items-center font-medium outline-none focus:outline-none h-6 pb-2px px-2 rounded ${
           isMenuOpen ? 'bg-blue-700' : 'hover:bg-blue-600'
         } active:bg-blue-700`}
       >
         Wallet: {state.wallet.name ? `${state.wallet.name}` : 'Default'}
-        <FiChevronDown className="text-teal-500 mt-px ml-2px" />
+        <FiChevronDown className="mt-px text-teal-500 ml-2px" />
       </button>
       {isMenuOpen && (
         <div
-          className="absolute z-10 top-100 mt-1"
+          className="absolute z-10 mt-1 top-100"
           style={{
             left: '50%',
             transform: 'translateX(-50%)',
@@ -237,36 +237,36 @@ const AppSidebar = () => {
           onSubmit={lockWallet}
         />
       )}
-      <div className="pb-titlebar bg-blue-500 relative z-10 draggable">
-        <div className="h-titlebar px-1 flex items-center relative">
-          <div className="flex-1 flex">
+      <div className="relative z-10 bg-blue-500 pb-titlebar draggable">
+        <div className="relative flex items-center px-1 h-titlebar">
+          <div className="flex flex-1">
             {window.platform !== 'darwin' && <MenuButton />}
           </div>
-          <div className="text-sm relative">
+          <div className="relative text-sm">
             <WalletMenuButton />
           </div>
-          <div className="flex-1 flex items-center justify-end">
+          <div className="flex items-center justify-end flex-1">
             {blockchain.chain !== 'main' && (
-              <span className="mr-1 text-xs font-semibold inline-block leading-none p-1 bg-orange-500 rounded-sm">
+              <span className="inline-block p-1 mr-1 text-xs font-semibold leading-none bg-orange-500 rounded-sm">
                 {blockchain.chain}
               </span>
             )}
             <div className="p-1 mb-2px">
               {state.staking.isWorking ? (
-                <div className="w-6 h-6 flex items-center justify-center">
+                <div className="flex items-center justify-center w-6 h-6">
                   <Spinner size={8} strokeWidth={2} />
                 </div>
               ) : state.wallet.locked ? (
                 <button
                   onClick={() => setRequiresPassword(true)}
-                  className="w-6 h-6 flex items-center justify-center rounded pointer outline-none opacity-50 hover:opacity-100 hover:bg-blue-600 active:bg-blue-700"
+                  className="flex items-center justify-center w-6 h-6 rounded outline-none opacity-50 focus:outline-none pointer hover:opacity-100 hover:bg-blue-600 active:bg-blue-700"
                 >
                   <FaLock size={14} title="Locked" />
                 </button>
               ) : (
                 <button
                   onClick={lockWallet}
-                  className="w-6 h-6 flex items-center justify-center rounded pointer outline-none hover:bg-blue-600 active:bg-blue-700"
+                  className="flex items-center justify-center w-6 h-6 rounded outline-none focus:outline-none pointer hover:bg-blue-600 active:bg-blue-700"
                 >
                   <FaLockOpen
                     size={14}
@@ -279,12 +279,12 @@ const AppSidebar = () => {
             {window.platform === 'darwin' && <MenuButton />}
           </div>
         </div>
-        <div className="h-24 px-6 flex items-center justify-center text-center">
+        <div className="flex items-center justify-center h-24 px-6 text-center">
           <Balance />
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto flex flex-col relative z-0">
+      <div className="relative z-0 flex flex-col flex-1 overflow-y-auto">
         <UnspendableBalanceBlock />
         <StakingBlock
           onEnableStaking={() => setRequiresPassword(true)}

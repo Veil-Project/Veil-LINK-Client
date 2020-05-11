@@ -11,6 +11,7 @@ type AppStatus =
   | 'wallet'
   | 'error'
   | 'shutdown'
+  | 'rpc-error'
 
 type State = {
   locale: string
@@ -36,6 +37,7 @@ interface RpcError {
 type Actions = {
   load: AsyncAction
   transition: AsyncAction
+  resetConnection: AsyncAction
   connectViaRpc: AsyncAction
   update: AsyncAction
   reset: AsyncAction
@@ -57,15 +59,21 @@ export const actions: Actions = {
         rpcConnectionInfo.host,
         rpcConnectionInfo.user
       )
-      state.app.connectionMethod = 'rpc'
       effects.rpc.initialize({
         ...rpcConnectionInfo,
         pass,
       })
+      try {
+        await effects.rpc.getNetworkInfo()
+        state.app.connectionMethod = 'rpc'
+        await actions.app.transition()
+      } catch (e) {
+        state.app.status = 'rpc-error'
+      }
     } else {
       await actions.daemon.load()
+      await actions.app.transition()
     }
-    await actions.app.transition()
   },
 
   async transition({ state, actions }) {
@@ -101,11 +109,16 @@ export const actions: Actions = {
       case 'crashed':
         state.app.status = 'error'
         break
-      case 'unknown':
-      case null:
+      default:
         state.app.status = installed && configured ? 'startup' : 'connect'
         break
     }
+  },
+
+  async resetConnection({ state, actions }) {
+    state.app.connectionMethod = 'daemon'
+    localStorage.removeItem('rpcConnectionInfo')
+    await actions.app.transition()
   },
 
   async connectViaRpc({ state, actions, effects }) {
@@ -132,12 +145,10 @@ export const actions: Actions = {
     await actions.balance.fetch()
   },
 
-  async reset({ state, actions, effects }) {
-    state.app.connectionMethod = 'daemon'
-    localStorage.removeItem('rpcConnectionInfo')
+  async reset({ actions, effects }) {
     await effects.daemon.stop()
-    await actions.app.transition()
     actions.daemon.reset()
+    actions.app.resetConnection()
   },
 
   async reload({ state, actions }, { resetTransactions = false }) {
