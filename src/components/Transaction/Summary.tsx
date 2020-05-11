@@ -14,6 +14,12 @@ import { useToasts } from 'react-toast-notifications'
 import { useIsVisible } from 'react-is-visible'
 import Loading from 'screens/Loading'
 
+const requiresReveal = (transaction: any): boolean =>
+  (transaction.type === 'ringct' || transaction.type === 'ct') &&
+  transaction.receivedAmount <= 0.00000002 &&
+  transaction.totalAmount > -0.00000002 &&
+  transaction.totalAmount <= 0.00000002
+
 // TODO: Move to transaction utils
 const transactionDescription = (transaction: any): string => {
   const { type, category, address, sentToSelf } = transaction
@@ -161,7 +167,7 @@ const TransactionSummary = ({ txid }: { txid: string | null }) => {
         <div className="flex-none">
           <StatusIcon category={transaction?.category} />
         </div>
-        <div className="flex-none w-24 text-white font-bold whitespace-no-wrap">
+        <div className="flex-none w-24 font-bold text-white whitespace-no-wrap">
           {transaction ? (
             formatDate(new Date(transaction.time), 'medium')
           ) : (
@@ -182,7 +188,7 @@ const TransactionSummary = ({ txid }: { txid: string | null }) => {
           )}
         </div>
         <div
-          className="max-w-md flex-shrink truncate"
+          className="flex-shrink max-w-md truncate"
           style={{ minWidth: 0, maxWidth: '500px' }}
         >
           {transaction ? (
@@ -201,11 +207,11 @@ const TransactionSummary = ({ txid }: { txid: string | null }) => {
         >
           {transaction ? (
             !isOpen &&
-            (transaction.requiresReveal ? (
+            (requiresReveal(transaction) ? (
               <Button
                 size="sm"
                 onClick={handleReveal}
-                disabled={!transaction.confirmations?.length}
+                disabled={transaction.confirmations < 1}
                 title={
                   transaction.confirmations?.length
                     ? ''
