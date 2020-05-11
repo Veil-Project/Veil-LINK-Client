@@ -34,6 +34,7 @@ interface RpcError {
 }
 
 type Actions = {
+  load: AsyncAction
   transition: AsyncAction
   connectViaRpc: AsyncAction
   update: AsyncAction
@@ -47,6 +48,26 @@ type Actions = {
 }
 
 export const actions: Actions = {
+  async load({ state, actions, effects }) {
+    const rpcConnectionInfo = JSON.parse(
+      localStorage.getItem('rpcConnectionInfo') || '{}'
+    )
+    if (rpcConnectionInfo && rpcConnectionInfo.host && rpcConnectionInfo.user) {
+      const pass = await effects.electron.getPassword(
+        rpcConnectionInfo.host,
+        rpcConnectionInfo.user
+      )
+      state.app.connectionMethod = 'rpc'
+      effects.rpc.initialize({
+        ...rpcConnectionInfo,
+        pass,
+      })
+    } else {
+      await actions.daemon.load()
+    }
+    await actions.app.transition()
+  },
+
   async transition({ state, actions }) {
     if (state.app.connectionMethod === 'rpc') {
       await actions.app.update()
@@ -87,8 +108,20 @@ export const actions: Actions = {
     }
   },
 
-  async connectViaRpc({ state, actions }) {
+  async connectViaRpc({ state, actions, effects }) {
     state.app.connectionMethod = 'rpc'
+
+    const rpcConnectionInfo = effects.rpc.getConnectionInfo()
+    localStorage.setItem(
+      'rpcConnectionInfo',
+      JSON.stringify({ ...rpcConnectionInfo, password: null })
+    )
+    await effects.electron.setPassword(
+      rpcConnectionInfo.host,
+      rpcConnectionInfo.user,
+      rpcConnectionInfo.pass
+    )
+
     await actions.app.transition()
   },
 
@@ -99,7 +132,9 @@ export const actions: Actions = {
     await actions.balance.fetch()
   },
 
-  async reset({ actions, effects }) {
+  async reset({ state, actions, effects }) {
+    state.app.connectionMethod = 'daemon'
+    localStorage.removeItem('rpcConnectionInfo')
     await effects.daemon.stop()
     await actions.app.transition()
     actions.daemon.reset()

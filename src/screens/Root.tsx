@@ -14,8 +14,7 @@ const Root = () => {
 
   useEffect(() => {
     ;(async () => {
-      await actions.daemon.load()
-      await actions.app.transition()
+      await actions.app.load()
     })()
   }, [actions.daemon, actions.app])
 

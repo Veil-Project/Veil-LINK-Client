@@ -2,6 +2,7 @@ import { app, dialog, ipcMain, shell } from 'electron'
 import url from 'url'
 import path from 'path'
 import fs from 'fs'
+import keytar from 'keytar'
 import Daemon, { DaemonOptions } from './Daemon'
 import AppWindow from './AppWindow'
 import { autoUpdater } from 'electron-updater'
@@ -138,6 +139,18 @@ ipcMain.handle('write-daemon-config', (_, datadir: string, content: string) => {
   } catch (e) {
     return false
   }
+})
+
+// Keychain
+ipcMain.handle(
+  'set-password',
+  async (_, service: string, account: string, password: string) => {
+    return await keytar.setPassword(service, account, password)
+  }
+)
+
+ipcMain.handle('get-password', async (_, service: string, account: string) => {
+  return await keytar.getPassword(service, account)
 })
 
 // Updater API

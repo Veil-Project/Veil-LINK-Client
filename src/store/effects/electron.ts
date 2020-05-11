@@ -53,6 +53,20 @@ export default {
     })
   },
 
+  // Keychain
+  async setPassword(service: string, account: string, password: string) {
+    return await window.ipcRenderer.invoke(
+      'set-password',
+      service,
+      account,
+      password
+    )
+  },
+
+  async getPassword(service: string, account: string) {
+    return await window.ipcRenderer.invoke('get-password', service, account)
+  },
+
   // Auto-update
   async checkForUpdates() {
     return await window.ipcRenderer.invoke('check-for-updates')
