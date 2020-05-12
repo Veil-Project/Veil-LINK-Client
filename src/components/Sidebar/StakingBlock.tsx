@@ -60,9 +60,10 @@ const StakingBlock = ({ onEnableStaking, onDisableStaking }: any) => {
   const [chartData, setChartData] = useState<number[]>([])
   const [summaryData, setSummaryData] = useState<[string, number][]>([])
   const { state, effects } = useStore()
-  const { staking } = state
+  const { staking, transactions } = state
 
   useEffect(() => {
+    if (!transactions.isCacheReady) return
     ;(async () => {
       const txByDay = await Promise.all(
         [6, 5, 4, 3, 2, 1, 0].map(daysAgo =>
@@ -78,7 +79,7 @@ const StakingBlock = ({ onEnableStaking, onDisableStaking }: any) => {
         ['Last 30 days', sum(map(last30, 'totalAmount'))],
       ])
     })()
-  }, [effects.db, state.transactions.txids.length])
+  }, [transactions.isCacheReady, effects.db, state.transactions.txids.length])
 
   return (
     <SidebarBlock
