@@ -255,7 +255,7 @@ RpcClient.callspec = {
   listLockUnspent: 'bool',
   lockUnspent: '',
   sethdseed: 'str',
-  mintzerocoin: 'int',
+  mintzerocoin: 'int bool',
   move: 'str str float int str',
   recoveraddresses: 'int',
   rescanblockchain: '',
