@@ -133,7 +133,7 @@ const TransactionSummary = ({ txid }: { txid: string | null }) => {
         addToast(e.message, { appearance: 'error' })
       }
     } finally {
-      if (password && !requiresPassword) {
+      if (password) {
         await effects.rpc.lockWallet()
         if (stakingWasActive) {
           await effects.rpc.unlockWalletForStaking(password)

@@ -71,7 +71,7 @@ const Send = () => {
         addToast(e.message, { appearance: 'error' })
       }
     } finally {
-      if (password && !requiresPassword) {
+      if (password) {
         effects.rpc.lockWallet()
         if (stakingWasActive) {
           effects.rpc.unlockWalletForStaking(password)
