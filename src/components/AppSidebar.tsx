@@ -145,7 +145,8 @@ const WalletMenuButton = () => {
   if (state.app.connectionMethod === 'rpc') {
     return (
       <span className="font-medium">
-        Wallet: {state.wallet.name ? `${state.wallet.name}` : 'Default'}
+        {state.app.connectionMethod === 'rpc' ? 'RPC' : 'Wallet'}:{' '}
+        {state.wallet.name ? `${state.wallet.name}` : 'Default'}
       </span>
     )
   }
