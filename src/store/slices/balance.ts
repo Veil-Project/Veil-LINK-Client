@@ -1,6 +1,8 @@
 import { Derive, AsyncAction } from 'store'
+import { sum } from 'lodash'
 
 type State = {
+  totalBalance: Derive<State, number>
   spendableBalance: Derive<State, number>
   unconfirmedBalance: Derive<State, number>
   immatureBalance: Derive<State, number>
@@ -23,6 +25,7 @@ type State = {
     zerocoinImmature: number
   }
   marketPrice: number | null
+  lastUpdated: number | null
   error: any
 }
 
@@ -32,6 +35,7 @@ type Actions = {
 }
 
 export const state: State = {
+  totalBalance: state => sum(Object.values(state.breakdown)),
   spendableBalance: state => state.breakdown.ringctSpendable,
   unspendableBalance: state =>
     state.unconfirmedBalance + state.immatureBalance + state.legacyBalance,
@@ -70,6 +74,7 @@ export const state: State = {
     zerocoinUnconfirmed: 0,
     zerocoinImmature: 0,
   },
+  lastUpdated: null,
   error: null,
 }
 
@@ -77,7 +82,18 @@ export const actions: Actions = {
   async fetch({ state, effects, actions }) {
     try {
       state.balance.error = null
+      const previousTotal = state.balance.totalBalance
       state.balance.breakdown = await effects.rpc.getBalances()
+      const newTotal = state.balance.totalBalance
+      // Update transactions if balance changed
+      if (
+        state.app.connectionMethod === 'rpc' &&
+        state.balance.lastUpdated &&
+        previousTotal !== newTotal
+      ) {
+        actions.transactions.updateFromWallet()
+      }
+      state.balance.lastUpdated = new Date().getTime()
     } catch (e) {
       state.balance.error = e
     }

@@ -12,20 +12,20 @@ const Balance = () => {
 
   return (
     <div>
-      <div className="mt-2 leading-none text-3xl font-extrabold flex items-center justify-center">
+      <div className="flex items-center justify-center mt-2 text-3xl font-extrabold leading-none">
         {spendableBalance.toLocaleString('en-US', {
           minimumFractionDigits: spendableBalance > 1000000 ? 0 : 2,
           maximumFractionDigits: spendableBalance > 1000000 ? 0 : 2,
         })}
         <span
-          className="ml-2 font-bold text-xs bg-teal-500 rounded-sm text-blue-600 leading-tight tracking-wide py-1 flex items-center"
+          className="flex items-center py-1 ml-2 text-xs font-bold leading-tight tracking-wide text-blue-600 bg-teal-500 rounded-sm"
           style={{ paddingLeft: 5, paddingRight: 5 }}
         >
           VEIL
         </span>
       </div>
       {marketValue !== null && marketValue > 0 && (
-        <div className="font-bold text-teal-500 mt-2">
+        <div className="mt-2 font-bold text-teal-500">
           {marketValue.toLocaleString('en-US', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
