@@ -131,8 +131,6 @@ const Console = () => {
     const command = currentAutoCompleteCommand || currentCommand
     if (!command || command === '') return
 
-    console.log(currentIndex, command)
-
     if (command === 'exit') {
       actions.app.closeModal()
       return
@@ -167,7 +165,6 @@ const Console = () => {
         default:
           lastEntry.error = e
       }
-      setRequiresPassword(false)
     } finally {
       if (password) {
         await effects.rpc.lockWallet()
@@ -177,6 +174,8 @@ const Console = () => {
       }
       setPassword(undefined)
     }
+
+    setRequiresPassword(false)
 
     newHistory.push({ input: '' })
     setCommandHistory(newHistory)
