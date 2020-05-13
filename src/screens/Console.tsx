@@ -60,8 +60,8 @@ const Command = memo(({ command, reply, error }: CommandProps) => {
 })
 
 const Console = () => {
-  const [requiresPassword, setRequiresPassword] = useState()
-  const [password, setPassword] = useState()
+  const [requiresPassword, setRequiresPassword] = useState(false)
+  const [password, setPassword] = useState<string>()
   const [isLoading, setIsLoading] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [commandHistory, setCommandHistory] = useState<Command[]>([
@@ -85,7 +85,7 @@ const Console = () => {
     submitCommand()
   })
   useHotkeys('Control+c', () => {
-    setPassword(null)
+    setPassword(undefined)
     setRequiresPassword(false)
     setIsLoading(false)
     resetCommand()
@@ -131,6 +131,8 @@ const Console = () => {
     const command = currentAutoCompleteCommand || currentCommand
     if (!command || command === '') return
 
+    console.log(currentIndex, command)
+
     if (command === 'exit') {
       actions.app.closeModal()
       return
@@ -138,17 +140,20 @@ const Console = () => {
 
     setIsLoading(true)
 
-    const newHistory = [...commandHistory]
+    const newHistory = [...commandHistory].map(h => ({ ...h }))
     const lastEntry = newHistory[newHistory.length - 1]
     const currentEntry = newHistory[currentIndex]
 
     if (currentEntry.command) {
-      // Reset the original command
+      // Reset the original command if editing history
       currentEntry.input = currentEntry.command
     }
 
     lastEntry.input = lastEntry.command = command
-    newHistory.push({ input: '' })
+    setCommandHistory(newHistory)
+    setCurrentIndex(newHistory.length - 1)
+
+    const stakingWasActive = state.staking.isEnabled
 
     try {
       if (password) await effects.rpc.unlockWallet(password)
@@ -162,14 +167,18 @@ const Console = () => {
         default:
           lastEntry.error = e
       }
+      setRequiresPassword(false)
     } finally {
-      setPassword(null)
       if (password) {
-        setRequiresPassword(false)
         await effects.rpc.lockWallet()
+        if (stakingWasActive) {
+          await effects.rpc.unlockWalletForStaking(password)
+        }
       }
+      setPassword(undefined)
     }
 
+    newHistory.push({ input: '' })
     setCommandHistory(newHistory)
     setCurrentIndex(newHistory.length - 1)
     setIsLoading(false)
@@ -215,7 +224,7 @@ const Console = () => {
       inputRef.current.selectionStart = inputRef.current.selectionEnd =
         inputRef.current.value.length
     }
-  }, [currentIndex, currentCommand])
+  }, [currentIndex])
 
   return (
     <Modal className="flex flex-col h-full" canClose={!isLoading}>
