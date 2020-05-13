@@ -21,20 +21,20 @@ const LoginForm = ({
           type="password"
           name="user"
           ref={register({ required: true })}
-          className="block h-12 bg-transparent text-white w-full rounded-t px-3 placeholder-gray-400 resize-none"
+          className="block w-full h-12 px-3 text-white placeholder-gray-400 bg-transparent rounded-t resize-none"
           placeholder="rpcuser"
         />
         <input
           type="password"
           name="pass"
           ref={register({ required: true })}
-          className="block h-12 bg-transparent border-t border-gray-700 text-white w-full rounded-b px-3 placeholder-gray-400"
+          className="block w-full h-12 px-3 text-white placeholder-gray-400 bg-transparent border-t border-gray-700 rounded-b"
           placeholder="rpcpassword"
         />
       </div>
 
       <div className="mt-4">
-        <Button primary size="lg" disabled={disabled} className="h-12 w-full">
+        <Button primary size="lg" disabled={disabled} className="w-full h-12">
           Connect now
         </Button>
       </div>

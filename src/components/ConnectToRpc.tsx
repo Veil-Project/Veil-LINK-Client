@@ -65,33 +65,36 @@ const ConnectToRpc = () => {
     )
   }
 
-  return isEditingConnection ? (
-    <div className="p-6 bg-gray-700 rounded-lg">
-      <ConnectionForm
-        defaultValues={connection}
-        onSubmit={saveConnectionSettings}
-      />
-    </div>
-  ) : (
+  return (
     <>
-      <div className="p-6 bg-gray-700 rounded-lg">
-        <LoginForm
-          defaultValues={{}}
-          onSubmit={handleLogin}
-          disabled={isSubmitting}
-        />
-      </div>
-      <footer className="text-sm leading-snug text-center text-gray-400">
-        <div className="mt-4">
-          Connecting to{' '}
-          <button
-            className="border-b border-gray-400 border-dotted hover:text-white"
-            onClick={() => setIsEditingConnection(true)}
-          >
-            {connection.protocol}://{connection.host}:{connection.port}
-          </button>
+      {isEditingConnection && (
+        <div className="p-6 bg-gray-700 rounded-lg">
+          <ConnectionForm
+            defaultValues={connection}
+            onSubmit={saveConnectionSettings}
+          />
         </div>
-      </footer>
+      )}
+      <div className={isEditingConnection ? 'hidden' : ''}>
+        <div className="p-6 bg-gray-700 rounded-lg">
+          <LoginForm
+            defaultValues={{}}
+            onSubmit={handleLogin}
+            disabled={isSubmitting}
+          />
+        </div>
+        <footer className="text-sm leading-snug text-center text-gray-400">
+          <div className="mt-4">
+            Connecting to{' '}
+            <button
+              className="border-b border-gray-400 border-dotted hover:text-white"
+              onClick={() => setIsEditingConnection(true)}
+            >
+              {connection.protocol}://{connection.host}:{connection.port}
+            </button>
+          </div>
+        </footer>
+      </div>
     </>
   )
 }
