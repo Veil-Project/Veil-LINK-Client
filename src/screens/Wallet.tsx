@@ -46,7 +46,8 @@ const Wallet = () => {
     actions.app.openModal('send')
   })
 
-  useHotkeys('c', () => {
+  useHotkeys('c', e => {
+    e.preventDefault()
     actions.app.openModal('console')
   })
 
