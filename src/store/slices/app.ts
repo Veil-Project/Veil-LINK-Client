@@ -117,6 +117,7 @@ export const actions: Actions = {
 
   async resetConnection({ state, actions }) {
     state.app.connectionMethod = 'daemon'
+    actions.daemon.reset()
     localStorage.removeItem('rpcConnectionInfo')
   },
 
@@ -147,7 +148,6 @@ export const actions: Actions = {
   async reset({ state, actions, effects }) {
     if (state.app.connectionMethod === 'daemon') {
       await effects.daemon.stop()
-      actions.daemon.reset()
     }
     actions.app.resetConnection()
     actions.app.closeModal()
