@@ -218,14 +218,17 @@ const Console = () => {
   }, [currentIndex, currentCommand])
 
   return (
-    <Modal className="h-full flex" canClose={!isLoading}>
-      <label className="block w-full flex flex-col p-4 overflow-y-auto font-mono text-sm">
+    <Modal className="flex flex-col h-full" canClose={!isLoading}>
+      <div className="flex items-center justify-center flex-none h-12 bg-gray-500 draggable">
+        Veil Console
+      </div>
+      <label className="flex flex-col flex-1 block w-full p-4 overflow-y-auto font-mono text-sm">
         <div>
           Welcome to the Veil RPC console.
           <br />
           Use up and down arrows to navigate history, and{' '}
-          <span className="inline-flex items-center bg-gray-700 rounded-sm h-6 align-middle -my-2 px-2">
-            <span className="text-lg mr-1">⌘</span>L
+          <span className="inline-flex items-center h-6 px-2 -my-2 align-middle bg-gray-700 rounded-sm">
+            <span className="mr-1 text-lg">⌘</span>L
           </span>{' '}
           to clear screen.
           <br />
@@ -252,7 +255,7 @@ const Console = () => {
             <span className="mr-2">Password:</span>
             <input
               type="password"
-              className="w-full text-white bg-transparent outline-none font-mono"
+              className="w-full font-mono text-white bg-transparent outline-none"
               style={{ caretColor: '#8adeff' }}
               autoFocus
               value={password}
@@ -265,7 +268,7 @@ const Console = () => {
           <div className="relative">
             <div className="flex items-center text-teal-400">
               <span className="w-4">></span>
-              <div className="w-full relative font-mono">
+              <div className="relative w-full font-mono">
                 <input
                   type="text"
                   className="relative z-10 w-full text-teal-400 bg-transparent outline-none"
@@ -276,7 +279,7 @@ const Console = () => {
                   disabled={isLoading}
                   ref={inputRef}
                 />
-                <div className="absolute z-0 inset-0 flex items-center text-gray-300">
+                <div className="absolute inset-0 z-0 flex items-center text-gray-300">
                   {currentAutoCompleteCommand}
                 </div>
               </div>
