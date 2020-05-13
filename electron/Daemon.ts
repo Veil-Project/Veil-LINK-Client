@@ -286,7 +286,7 @@ export default class Daemon extends EventEmitter {
       return Promise.reject()
     }
 
-    if (this.status === 'stopped') {
+    if (this.status === 'stopped' || !this.isRunning) {
       return Promise.resolve(this.status)
     }
 
