@@ -109,7 +109,9 @@ const Help = () => {
         </li>
         <li className="flex w-48">
           <ExternalLink
-            href="https://explorer.veil-project.com"
+            href={`https://${
+              state.blockchain.chain === 'test' ? 'testnet' : 'explorer'
+            }.veil-project.com`}
             className="w-full p-4 text-gray-300 rounded hover:text-white"
             style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
           >
