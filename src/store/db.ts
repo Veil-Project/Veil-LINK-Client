@@ -22,13 +22,14 @@ interface ITransaction {
 class VeilDatabase extends Dexie {
   transactions: Dexie.Table<ITransaction, string>
 
-  constructor() {
-    super('VeilX')
+  constructor(wallet: string) {
+    super(wallet)
     this.version(1).stores({
       transactions: '&txid,time,type,category',
     })
+
     this.transactions = this.table('transactions')
   }
 }
 
-export default new VeilDatabase()
+export default VeilDatabase

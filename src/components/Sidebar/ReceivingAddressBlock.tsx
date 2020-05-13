@@ -38,7 +38,7 @@ const ReceivingAddressBlock = () => {
         addToast(e.message, { appearance: 'error' })
       }
     } finally {
-      if (password) {
+      if (password && !requiresPassword) {
         await effects.rpc.lockWallet()
         if (stakingWasActive) {
           await effects.rpc.unlockWalletForStaking(password)
@@ -70,13 +70,13 @@ const ReceivingAddressBlock = () => {
           currentReceivingAddress ? (
             <div className="pr-2">
               <button
-                className="p-2 font-semibold text-teal-500 hover:text-white outline-none"
+                className="p-2 font-semibold text-teal-500 outline-none hover:text-white"
                 onClick={handleAddressCopy}
               >
                 <FiCopy size="14" />
               </button>
               <button
-                className="p-2 font-semibold text-teal-500 hover:text-white outline-none"
+                className="p-2 font-semibold text-teal-500 outline-none hover:text-white"
                 onClick={() => handleRegenerateAddress()}
               >
                 <FiRefreshCw size="14" />
@@ -84,7 +84,7 @@ const ReceivingAddressBlock = () => {
             </div>
           ) : (
             <button
-              className="text-teal-500 hover:text-white font-semibold py-2 px-4"
+              className="px-4 py-2 font-semibold text-teal-500 hover:text-white"
               onClick={() => handleRegenerateAddress()}
             >
               Generate

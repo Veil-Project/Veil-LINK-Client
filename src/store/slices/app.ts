@@ -72,6 +72,7 @@ export const actions: Actions = {
       }
     } else {
       await actions.daemon.load()
+      await actions.app.update()
       await actions.app.transition()
     }
   },
@@ -145,8 +146,10 @@ export const actions: Actions = {
     await actions.balance.fetch()
   },
 
-  async reset({ actions, effects }) {
-    await effects.daemon.stop()
+  async reset({ state, actions, effects }) {
+    if (state.app.connectionMethod === 'daemon') {
+      await effects.daemon.stop()
+    }
     actions.daemon.reset()
     actions.app.resetConnection()
   },
@@ -154,10 +157,12 @@ export const actions: Actions = {
   async reload({ state, actions }, { resetTransactions = false }) {
     state.app.isRestarting = true
     await actions.daemon.restart()
-    await actions.app.update()
-    await actions.wallet.fetchReceivingAddress()
-    if (resetTransactions) await actions.transactions.reset()
     state.app.isRestarting = false
+    await actions.wallet.fetchReceivingAddress()
+    await actions.app.update()
+    if (resetTransactions) {
+      await actions.transactions.initializeCache()
+    }
     await actions.transactions.updateFromWallet()
   },
 

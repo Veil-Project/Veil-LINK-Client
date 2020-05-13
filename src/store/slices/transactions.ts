@@ -55,7 +55,6 @@ type State = {
   txids: string[]
   category: string
   query: string
-  lastUpdated: number
   isCacheReady: boolean
   isUpdating: boolean
 }
@@ -66,12 +65,10 @@ export const state: State = {
   query: '',
   isCacheReady: false,
   isUpdating: false,
-  lastUpdated: Number(localStorage.getItem('transactionsLastUpdated')),
 }
 
 type Actions = {
   initializeCache: AsyncAction
-  verifyLocalDatabaseBelongsToWallet: AsyncAction
   setCategory: Action<string>
   setQuery: Action<string>
   updateFromCache: AsyncAction
@@ -81,24 +78,11 @@ type Actions = {
 }
 
 export const actions: Actions = {
-  async initializeCache({ state, effects }) {
-    await effects.db.open()
+  async initializeCache({ state, effects, actions }) {
+    state.transactions.txids = []
+    const cacheId = state.wallet.hdseedid || 'default'
+    await effects.db.open(cacheId, actions.transactions.updateFromCache)
     state.transactions.isCacheReady = true
-  },
-
-  async verifyLocalDatabaseBelongsToWallet({ effects, actions }) {
-    const tx = await effects.db.fetchFirstTransaction()
-    if (!tx) return
-
-    try {
-      await effects.rpc.getTransaction(tx.txid)
-    } catch (e) {
-      if (e.code === -4) {
-        await actions.transactions.reset()
-      } else {
-        throw e
-      }
-    }
   },
 
   setCategory({ state, actions }, category) {
@@ -119,16 +103,17 @@ export const actions: Actions = {
     })
   },
 
-  async updateFromWallet({ actions, effects, state }, ignoreLastBlock = false) {
+  async updateFromWallet({ effects, state, actions }, ignoreLastBlock = false) {
     if (state.transactions.isUpdating) return
+
+    const walletId = state.wallet.hdseedid || 'default'
 
     try {
       state.transactions.isUpdating = true
-      await actions.transactions.verifyLocalDatabaseBelongsToWallet()
 
       let lastBlock = ignoreLastBlock
         ? ''
-        : localStorage.getItem('transactionsLastBlock') || ''
+        : localStorage.getItem(walletId) || ''
 
       if (lastBlock) {
         try {
@@ -165,15 +150,12 @@ export const actions: Actions = {
       const {
         lastBlock: newLastBlock,
       } = await transactionWorker.importWalletTransactions({
+        wallet: walletId,
         connectionInfo,
         lastBlock,
       })
-      state.transactions.lastUpdated = new Date().getTime()
-      localStorage.setItem(
-        'transactionsLastUpdated',
-        String(state.transactions.lastUpdated)
-      )
-      localStorage.setItem('transactionsLastBlock', newLastBlock)
+      localStorage.setItem(walletId, newLastBlock)
+      await actions.transactions.updateFromCache()
       return null
     } catch (e) {
       console.error(e)
@@ -192,8 +174,6 @@ export const actions: Actions = {
   async reset({ effects, state }) {
     await effects.db.clearTransactions()
     state.transactions.txids = []
-    state.transactions.lastUpdated = 0
-    localStorage.removeItem('transactionsLastBlock')
-    localStorage.removeItem('transactionsLastUpdated')
+    localStorage.removeItem(state.wallet.hdseedid || 'default')
   },
 }

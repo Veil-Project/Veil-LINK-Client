@@ -1,5 +1,5 @@
 import registerPromiseWorker from 'promise-worker/register'
-import db from 'store/db'
+import VeilDatabase from 'store/db'
 import rpc from 'store/effects/rpc'
 import { uniq, map, chunk } from 'lodash'
 
@@ -13,8 +13,9 @@ const isCoinstake = tx =>
 
 registerPromiseWorker(async ({ type, options }) => {
   if (type === 'importWalletTransactionsMessage') {
-    const { connectionInfo, lastBlock } = options
+    const { wallet, connectionInfo, lastBlock } = options
 
+    const db = new VeilDatabase(wallet)
     rpc.initialize(connectionInfo)
 
     const { lastblock: newLastBlock, transactions } = await rpc.listSinceBlock(

@@ -61,6 +61,7 @@ const Send = () => {
       if (password) await effects.rpc.unlockWallet(password)
       await effects.rpc.setTxFee(MIN_FEE)
       await effects.rpc.sendRingCtToRingCt(address, amount, subtractFees)
+      setRequiresPassword(false)
       addToast('Transaction sent!', { appearance: 'success' })
       actions.app.closeModal()
     } catch (e) {
@@ -70,7 +71,7 @@ const Send = () => {
         addToast(e.message, { appearance: 'error' })
       }
     } finally {
-      if (password) {
+      if (password && !requiresPassword) {
         effects.rpc.lockWallet()
         if (stakingWasActive) {
           effects.rpc.unlockWalletForStaking(password)
@@ -90,11 +91,11 @@ const Send = () => {
     <Sheet onClose={() => actions.app.closeModal()}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="max-w-sm w-full m-auto text-center"
+        className="w-full max-w-sm m-auto text-center"
       >
-        <h1 className="mb-6 leading-none text-2xl font-bold">Send Veil</h1>
+        <h1 className="mb-6 text-2xl font-bold leading-none">Send Veil</h1>
 
-        <div className="bg-gray-700 rounded p-6">
+        <div className="p-6 bg-gray-700 rounded">
           <div className="flex-1">
             <div className="relative">
               <textarea
@@ -103,21 +104,21 @@ const Send = () => {
                 name="address"
                 ref={register({ required: true })}
                 onChange={checkAddressValidity}
-                className="block bg-gray-600 text-white text-lg w-full rounded py-2 px-3 placeholder-gray-400 resize-none"
+                className="block w-full px-3 py-2 text-lg text-white placeholder-gray-400 bg-gray-600 rounded resize-none"
                 placeholder="Recipient address"
               />
               {watchAddress && (
-                <div className="absolute bottom-0 right-0 mr-2 mb-2">
+                <div className="absolute bottom-0 right-0 mb-2 mr-2">
                   <AddressValidity valid={isAddressValid} />
                 </div>
               )}
             </div>
-            <div className="mt-2 relative">
+            <div className="relative mt-2">
               <input
                 type="text"
                 name="amount"
                 ref={register({ required: true, min: 1 })}
-                className="block bg-gray-600 text-white text-lg w-full rounded py-2 px-3 placeholder-gray-400"
+                className="block w-full px-3 py-2 text-lg text-white placeholder-gray-400 bg-gray-600 rounded"
                 placeholder="Amount to send"
               />
               <div className="absolute top-0 bottom-0 right-0 flex items-center pr-4 text-sm text-gray-300">
@@ -134,7 +135,7 @@ const Send = () => {
               </div>
             </div>
           </div>
-          <div className="mt-4 flex">
+          <div className="flex mt-4">
             <Toggle
               on={subtractFees || isSendingMaxAmount}
               disabled={isSendingMaxAmount}
@@ -142,7 +143,7 @@ const Send = () => {
               label="Subtract fees from amount"
             />
           </div>
-          <div className="mt-6 flex justify-center">
+          <div className="flex justify-center mt-6">
             <Button
               primary
               size="xl"

@@ -1,13 +1,12 @@
 import 'dexie-observable'
 import moment from 'moment'
-import db from 'store/db'
+import VeilDatabase from 'store/db'
 
+let db: any
 export default {
-  initialize({ onChanges }: { onChanges(changes: any): void }) {
+  async open(wallet: string, onChanges: Function) {
+    db = new VeilDatabase(wallet)
     db.on('changes', onChanges)
-  },
-
-  async open() {
     return await db.open()
   },
 

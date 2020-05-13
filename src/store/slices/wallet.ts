@@ -2,6 +2,7 @@ import { Derive, AsyncAction, Action } from 'store'
 
 type State = {
   name: string | null
+  hdseedid: string | null
   version: number | null
   unlockedUntil: number | null
   currentReceivingAddress: string | null
@@ -22,6 +23,7 @@ type Actions = {
 
 export const state: State = {
   name: null,
+  hdseedid: null,
   version: null,
   unlockedUntil: null,
   currentReceivingAddress: null,
@@ -39,6 +41,7 @@ export const actions: Actions = {
     try {
       const {
         walletname: name,
+        hdseedid,
         walletversion: version,
         staking_active: stakingActive,
         unlocked_until: unlockedUntil,
@@ -46,6 +49,7 @@ export const actions: Actions = {
       } = await effects.rpc.getWalletInfo()
 
       state.wallet.name = name.split('/')[name.split('/').length - 1]
+      state.wallet.hdseedid = hdseedid
       state.wallet.version = version
       state.wallet.unlockedUntil = unlockedUntil
       state.wallet.txCount = txCount

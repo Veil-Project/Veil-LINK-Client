@@ -22,3 +22,20 @@ private getChecksum() {
     })
   })
 }
+
+// Fine-grained db change tracking
+effects.db.initialize({
+  onChanges(changes) {
+    const creates = changes.filter((change: any) => change.type === 1)
+    const updates = changes.filter((change: any) => change.type === 2)
+    const deletes = changes.filter((change: any) => change.type === 3)
+
+    if (creates.length > 0 || deletes.length > 0) {
+      actions.transactions.updateFromCache()
+    }
+
+    if (updates.length > 0) {
+      actions.balance.fetch()
+    }
+  },
+})

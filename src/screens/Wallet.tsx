@@ -61,7 +61,7 @@ const Wallet = () => {
         <Portal>
           <Overlay>
             <div
-              className="text-white p-6 rounded-lg"
+              className="p-6 text-white rounded-lg"
               style={{
                 backgroundColor: '#23282cee',
                 backdropFilter: 'blur(8px)',
@@ -73,15 +73,15 @@ const Wallet = () => {
         </Portal>
       )}
 
-      <div className="flex-1 w-full flex">
+      <div className="flex flex-1 w-full">
         <div
-          className="flex-none bg-gray-700 flex flex-col relative"
+          className="relative flex flex-col flex-none bg-gray-700"
           style={{ width: 310 }}
         >
           <AppSidebar />
         </div>
         <div
-          className="flex-1 flex flex-col bg-gray-800 relative"
+          className="relative flex flex-col flex-1 bg-gray-800"
           style={{ minWidth: 0 }}
         >
           <Home />

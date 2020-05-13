@@ -133,7 +133,7 @@ const TransactionSummary = ({ txid }: { txid: string | null }) => {
         addToast(e.message, { appearance: 'error' })
       }
     } finally {
-      if (password) {
+      if (password && !requiresPassword) {
         await effects.rpc.lockWallet()
         if (stakingWasActive) {
           await effects.rpc.unlockWalletForStaking(password)
@@ -212,13 +212,10 @@ const TransactionSummary = ({ txid }: { txid: string | null }) => {
                 size="sm"
                 onClick={handleReveal}
                 disabled={transaction.confirmations < 1}
-                title={
-                  transaction.confirmations?.length
-                    ? ''
-                    : 'Pending confirmation…'
-                }
               >
-                Reveal
+                {transaction.confirmations < 1
+                  ? 'Pending confirmation'
+                  : 'Reveal'}
               </Button>
             ) : (
               formatAmount(transaction.totalAmount)

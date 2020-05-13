@@ -27,16 +27,16 @@ const SearchField = ({ placeholder, value, onChange }: SearchFieldProps) => {
 
   return (
     <div
-      className="h-9 rounded bg-gray-600 flex relative"
+      className="relative flex bg-gray-600 rounded h-9"
       style={{ width: '280px' }}
     >
       <input
-        className="flex-1 placeholder-gray-400 bg-transparent border-none p-0 pr-3 pl-8 outline-none"
+        className="flex-1 p-0 pl-8 pr-3 placeholder-gray-400 bg-transparent border-none outline-none"
         value={value}
         onChange={handleChange}
         placeholder={placeholder}
       />
-      <div className="absolute top-0 left-0 bottom-0 ml-2 flex items-center justify-center">
+      <div className="absolute top-0 bottom-0 left-0 flex items-center justify-center ml-2">
         <FiSearch size="18" />
       </div>
     </div>
@@ -54,7 +54,6 @@ const Transactions = () => {
     query,
     isCacheReady,
     isUpdating,
-    lastUpdated,
   } = state.transactions
 
   const reloadTransactions = async () => {
@@ -107,7 +106,7 @@ const Transactions = () => {
               <option value="receive">Received</option>
               <option value="stake">Rewards</option>
             </select>
-            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-10 flex items-center justify-center text-teal-500">
+            <div className="absolute top-0 bottom-0 right-0 flex items-center justify-center w-10 text-teal-500 pointer-events-none">
               <FaChevronDown size={10} />
             </div>
           </div>
@@ -125,7 +124,7 @@ const Transactions = () => {
       </div>
       <div
         ref={viewPortRef}
-        className="flex-1 p-2 overflow-y-auto w-full overflow-x-hidden"
+        className="flex-1 w-full p-2 overflow-x-hidden overflow-y-auto"
       >
         <ViewPortList
           viewPortRef={viewPortRef}
@@ -141,31 +140,22 @@ const Transactions = () => {
           )}
         </ViewPortList>
       </div>
-      <div className="flex justify-between items-center bg-gray-700 text-gray-400 leading-none h-12 px-4 text-sm border-l-2 border-gray-800">
+      <div className="flex items-center justify-between h-12 px-4 text-sm leading-none text-gray-400 bg-gray-700 border-l-2 border-gray-800">
         <div className="-ml-2px">
           {isCacheReady
             ? isLoading || isUpdating
-              ? lastUpdated
-                ? 'Updating transactions…'
-                : 'Loading transactions…'
+              ? 'Loading transactions…'
               : `${txids.length} ${categoryLabel(category)} transactions`
             : 'Loading database…'}
         </div>
         <div>
           {isLoading || isUpdating ? (
-            <Spinner
-              size={12}
-              percentage={
-                !lastUpdated && state.wallet.txCount
-                  ? (txids.length / state.wallet.txCount) * 100 * 1.25
-                  : null
-              }
-            />
+            <Spinner size={12} />
           ) : (
             state.app.connectionMethod === 'rpc' && (
               <button
                 onClick={reloadTransactions}
-                className="p-1 rounded hover:bg-gray-600 hover:text-white outline-none"
+                className="p-1 rounded outline-none hover:bg-gray-600 hover:text-white"
               >
                 <FiRefreshCw size="16" />
               </button>
@@ -180,36 +170,36 @@ const Transactions = () => {
       <h1 className="text-3xl font-bold leading-tight">
         You're ready to get started.
       </h1>
-      <p className="text-gray-300 text-xl">
+      <p className="text-xl text-gray-300">
         You can now send Veil to your receiving address.
       </p>
-      <div className="max-w-xs mx-auto rounded bg-gray-700 text-left font-medium flex flex-col p-4 my-8">
+      <div className="flex flex-col max-w-xs p-4 mx-auto my-8 font-medium text-left bg-gray-700 rounded">
         <div className="flex items-center mb-3">
           {state.wallet.currentReceivingAddress ? (
-            <div className="w-6 h-6 text-xs leading-none rounded-full bg-green-500 text-white flex items-center justify-center mr-3 font-semibold">
+            <div className="flex items-center justify-center w-6 h-6 mr-3 text-xs font-semibold leading-none text-white bg-green-500 rounded-full">
               <FaCheck />
             </div>
           ) : (
-            <div className="w-6 h-6 text-xs text-teal-500 leading-none rounded-full bg-gray-500 flex items-center justify-center mr-3 font-semibold">
+            <div className="flex items-center justify-center w-6 h-6 mr-3 text-xs font-semibold leading-none text-teal-500 bg-gray-500 rounded-full">
               1
             </div>
           )}
           Generate a receiving address
         </div>
         <div className="flex items-center mb-3">
-          <div className="w-6 h-6 text-xs text-teal-500 leading-none rounded-full bg-gray-500 flex items-center justify-center mr-3 font-semibold">
+          <div className="flex items-center justify-center w-6 h-6 mr-3 text-xs font-semibold leading-none text-teal-500 bg-gray-500 rounded-full">
             2
           </div>
           Transfer Veil to your wallet
         </div>
         <div className="flex items-center">
-          <div className="w-6 h-6 text-xs text-teal-500 leading-none rounded-full bg-gray-500 flex items-center justify-center mr-3 font-semibold">
+          <div className="flex items-center justify-center w-6 h-6 mr-3 text-xs font-semibold leading-none text-teal-500 bg-gray-500 rounded-full">
             3
           </div>
           Enjoy using Veil!
         </div>
       </div>
-      <ul className="text-center text-sm leading-none text-gray-400">
+      <ul className="text-sm leading-none text-center text-gray-400">
         <li>
           <ExternalLink
             href="https://www.veil-project.com/blog"
@@ -235,7 +225,7 @@ const Home = () => {
   const { state } = useStore()
 
   return (
-    <div className="h-screen flex flex-col relative">
+    <div className="relative flex flex-col h-screen">
       <Transactions />
 
       {state.app.modal === 'send' && <Send />}
