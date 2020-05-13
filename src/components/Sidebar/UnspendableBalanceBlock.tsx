@@ -14,7 +14,7 @@ const UnspendableBalanceBlock = () => {
   const ConvertLink = (
     <button
       onClick={() => actions.app.closeModal()}
-      className="text-teal-500 py-2 px-4 hover:text-white hover:no-underline"
+      className="px-4 py-2 font-semibold text-teal-500 hover:text-white hover:no-underline"
     >
       Convert legacy
     </button>
