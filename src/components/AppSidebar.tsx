@@ -139,17 +139,13 @@ const WalletMenuButton = () => {
     }
   }
 
+  const resetConnection = async () => {
+    await actions.app.reset()
+    await actions.app.load()
+  }
+
   useHotkeys('Meta+o', openWallet)
   useHotkeys('Meta+b', backupWallet)
-
-  if (state.app.connectionMethod === 'rpc') {
-    return (
-      <span className="font-medium">
-        {state.app.connectionMethod === 'rpc' ? 'RPC' : 'Wallet'}:{' '}
-        {state.wallet.name ? `${state.wallet.name}` : 'Default'}
-      </span>
-    )
-  }
 
   return (
     <>
@@ -159,7 +155,8 @@ const WalletMenuButton = () => {
           isMenuOpen ? 'bg-blue-700' : 'hover:bg-blue-600'
         } active:bg-blue-700`}
       >
-        Wallet: {state.wallet.name ? `${state.wallet.name}` : 'Default'}
+        {state.app.connectionMethod === 'rpc' ? 'RPC' : 'Wallet'}:{' '}
+        {state.wallet.name ? `${state.wallet.name}` : 'Default'}
         <FiChevronDown className="mt-px text-teal-500 ml-2px" />
       </button>
       {isMenuOpen && (
@@ -171,7 +168,12 @@ const WalletMenuButton = () => {
             willChange: 'transform',
           }}
         >
-          <WalletMenu onOpenWallet={openWallet} onBackupWallet={backupWallet} />
+          <WalletMenu
+            connectionMethod={state.app.connectionMethod}
+            onOpenWallet={openWallet}
+            onBackupWallet={backupWallet}
+            onDisconnect={resetConnection}
+          />
         </div>
       )}
     </>

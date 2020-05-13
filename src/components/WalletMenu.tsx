@@ -4,11 +4,18 @@ import MenuLink from './MenuLink'
 import { useStore } from 'store'
 
 interface MenuProps {
+  connectionMethod: 'daemon' | 'rpc'
   onOpenWallet(): void
   onBackupWallet(): void
+  onDisconnect(): void
 }
 
-const WalletMenu = ({ onOpenWallet, onBackupWallet }: MenuProps) => {
+const WalletMenu = ({
+  connectionMethod,
+  onOpenWallet,
+  onBackupWallet,
+  onDisconnect,
+}: MenuProps) => {
   const { actions } = useStore()
 
   return (
@@ -21,29 +28,36 @@ const WalletMenu = ({ onOpenWallet, onBackupWallet }: MenuProps) => {
       initial={{ scale: 0.5, opacity: 1 }}
       animate={{ scale: 1, opacity: 1 }}
       onClick={e => e.nativeEvent.stopImmediatePropagation()}
-      className="w-48 bg-gray-700 text-sm text-gray-300 font-medium rounded shadow-lg"
+      className="w-48 text-sm font-medium text-gray-300 bg-gray-700 rounded shadow-lg"
     >
       <div
-        className="border-b p-2"
+        className="p-2 border-b"
         style={{ borderColor: 'rgba(255, 255, 255, .05)' }}
       >
         <MenuLink
           onClick={() => actions.app.openModal('change-password')}
           label="Change password"
         />
-        <MenuLink
-          onClick={onBackupWallet}
-          label="Backup wallet…"
-          shortcut={window.platform === 'darwin' ? '⌘B' : 'Win+B'}
-        />
+        {connectionMethod === 'rpc' && (
+          <MenuLink onClick={onDisconnect} label="Disconnect" />
+        )}
+        {connectionMethod === 'daemon' && (
+          <MenuLink
+            onClick={onBackupWallet}
+            label="Backup wallet…"
+            shortcut={window.platform === 'darwin' ? '⌘B' : 'Win+B'}
+          />
+        )}
       </div>
-      <div className="flex flex-col p-2">
-        <MenuLink
-          onClick={onOpenWallet}
-          label="Open wallet…"
-          shortcut={window.platform === 'darwin' ? '⌘O' : 'Win+O'}
-        />
-      </div>
+      {connectionMethod === 'daemon' && (
+        <div className="flex flex-col p-2">
+          <MenuLink
+            onClick={onOpenWallet}
+            label="Open wallet…"
+            shortcut={window.platform === 'darwin' ? '⌘O' : 'Win+O'}
+          />
+        </div>
+      )}
     </motion.div>
   )
 }

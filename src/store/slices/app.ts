@@ -92,7 +92,6 @@ export const actions: Actions = {
         state.app.status = 'wallet'
         break
       case 'starting':
-      case 'stopped':
         state.app.status = 'startup'
         break
       case 'stopping':
@@ -119,7 +118,6 @@ export const actions: Actions = {
   async resetConnection({ state, actions }) {
     state.app.connectionMethod = 'daemon'
     localStorage.removeItem('rpcConnectionInfo')
-    await actions.app.transition()
   },
 
   async connectViaRpc({ state, actions, effects }) {
@@ -149,9 +147,10 @@ export const actions: Actions = {
   async reset({ state, actions, effects }) {
     if (state.app.connectionMethod === 'daemon') {
       await effects.daemon.stop()
+      actions.daemon.reset()
     }
-    actions.daemon.reset()
     actions.app.resetConnection()
+    actions.app.closeModal()
   },
 
   async reload({ state, actions }, { resetTransactions = false }) {

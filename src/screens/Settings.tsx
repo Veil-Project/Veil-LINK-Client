@@ -15,7 +15,7 @@ const Settings = () => {
   const resetSettings = async () => {
     setIsBusy(true)
     await actions.app.reset()
-    effects.electron.relaunch()
+    await actions.app.load()
   }
 
   const resetCache = async () => {

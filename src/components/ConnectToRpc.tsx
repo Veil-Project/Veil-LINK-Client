@@ -59,14 +59,14 @@ const ConnectToRpc = () => {
 
   if (warmupMessage) {
     return (
-      <div className="bg-gray-700 rounded-lg p-6">
+      <div className="p-6 bg-gray-700 rounded-lg">
         <Loading message={warmupMessage} />
       </div>
     )
   }
 
   return isEditingConnection ? (
-    <div className="bg-gray-700 rounded-lg p-6">
+    <div className="p-6 bg-gray-700 rounded-lg">
       <ConnectionForm
         defaultValues={connection}
         onSubmit={saveConnectionSettings}
@@ -74,18 +74,18 @@ const ConnectToRpc = () => {
     </div>
   ) : (
     <>
-      <div className="bg-gray-700 rounded-lg p-6">
+      <div className="p-6 bg-gray-700 rounded-lg">
         <LoginForm
           defaultValues={{}}
           onSubmit={handleLogin}
           disabled={isSubmitting}
         />
       </div>
-      <footer className="text-sm text-center leading-snug text-gray-400">
+      <footer className="text-sm leading-snug text-center text-gray-400">
         <div className="mt-4">
           Connecting to{' '}
           <button
-            className="border-b border-dotted border-gray-400 hover:text-white"
+            className="border-b border-gray-400 border-dotted hover:text-white"
             onClick={() => setIsEditingConnection(true)}
           >
             {connection.protocol}://{connection.host}:{connection.port}
