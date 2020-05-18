@@ -1,4 +1,4 @@
-import { app, dialog, ipcMain, shell } from 'electron'
+import { app, dialog, ipcMain, shell, Menu } from 'electron'
 import url from 'url'
 import path from 'path'
 import fs from 'fs'
@@ -12,6 +12,8 @@ autoUpdater.autoDownload = false
 log.transports.file.level = 'debug'
 autoUpdater.logger = log
 log.info('App starting...')
+
+Menu.setApplicationMenu(null)
 
 // Set up main window
 const startUrl =
