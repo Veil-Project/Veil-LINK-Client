@@ -231,7 +231,10 @@ const TransactionSummary = ({ txid }: { txid: string | null }) => {
 
       {isOpen &&
         (transaction ? (
-          <Details transaction={transaction} />
+          <Details
+            transaction={transaction}
+            shielded={requiresReveal(transaction)}
+          />
         ) : (
           <div className="p-24">
             <Loading />

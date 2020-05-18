@@ -6,7 +6,13 @@ import { useToasts } from 'react-toast-notifications'
 import JsonViewer from 'components/JsonViewer'
 import { useStore } from 'store'
 
-const TransactionDetails = ({ transaction }: { transaction: any }) => {
+const TransactionDetails = ({
+  transaction,
+  shielded = false,
+}: {
+  transaction: any
+  shielded: boolean
+}) => {
   const { state } = useStore()
   const { addToast } = useToasts()
 
@@ -22,9 +28,11 @@ const TransactionDetails = ({ transaction }: { transaction: any }) => {
           <dt className="flex-none w-48 pr-2 font-semibold text-right text-teal-500">
             Amount:
           </dt>
-          <dl className="flex-1 pl-3">{transaction.totalAmount} Veil</dl>
+          <dl className="flex-1 pl-3">
+            {shielded ? 'Shielded' : `${transaction.totalAmount} Veil`}
+          </dl>
         </div>
-        {transaction.sentAmount !== 0 && (
+        {!shielded && transaction.sentAmount !== 0 && (
           <div className="flex py-2 pb-3 border-t border-gray-600">
             <dt className="flex-none w-48 pr-2 font-semibold text-right text-teal-500">
               Sent:
@@ -32,7 +40,7 @@ const TransactionDetails = ({ transaction }: { transaction: any }) => {
             <dl className="flex-1 pl-3">{transaction.sentAmount} Veil</dl>
           </div>
         )}
-        {transaction.receivedAmount !== 0 && (
+        {!shielded && transaction.receivedAmount !== 0 && (
           <div className="flex py-2 pb-3 border-t border-gray-600">
             <dt className="flex-none w-48 pr-2 font-semibold text-right text-teal-500">
               Received:
@@ -40,7 +48,7 @@ const TransactionDetails = ({ transaction }: { transaction: any }) => {
             <dl className="flex-1 pl-3">{transaction.receivedAmount} Veil</dl>
           </div>
         )}
-        {transaction.changeAmount !== 0 && (
+        {!shielded && transaction.changeAmount !== 0 && (
           <div className="flex py-2 pb-3 border-t border-gray-600">
             <dt className="flex-none w-48 pr-2 font-semibold text-right text-teal-500">
               Change:
@@ -48,7 +56,7 @@ const TransactionDetails = ({ transaction }: { transaction: any }) => {
             <dl className="flex-1 pl-3">{transaction.changeAmount} Veil</dl>
           </div>
         )}
-        {transaction.fee !== 0 && (
+        {!shielded && transaction.fee !== 0 && (
           <div className="flex py-2 pb-3 border-t border-gray-600">
             <dt className="flex-none w-48 pr-2 font-semibold text-right text-teal-500">
               Fee:
@@ -56,25 +64,23 @@ const TransactionDetails = ({ transaction }: { transaction: any }) => {
             <dl className="flex-1 pl-3">{transaction.fee} Veil</dl>
           </div>
         )}
-        <div className="flex py-2 pb-3 border-t border-gray-600">
-          <dt className="flex-none w-48 pr-2 font-semibold text-right text-teal-500">
-            Recipient:
-          </dt>
-          <dl className="flex-1 pl-3">{transaction.address}</dl>
-        </div>
-        <div className="flex py-2 pb-3 border-t border-gray-600">
-          <dt className="flex-none w-48 pr-2 font-semibold text-right text-teal-500">
-            Status:
-          </dt>
-          <dl className="flex-1 pl-3">
-            {transaction.isConfirmed ? 'Confirmed' : 'Unconfirmed'}
-          </dl>
-        </div>
+        {transaction.address && (
+          <div className="flex py-2 pb-3 border-t border-gray-600">
+            <dt className="flex-none w-48 pr-2 font-semibold text-right text-teal-500">
+              Recipient:
+            </dt>
+            <dl className="flex-1 pl-3">{transaction.address}</dl>
+          </div>
+        )}
         <div className="flex py-2 pb-3 border-t border-gray-600">
           <dt className="flex-none w-48 pr-2 font-semibold text-right text-teal-500">
             Confirmations:
           </dt>
-          <dl className="flex-1 pl-3">{transaction.confirmations}</dl>
+          <dl className="flex-1 pl-3">
+            {transaction.confirmations > 0
+              ? transaction.confirmations
+              : 'Unconfirmed'}
+          </dl>
         </div>
         <div className="flex py-2 pb-3 border-t border-b border-gray-600">
           <dt className="flex-none w-48 pr-2 font-semibold text-right text-teal-500">
