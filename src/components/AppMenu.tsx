@@ -77,11 +77,7 @@ const AppMenu = ({ onClickOption }: MenuProps) => {
         className="flex flex-col p-2 border-t"
         style={{ borderColor: 'rgba(255, 255, 255, .05)' }}
       >
-        <MenuLink
-          onClick={() => openModal('console')}
-          label="Console"
-          shortcut="C"
-        />
+        <MenuLink onClick={() => openModal('console')} label="Console" />
         {state.app.connectionMethod === 'daemon' && (
           <MenuLink
             onClick={() => openModal('configure')}

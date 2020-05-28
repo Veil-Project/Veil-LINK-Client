@@ -46,11 +46,6 @@ const Wallet = () => {
     actions.app.openModal('send')
   })
 
-  useHotkeys('c', e => {
-    if (modal !== 'console') e.preventDefault()
-    actions.app.openModal('console')
-  })
-
   if (!state.wallet.encrypted) {
     return <EncryptWallet />
   }
